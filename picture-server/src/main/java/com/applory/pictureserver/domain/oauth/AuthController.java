@@ -16,7 +16,7 @@ public class AuthController {
 
     private final LoginService loginService;
 
-    @PostMapping("")
+    @PostMapping("/login")
     public OAuth2Token login(@Valid @RequestBody LoginDto.Login dto, HttpServletRequest request) {
         return loginService.login(dto, "http://localhost:" + request.getLocalPort());
     }

@@ -1,0 +1,98 @@
+package com.applory.pictureserver.domain.oauth;
+
+import com.applory.pictureserver.domain.config.AppConfiguration;
+import com.applory.pictureserver.domain.exception.NotFoundException;
+import com.applory.pictureserver.domain.exception.UnauthorizedException;
+import com.applory.pictureserver.domain.user.User;
+import com.applory.pictureserver.domain.user.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.codec.binary.Base64;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
+import org.springframework.http.*;
+import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.HashMap;
+
+@Service
+@RequiredArgsConstructor
+public class LoginService {
+    public static final String KAKAO_VALIDATE_TOKEN_URL = "https://kapi.kakao.com/v1/user/access_token_info";
+
+    private final UserRepository userRepository;
+
+    private final RestTemplate restTemplate;
+
+    private final Environment environment;
+
+    private final AppConfiguration appConfiguration;
+
+    private final ObjectMapper objectMapper;
+
+    public OAuth2Token login(LoginDto.Login dto, String baseUrl) {
+
+        User userInDB = userRepository.findByUsername(dto.getUsername());
+
+        if (userInDB == null) {
+            throw new NotFoundException(dto.getUsername() + " not found");
+        }
+
+        checkKakaoToken(dto.getKakaoToken());
+
+        OAuth2Token oAuth2Token = getToken(dto, baseUrl);
+
+        return oAuth2Token;
+
+    }
+
+    private void checkKakaoToken(String token) {
+        if (environment.acceptsProfiles(Profiles.of("test")) && "test".equals(token)) {
+            return;
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+        headers.set("Authorization", "Bearer " + token);
+
+        try {
+            HttpEntity httpEntity = new HttpEntity(headers);
+            restTemplate.exchange(KAKAO_VALIDATE_TOKEN_URL, HttpMethod.GET, httpEntity, HashMap.class);
+        } catch (HttpClientErrorException e) {
+            throw new UnauthorizedException(e.getMessage());
+        }
+    }
+
+    private OAuth2Token getToken(LoginDto.Login dto, String baseUrl) {
+        String credentials = appConfiguration.getClientId() + ":" + appConfiguration.getPwSalt();
+        String encodedCredentials = new String(Base64.encodeBase64(credentials.getBytes()));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add("Authorization", "Basic " + encodedCredentials);
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", "password");
+        params.add("username", dto.getUsername());
+        params.add("password", dto.getUsername() + appConfiguration.getPwSalt());
+        params.add("scope", "read write");
+
+        HttpEntity<MultiValueMap<String,String>> request = new HttpEntity<>(params, headers);
+
+        ResponseEntity<String> response = restTemplate.postForEntity(baseUrl + "/oauth/token", request, String.class);
+        if(response.getStatusCode() == HttpStatus.OK) {
+            try {
+                return objectMapper.readValue(response.getBody(), OAuth2Token.class);
+            } catch (JsonProcessingException e) {
+                throw new UnauthorizedException("Invalid Oauth token request");
+            }
+        }
+
+        throw new UnauthorizedException("Invalid Oauth token request");
+    }
+}

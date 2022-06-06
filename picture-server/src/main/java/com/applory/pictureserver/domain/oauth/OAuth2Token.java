@@ -1,4 +1,4 @@
-package com.applory.pictureserver.domain.oauth2;
+package com.applory.pictureserver.domain.oauth;
 
 import lombok.Getter;
 import lombok.Setter;

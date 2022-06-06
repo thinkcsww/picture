@@ -19,17 +19,35 @@ spring:
             mode: none
     hibernate:
       ddl-auto: update
+    show-sql: true
   profiles:
-    active: dev
-security:
-  oauth2:
-    jwt:
-      signkey: 123@#$
+    active: test
+#security:
+#  oauth2:
 #    client:
 #      client-id: applory
 #      client-secret: durtnlchrhtn@1
 #      resource:
 #        token-info-uri: http://localhost:8080/oauth/check_token
+picture:
+  pw-salt: durtnlchrhtn@1
+  jwt-sign-key: durtnlchrhtn@1
+  client-id: applory
+  client-secret: durtnlchrhtn@1
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+    schema: classpath:h2/schema.sql
+    data: classpath:h2/data.sql
+picture:
+  upload-path: uploads-test
 ---
 spring:
   config:
@@ -47,5 +65,5 @@ spring:
       ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-hoaxify:
+picture:
   upload-path: uploads-dev

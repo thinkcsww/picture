@@ -1,9 +1,11 @@
-package com.applory.pictureserver.domain.oauth2;
+package com.applory.pictureserver.domain.oauth;
 
+import com.applory.pictureserver.domain.config.AppConfiguration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -14,48 +16,20 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
-@RequestMapping("/oauth2")
-public class Oauth2Controller {
+@RequestMapping("/api/oauth")
+@RequiredArgsConstructor
+public class OAuth2Controller {
 
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-    public Oauth2Controller(RestTemplate restTemplate, ObjectMapper objectMapper) {
-        this.restTemplate = restTemplate;
-        this.objectMapper = objectMapper;
-    }
-
-    @GetMapping("/callback")
-    public OAuth2Token callback(@RequestParam String code) throws JsonProcessingException {
-        String credentials = "applory:durtnlchrhtn@1";
-        String encodedCredentials = new String(Base64.encodeBase64(credentials.getBytes()));
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.add("Authorization", "Basic "+ encodedCredentials);
-
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("code", code);
-//        params.add("grant_type", "authorization_code");
-        params.add("grant_type", "password");
-        params.add("username", "user");
-        params.add("password", "pass");
-        params.add("scope", "read");
-        params.add("redirect_uri", "http://localhost:8080/oauth2/callback");
-
-        HttpEntity<MultiValueMap<String,String>> request = new HttpEntity<>(params, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:8080/oauth/token", request, String.class);
-        if(response.getStatusCode() == HttpStatus.OK) {
-            return objectMapper.readValue(response.getBody(), OAuth2Token.class);
-        }
-        return null;
-    }
+    private final AppConfiguration appConfiguration;
 
     @GetMapping(value = "/token/refresh")
     public OAuth2Token refreshToken(@RequestParam String refreshToken) throws JsonProcessingException {
 
-        String credentials = "applory:durtnlchrhtn@1";
+        String credentials = appConfiguration.getClientId() + ":" + appConfiguration.getClientSecret();
         String encodedCredentials = new String(Base64.encodeBase64(credentials.getBytes()));
 
         HttpHeaders headers = new HttpHeaders();

@@ -1,32 +1,19 @@
 package com.applory.pictureserver.domain.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-
 @Service
+@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    //    @PostConstruct
-//    public void init() {
-//        User user = new User();
-//        user.setUsername("user");
-//        user.setPassword(passwordEncoder.encode("pass"));
-//
-//        userRepository.save(user);
-//    }
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -37,5 +24,13 @@ public class UserService implements UserDetailsService {
         }
 
         return user;
+    }
+
+    public User createUser(UserDto.Create dto) {
+        User user = new User();
+        user.setUsername(dto.getUsername());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+
+        return userRepository.save(user);
     }
 }

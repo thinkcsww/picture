@@ -1,7 +1,6 @@
 package com.applory.pictureserver.domain.user;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +17,10 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("")
-    public ResponseEntity<UserVM> createUser(@Valid @RequestBody UserDto.Create dto) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserDto.UserVM createUser(@Valid @RequestBody UserDto.Create dto) {
         User newUser = userService.createUser(dto);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(new UserVM(newUser));
+        return new UserDto.UserVM(newUser);
     }
 
     @GetMapping("")

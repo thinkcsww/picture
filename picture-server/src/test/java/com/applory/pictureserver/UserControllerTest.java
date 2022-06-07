@@ -4,7 +4,6 @@ import com.applory.pictureserver.domain.config.AppConfiguration;
 import com.applory.pictureserver.domain.user.UserDto;
 import com.applory.pictureserver.domain.user.UserRepository;
 import com.applory.pictureserver.domain.user.UserService;
-import com.applory.pictureserver.domain.user.UserVM;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

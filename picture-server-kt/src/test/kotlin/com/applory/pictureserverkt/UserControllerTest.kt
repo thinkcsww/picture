@@ -35,10 +35,10 @@ class UserControllerTest(
     }
 
     @Test
-    fun postUser_withValidUserDto_receiveOk() {
+    fun postUser_withValidUserDto_receiveCreated201() {
         val response = signUp(TestUtil.createValidUser("123123"), Any::class.java)
 
-        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
     }
 
     @Test

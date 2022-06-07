@@ -8,6 +8,7 @@ import com.applory.pictureserver.domain.user.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
@@ -22,7 +23,8 @@ import java.util.HashMap;
 
 @Service
 @RequiredArgsConstructor
-public class LoginService {
+@Slf4j
+public class AuthService {
     public static final String KAKAO_VALIDATE_TOKEN_URL = "https://kapi.kakao.com/v1/user/access_token_info";
 
     private final UserRepository userRepository;
@@ -35,7 +37,7 @@ public class LoginService {
 
     private final ObjectMapper objectMapper;
 
-    public OAuth2Token login(LoginDto.Login dto, String baseUrl) {
+    public OAuth2Token login(AuthDto.Login dto, String baseUrl) {
 
         User userInDB = userRepository.findByUsername(dto.getUsername());
 
@@ -68,7 +70,7 @@ public class LoginService {
         }
     }
 
-    private OAuth2Token getToken(LoginDto.Login dto, String baseUrl) {
+    private OAuth2Token getToken(AuthDto.Login dto, String baseUrl) {
         String credentials = appConfiguration.getClientId() + ":" + appConfiguration.getPwSalt();
         String encodedCredentials = new String(Base64.encodeBase64(credentials.getBytes()));
 
@@ -94,5 +96,34 @@ public class LoginService {
         }
 
         throw new UnauthorizedException("Invalid Oauth token request");
+    }
+
+    public OAuth2Token refreshToken(AuthDto.RefreshToken dto, String baseUrl) {
+
+        String credentials = appConfiguration.getClientId() + ":" + appConfiguration.getClientSecret();
+        String encodedCredentials = new String(Base64.encodeBase64(credentials.getBytes()));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+        headers.add("Authorization", "Basic " + encodedCredentials);
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("refresh_token", dto.getRefreshToken());
+        params.add("grant_type", "refresh_token");
+
+        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(params, headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.postForEntity(baseUrl + "/oauth/token", httpEntity, String.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                return objectMapper.readValue(response.getBody(), OAuth2Token.class);
+            }
+        } catch (Exception e) {
+            log.error("refreshToken error: " + e.getMessage());
+            throw new UnauthorizedException("Invalid Refresh Token");
+        }
+
+        throw new UnauthorizedException("Invalid Refresh Token");
     }
 }

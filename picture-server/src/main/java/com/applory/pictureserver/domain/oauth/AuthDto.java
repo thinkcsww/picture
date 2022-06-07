@@ -4,9 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
-public class LoginDto {
+public class AuthDto {
 
     @Getter
     @Setter
@@ -17,5 +16,12 @@ public class LoginDto {
 
         @NotNull
         private String kakaoToken;
+    }
+
+    @Getter
+    @Setter
+    public static class RefreshToken {
+        @NotNull
+        private String refreshToken;
     }
 }

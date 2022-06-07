@@ -1,7 +1,7 @@
 package com.applory.pictureserver;
 
 import com.applory.pictureserver.domain.error.ApiError;
-import com.applory.pictureserver.domain.oauth.LoginDto;
+import com.applory.pictureserver.domain.oauth.AuthDto;
 import com.applory.pictureserver.domain.oauth.OAuth2Token;
 import com.applory.pictureserver.domain.user.UserDto;
 import com.applory.pictureserver.domain.user.UserRepository;
@@ -51,7 +51,7 @@ public class AuthControllerTest {
 
     @Test
     public void postLogin_loginDtoWithoutUsername_receiveApiErrorWithValidationErrors() {
-        LoginDto.Login loginDto = new LoginDto.Login();
+        AuthDto.Login loginDto = new AuthDto.Login();
         loginDto.setKakaoToken("abc");
 
         ResponseEntity<String> response = login(loginDto, String.class);
@@ -60,7 +60,7 @@ public class AuthControllerTest {
 
     @Test
     public void postLogin_loginDtoWithoutKakaoToken_receiveApiErrorWithValidationErrors() {
-        LoginDto.Login loginDto = new LoginDto.Login();
+        AuthDto.Login loginDto = new AuthDto.Login();
         loginDto.setUsername("abc");
 
         ResponseEntity<String> response = login(loginDto, String.class);
@@ -69,7 +69,7 @@ public class AuthControllerTest {
 
     @Test
     public void postLogin_validLoginDtoButUserNotExist_receiveNotFound404() {
-        LoginDto.Login loginDto = new LoginDto.Login();
+        AuthDto.Login loginDto = new AuthDto.Login();
         loginDto.setUsername("123");
         loginDto.setKakaoToken("abc");
 
@@ -82,7 +82,7 @@ public class AuthControllerTest {
         String username = "123123";
         signUp(TestUtil.createValidUser(username), Object.class);
 
-        LoginDto.Login loginDto = new LoginDto.Login();
+        AuthDto.Login loginDto = new AuthDto.Login();
         loginDto.setUsername(username);
         loginDto.setKakaoToken("abc");
 
@@ -96,7 +96,7 @@ public class AuthControllerTest {
 
         signUp(TestUtil.createValidUser(username), Object.class);
 
-        LoginDto.Login loginDto = TestUtil.createValidLoginDto(username);
+        AuthDto.Login loginDto = TestUtil.createValidLoginDto(username);
 
         ResponseEntity<OAuth2Token> response = login(loginDto, OAuth2Token.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -108,24 +108,70 @@ public class AuthControllerTest {
 
         signUp(TestUtil.createValidUser(username), Object.class);
 
-        LoginDto.Login loginDto = TestUtil.createValidLoginDto(username);
+        AuthDto.Login loginDto = TestUtil.createValidLoginDto(username);
 
         ResponseEntity<OAuth2Token> response = login(loginDto, OAuth2Token.class);
         assertThat(response.getBody().getExpires_in()).isEqualTo(86399);
     }
 
     @Test
-//    public void postLogin_withValidUsername_receiveOk() {
-//        ResponseEntity<String> response = login("123123", String.class);
-//        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-//    }
+    public void getRefreshToken_withValidRefreshToken_receiveOk() {
+        String username = "123123";
 
-    public <T> ResponseEntity<T> login(LoginDto.Login loginDto, Class<T> responseType) {
+        signUp(TestUtil.createValidUser(username), Object.class);
+
+        AuthDto.Login loginDto = TestUtil.createValidLoginDto(username);
+
+        ResponseEntity<OAuth2Token> tokenResponse = login(loginDto, OAuth2Token.class);
+
+        AuthDto.RefreshToken refreshTokenDto = new AuthDto.RefreshToken();
+        refreshTokenDto.setRefreshToken(tokenResponse.getBody().getRefresh_token());
+
+        ResponseEntity<Object> refreshTokenResponse = refreshToken(refreshTokenDto, Object.class);
+
+        assertThat(refreshTokenResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void getRefreshToken_withValidRefreshToken_receiveRefreshedOauth2Token() {
+        String username = "123123";
+
+        signUp(TestUtil.createValidUser(username), Object.class);
+
+        AuthDto.Login loginDto = TestUtil.createValidLoginDto(username);
+
+        ResponseEntity<OAuth2Token> tokenResponse = login(loginDto, OAuth2Token.class);
+
+        AuthDto.RefreshToken refreshTokenDto = new AuthDto.RefreshToken();
+        refreshTokenDto.setRefreshToken(tokenResponse.getBody().getRefresh_token());
+        ResponseEntity<OAuth2Token> refreshTokenResponse = refreshToken(refreshTokenDto, OAuth2Token.class);
+
+        assertThat(refreshTokenResponse.getBody().getExpires_in()).isEqualTo(86399);
+    }
+
+    @Test
+    public void getRefreshToken_withInValidRefreshToken_receiveUnauthorized() {
+        AuthDto.RefreshToken refreshTokenDto = new AuthDto.RefreshToken();
+        refreshTokenDto.setRefreshToken("abc");
+        ResponseEntity<OAuth2Token> refreshTokenResponse = refreshToken(refreshTokenDto, OAuth2Token.class);
+
+        assertThat(refreshTokenResponse.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    public <T> ResponseEntity<T> login(AuthDto.Login dto, Class<T> responseType) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-        HttpEntity<LoginDto.Login> httpEntity = new HttpEntity<>(loginDto, headers);
+        HttpEntity<AuthDto.Login> httpEntity = new HttpEntity<>(dto, headers);
 
         return testRestTemplate.postForEntity(API_1_0_AUTH_LOGIN, httpEntity, responseType);
+    }
+
+    public <T> ResponseEntity<T> refreshToken(AuthDto.RefreshToken dto, Class<T> responseType) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+        HttpEntity<AuthDto.RefreshToken> httpEntity = new HttpEntity<>(dto, headers);
+
+        return testRestTemplate.postForEntity(API_1_0_AUTH_REFRESH_TOKEN, httpEntity, responseType);
     }
 
     public <T>ResponseEntity<T> signUp(UserDto.Create dto, Class<T> responseType) {

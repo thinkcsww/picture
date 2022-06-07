@@ -1,14 +1,11 @@
 package com.applory.pictureserver.domain.oauth;
 
-import com.applory.pictureserver.domain.config.AppConfiguration;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -19,12 +16,6 @@ import javax.validation.Valid;
 public class AuthController {
 
     private final AuthService authService;
-
-    private final AppConfiguration appConfiguration;
-
-    private final RestTemplate restTemplate;
-
-    private final ObjectMapper objectMapper;
 
     @PostMapping("/login")
     public OAuth2Token login(@Valid @RequestBody AuthDto.Login dto, HttpServletRequest request) {

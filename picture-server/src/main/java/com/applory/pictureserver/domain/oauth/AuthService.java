@@ -62,8 +62,9 @@ public class AuthService {
         headers.set("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
         headers.set("Authorization", "Bearer " + token);
 
+        HttpEntity httpEntity = new HttpEntity(headers);
+
         try {
-            HttpEntity httpEntity = new HttpEntity(headers);
             restTemplate.exchange(KAKAO_VALIDATE_TOKEN_URL, HttpMethod.GET, httpEntity, HashMap.class);
         } catch (HttpClientErrorException e) {
             throw new UnauthorizedException(e.getMessage());
@@ -84,9 +85,9 @@ public class AuthService {
         params.add("password", dto.getUsername() + appConfiguration.getPwSalt());
         params.add("scope", "read write");
 
-        HttpEntity<MultiValueMap<String,String>> request = new HttpEntity<>(params, headers);
+        HttpEntity<MultiValueMap<String,String>> httpEntity = new HttpEntity<>(params, headers);
 
-        ResponseEntity<String> response = restTemplate.postForEntity(baseUrl + "/oauth/token", request, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(baseUrl + "/oauth/token", httpEntity, String.class);
         if(response.getStatusCode() == HttpStatus.OK) {
             try {
                 return objectMapper.readValue(response.getBody(), OAuth2Token.class);

@@ -23,6 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 public class UserControllerTest {
 
+    public static final String API_V_1_USERS = "/api/v1/users";
+
     @Autowired
     TestRestTemplate testRestTemplate;
 
@@ -41,7 +43,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void postUser_withValidUserDto_receiveOk() {
+    public void postUser_withValidUserDto_receive202() {
         UserDto.Create dto = TestUtil.createValidUser("123123");
 
         ResponseEntity<Object> response = signUp(dto, Object.class);
@@ -67,8 +69,8 @@ public class UserControllerTest {
         assertThat(response.getBody().contains("password")).isFalse();
     }
 
-    public <T>ResponseEntity<T> signUp(UserDto.Create dto, Class<T> responseType) {
-        return testRestTemplate.postForEntity("/api/v1/users", dto, responseType);
+    public <T> ResponseEntity<T> signUp(UserDto.Create dto, Class<T> responseType) {
+        return testRestTemplate.postForEntity(API_V_1_USERS, dto, responseType);
     }
 
 }

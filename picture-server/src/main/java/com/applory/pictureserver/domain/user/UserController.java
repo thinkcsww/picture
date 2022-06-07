@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
@@ -16,7 +18,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("")
-    public ResponseEntity<UserVM> createUser(@RequestBody UserDto.Create dto) {
+    public ResponseEntity<UserVM> createUser(@Valid @RequestBody UserDto.Create dto) {
         User newUser = userService.createUser(dto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)

@@ -1,0 +1,69 @@
+spring:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+    schema: classpath:h2/schema.sql
+    data: classpath:h2/data.sql
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      javax:
+        persistence:
+          validation:
+            mode: none
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  profiles:
+    active: test
+#security:
+#  oauth2:
+#    client:
+#      client-id: applory
+#      client-secret: durtnlchrhtn@1
+#      resource:
+#        token-info-uri: http://localhost:8080/oauth/check_token
+picture:
+  pw-salt: durtnlchrhtn@1
+  jwt-sign-key: durtnlchrhtn@1
+  client-id: applory
+  client-secret: durtnlchrhtn@1
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+    schema: classpath:h2/schema.sql
+    data: classpath:h2/data.sql
+picture:
+  upload-path: uploads-test
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:mysql://localhost:3306/PICTURE?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
+    username: picture
+    password: durtnlchrhtn@1
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+picture:
+  upload-path: uploads-dev

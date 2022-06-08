@@ -16,4 +16,9 @@ class AuthController(private val authService: AuthService) {
         return authService.login(dto, "${request.scheme}://${request.localName}:${request.localPort}");
     }
 
+    @PostMapping("/token/refresh")
+    fun refreshToken(@Valid @RequestBody dto: AuthDto.RefreshToken, request: HttpServletRequest): Oauth2Token {
+        return authService.refreshToken(dto, "${request.scheme}://${request.localName}:${request.localPort}");
+    }
+
 }

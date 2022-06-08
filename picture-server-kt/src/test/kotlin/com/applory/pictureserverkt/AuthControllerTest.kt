@@ -106,6 +106,60 @@ class AuthControllerTest(@Autowired private val testRestTemplate: TestRestTempla
         assertThat(response.body?.expires_in).isEqualTo(86399)
     }
 
+    @Test
+    fun getRefreshToken_validLoginDto_receiveOauth2Token() {
+        val username = "123123"
+
+        signUp(TestUtil.createValidUser(username), Any::class.java)
+
+        val dto = TestUtil.createValidLoginDto(username)
+
+        val response: ResponseEntity<Oauth2Token> = login(dto, Oauth2Token::class.java)
+        assertThat(response.body?.expires_in).isEqualTo(86399)
+    }
+
+    @Test
+    fun postRefreshToken_withValidRefreshToken_receiveOk() {
+        val username = "123123"
+        signUp(TestUtil.createValidUser(username), Any::class.java)
+
+        val loginDto = TestUtil.createValidLoginDto(username)
+        val tokenResponse = login(loginDto, Oauth2Token::class.java)
+
+        val refreshTokenDto = AuthDto.RefreshToken(tokenResponse.body!!.refresh_token)
+        val refreshTokenResponse = getRefreshToken(refreshTokenDto, Any::class.java)
+
+        assertThat(refreshTokenResponse?.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
+    @Test
+    fun postRefreshToken_withValidRefreshToken_receiveRefreshedOauth2Token() {
+        val username = "123123"
+        signUp(TestUtil.createValidUser(username), Any::class.java)
+
+        val loginDto = TestUtil.createValidLoginDto(username)
+        val tokenResponse = login(loginDto, Oauth2Token::class.java)
+
+        val refreshTokenDto = AuthDto.RefreshToken(tokenResponse.body!!.refresh_token)
+        val refreshTokenResponse = getRefreshToken(refreshTokenDto, Oauth2Token::class.java)
+
+        assertThat(refreshTokenResponse?.body?.expires_in).isEqualTo(86399)
+    }
+
+    @Test
+    fun postRefreshToken_withInValidRefreshToken_receiveUnauthorized() {
+        val username = "123123"
+        signUp(TestUtil.createValidUser(username), Any::class.java)
+
+        val loginDto = TestUtil.createValidLoginDto(username)
+        val tokenResponse = login(loginDto, Oauth2Token::class.java)
+
+        val refreshTokenDto = AuthDto.RefreshToken("abc")
+        val refreshTokenResponse = getRefreshToken(refreshTokenDto, Any::class.java)
+
+        assertThat(refreshTokenResponse?.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
+    }
+
 
     private fun <T> login(dto: Any?, responseType: Class<T>): ResponseEntity<T> {
         val headers = HttpHeaders()
@@ -120,4 +174,11 @@ class AuthControllerTest(@Autowired private val testRestTemplate: TestRestTempla
         return testRestTemplate.postForEntity(API_V_1_USERS, dto, responseType)
     }
 
+    fun <T> getRefreshToken(dto: AuthDto.RefreshToken, responseType: Class<T>): ResponseEntity<T>? {
+        val headers = HttpHeaders()
+        headers["Content-Type"] = MediaType.APPLICATION_JSON_VALUE
+        val httpEntity = HttpEntity(dto, headers)
+
+        return testRestTemplate.postForEntity(API_1_0_AUTH_REFRESH_TOKEN, httpEntity, responseType)
+    }
 }

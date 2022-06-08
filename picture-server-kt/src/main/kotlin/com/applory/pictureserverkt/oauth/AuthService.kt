@@ -6,10 +6,11 @@ import com.applory.pictureserverkt.exception.UnauthorizedException
 import com.applory.pictureserverkt.user.UserRepository
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
+import lombok.extern.slf4j.Slf4j
+import org.slf4j.LoggerFactory
 import org.springframework.core.env.Environment
 import org.springframework.core.env.Profiles
 import org.springframework.http.*
-import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
@@ -26,6 +27,8 @@ class AuthService(
     private val environment: Environment
 ) {
     val KAKAO_VALIDATE_TOKEN_URL = "https://kapi.kakao.com/v1/user/access_token_info"
+
+    private val log = LoggerFactory.getLogger(AuthService::class.java)
 
     fun login(dto: AuthDto.Login, baseUrl: String): Oauth2Token {
         val userInDB = userRepository.findByUsername(dto.username)
@@ -87,5 +90,33 @@ class AuthService(
 
         throw UnauthorizedException("Invalid Oauth token request")
 
+    }
+
+    fun refreshToken(dto: AuthDto.RefreshToken, baseUrl: String): Oauth2Token {
+        val crendentials: String = "${appConfiguration.clientId}:${appConfiguration.clientSecret}"
+        val encodedCredentials: String = String(Base64.getEncoder().encode(crendentials.encodeToByteArray()))
+
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+        headers.add("Authorization", "Basic $encodedCredentials")
+
+        val params: MultiValueMap<String, String> = LinkedMultiValueMap()
+        params.add("grant_type", "refresh_token")
+        params.add("refresh_token", dto.refreshToken)
+
+        val httpEntity = HttpEntity(params, headers)
+
+        try {
+            val response = restTemplate.postForEntity("$baseUrl/oauth/token", httpEntity, String::class.java)
+
+            if (response.statusCode == HttpStatus.OK) {
+                return objectMapper.readValue(response.body, Oauth2Token::class.java)
+            }
+        } catch (e: Exception) {
+            log.error("refreshToken error: " + e.message)
+            throw UnauthorizedException("Invalid Refresh Token")
+        }
+
+        throw UnauthorizedException("Invalid Refresh Token")
     }
 }

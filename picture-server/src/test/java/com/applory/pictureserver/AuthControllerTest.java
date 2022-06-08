@@ -115,7 +115,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    public void getRefreshToken_withValidRefreshToken_receiveOk() {
+    public void postRefreshToken_withValidRefreshToken_receiveOk() {
         String username = "123123";
 
         signUp(TestUtil.createValidUser(username), Object.class);
@@ -127,13 +127,13 @@ public class AuthControllerTest {
         AuthDto.RefreshToken refreshTokenDto = new AuthDto.RefreshToken();
         refreshTokenDto.setRefreshToken(tokenResponse.getBody().getRefresh_token());
 
-        ResponseEntity<Object> refreshTokenResponse = refreshToken(refreshTokenDto, Object.class);
+        ResponseEntity<Object> refreshTokenResponse = getRefreshToken(refreshTokenDto, Object.class);
 
         assertThat(refreshTokenResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
-    public void getRefreshToken_withValidRefreshToken_receiveRefreshedOauth2Token() {
+    public void postRefreshToken_withValidRefreshToken_receiveRefreshedOauth2Token() {
         String username = "123123";
 
         signUp(TestUtil.createValidUser(username), Object.class);
@@ -144,16 +144,16 @@ public class AuthControllerTest {
 
         AuthDto.RefreshToken refreshTokenDto = new AuthDto.RefreshToken();
         refreshTokenDto.setRefreshToken(tokenResponse.getBody().getRefresh_token());
-        ResponseEntity<OAuth2Token> refreshTokenResponse = refreshToken(refreshTokenDto, OAuth2Token.class);
+        ResponseEntity<OAuth2Token> refreshTokenResponse = getRefreshToken(refreshTokenDto, OAuth2Token.class);
 
         assertThat(refreshTokenResponse.getBody().getExpires_in()).isEqualTo(86399);
     }
 
     @Test
-    public void getRefreshToken_withInValidRefreshToken_receiveUnauthorized() {
+    public void postRefreshToken_withInValidRefreshToken_receiveUnauthorized() {
         AuthDto.RefreshToken refreshTokenDto = new AuthDto.RefreshToken();
         refreshTokenDto.setRefreshToken("abc");
-        ResponseEntity<OAuth2Token> refreshTokenResponse = refreshToken(refreshTokenDto, OAuth2Token.class);
+        ResponseEntity<OAuth2Token> refreshTokenResponse = getRefreshToken(refreshTokenDto, OAuth2Token.class);
 
         assertThat(refreshTokenResponse.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
@@ -166,7 +166,7 @@ public class AuthControllerTest {
         return testRestTemplate.postForEntity(API_1_0_AUTH_LOGIN, httpEntity, responseType);
     }
 
-    public <T> ResponseEntity<T> refreshToken(AuthDto.RefreshToken dto, Class<T> responseType) {
+    public <T> ResponseEntity<T> getRefreshToken(AuthDto.RefreshToken dto, Class<T> responseType) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
         HttpEntity<AuthDto.RefreshToken> httpEntity = new HttpEntity<>(dto, headers);

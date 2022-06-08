@@ -10,4 +10,9 @@ class AuthDto {
         @field:NotBlank
         var kakaoToken: String
     )
+
+    data class RefreshToken(
+        @field:NotBlank
+        val refreshToken: String
+    )
 }

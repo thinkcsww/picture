@@ -21,7 +21,7 @@ spring:
       ddl-auto: update
     show-sql: true
   profiles:
-    active: test
+    active: dev
 #security:
 #  oauth2:
 #    client:

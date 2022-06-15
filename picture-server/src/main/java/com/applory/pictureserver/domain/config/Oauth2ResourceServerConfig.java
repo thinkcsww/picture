@@ -3,6 +3,7 @@ package com.applory.pictureserver.domain.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 
@@ -20,5 +21,8 @@ public class Oauth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
                         "/api/v1/auth/token/refresh",
                         "/h2-console/**").permitAll()
                 .anyRequest().authenticated();
+
+
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 }

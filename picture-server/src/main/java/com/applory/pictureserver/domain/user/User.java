@@ -1,23 +1,30 @@
 package com.applory.pictureserver.domain.user;
 
+import com.applory.pictureserver.domain.shared.BaseTimeEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.Collection;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "USER")
-public class User implements UserDetails {
+@Table(name = "user")
+public class User extends BaseTimeEntity {
+
+    public enum SnsType {
+        KAKAO, APPLE
+    }
+
+    public enum SellerSpecialty {
+        OFFICIAL, PEOPLE, BACKGROUND
+    }
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -25,44 +32,48 @@ public class User implements UserDetails {
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @Column(name = "USER_NAME")
+    @NotEmpty
+    @Column(name = "username")
     private String username;
 
-    @Column(name = "PASSWORD")
+    @NotEmpty
+    @Column(name = "password")
     private String password;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return AuthorityUtils.createAuthorityList("Role_USER");
-    }
+    @NotEmpty
+    @Column(name = "nickname", length = 20)
+    private String nickname;
 
-    @Override
-    public String getUsername() {
-        return username;
-    }
+    @Column(name = "description")
+    private String description;
 
-    @Override
-    public String getPassword() {
-        return this.password;
-    }
+    @Column(name = "sellerEnabledYn", length = 1, columnDefinition = "varchar(1) default 'N'")
+    private String sellerEnabledYn;
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+    @Column(name = "workHourFromDt")
+    private Integer workHourFromDt;
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+    @Column(name = "workHourToDt")
+    private Integer workHourToDt;
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+    // people, bg, official
+    @Column(name = "specialty")
+    private String specialty;
 
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
+    @NotEmpty
+    @Column(name = "useTermAgreeYn", length = 1, columnDefinition = "varchar(1) default 'Y'")
+    private String useTermAgreeYn;
+
+    @NotEmpty
+    @Column(name = "personalInfoUseTermAgreeYn", length = 1, columnDefinition = "varchar(1) default 'Y'")
+    private String personalInfoUseTermAgreeYn;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "snsType")
+    private SnsType snsType;
+
+//    @Column(name = "profileFileGroupId")
+//    private String profileFileGroupId;
+
 }

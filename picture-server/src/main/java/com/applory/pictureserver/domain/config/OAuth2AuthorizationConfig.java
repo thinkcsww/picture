@@ -1,8 +1,7 @@
 package com.applory.pictureserver.domain.config;
 
-import com.applory.pictureserver.domain.user.UserService;
+import com.applory.pictureserver.domain.user.CustomUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,8 +10,9 @@ import org.springframework.security.oauth2.config.annotation.configurers.ClientD
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
-import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 import javax.sql.DataSource;
 
@@ -27,7 +27,7 @@ public class OAuth2AuthorizationConfig extends AuthorizationServerConfigurerAdap
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private UserService userService;
+    private CustomUserDetailService customUserDetailService;
 
     @Autowired
     private DataSource dataSource;
@@ -42,15 +42,16 @@ public class OAuth2AuthorizationConfig extends AuthorizationServerConfigurerAdap
     }
 
     /**
-     * 토큰 발급 방식을 JWT 토큰 방식으로 변경한다. 이렇게 하면 토큰 저장하는 DB Table은 필요가 없다.
+     * 토큰 발급 방식을 JWT 토큰 방식으로 변경한다. 이렇게 하면 토큰 저장하는 DB Table은 필요가 없다. userService는 refreshToken 발급때 사용된다?
      * @throws Exception
      */
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         super.configure(endpoints);
-        endpoints.authenticationManager(authenticationManager)
+        endpoints.tokenStore(tokenStore())
+                .authenticationManager(authenticationManager)
                 .accessTokenConverter(jwtAccessTokenConverter())
-                .userDetailsService(userService);
+                .userDetailsService(customUserDetailService);
     }
 
     /**
@@ -65,6 +66,12 @@ public class OAuth2AuthorizationConfig extends AuthorizationServerConfigurerAdap
         return converter;
     }
 
+    @Bean
+    public TokenStore tokenStore() {
+        return new JwtTokenStore(jwtAccessTokenConverter());
+    }
+
+    // /oauth/check_token을 위한 설정 - DB로 토큰 관리할 경우
     //    @Override
 //    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
 //        security.tokenKeyAccess("permitAll()")

@@ -1,7 +1,7 @@
 package com.applory.pictureserver.domain.error;
 
-import com.applory.pictureserver.domain.error.ApiError;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,7 +17,25 @@ import java.util.Map;
 public class ExceptionHandlerAdvice {
     @ExceptionHandler({MethodArgumentNotValidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    ApiError handleValidationException (MethodArgumentNotValidException exception, HttpServletRequest request) {
+    ApiError handleRequestBodyValidationException (MethodArgumentNotValidException exception, HttpServletRequest request) {
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), "Validation error", request.getServletPath());
+
+        BindingResult bindingResult = exception.getBindingResult();
+
+        Map<String, String> validationErrors = new HashMap<>();
+
+        for (FieldError fieldError: bindingResult.getFieldErrors()) {
+            validationErrors.put(fieldError.getField(), fieldError.getDefaultMessage());
+        }
+
+        apiError.setValidationErrors(validationErrors);
+        return apiError;
+    }
+
+
+    @ExceptionHandler({BindException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ApiError handleRequestParamValidationException (BindException exception, HttpServletRequest request) {
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), "Validation error", request.getServletPath());
 
         BindingResult bindingResult = exception.getBindingResult();

@@ -1,19 +1,15 @@
 package com.applory.pictureserver;
 
-import org.apache.commons.codec.binary.Base64;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+@EnableJpaAuditing
 @SpringBootApplication
 public class PictureServerApplication {
 
     public static void main(String[] args) {
-
         SpringApplication.run(PictureServerApplication.class, args);
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        System.out.println(passwordEncoder.encode("durtnlchrhtn@1"));
     }
 
 }

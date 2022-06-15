@@ -35,6 +35,7 @@ public class AuthControllerTest {
     @BeforeEach
     public void cleanUp() {
         userRepository.deleteAll();
+        testRestTemplate.getRestTemplate().getInterceptors().clear();
     }
 
     @Test
@@ -80,7 +81,7 @@ public class AuthControllerTest {
     @Test
     public void postLogin_validLoginDtoWithInvalidKakaoToken_receiveUnauthorized() {
         String username = "123123";
-        signUp(TestUtil.createValidUser(username), Object.class);
+        signUp(TestUtil.createValidClientUser(username), Object.class);
 
         AuthDto.Login loginDto = new AuthDto.Login();
         loginDto.setUsername(username);
@@ -94,7 +95,7 @@ public class AuthControllerTest {
     public void postLogin_validLoginDto_receiveOk() {
         String username = "123123";
 
-        signUp(TestUtil.createValidUser(username), Object.class);
+        signUp(TestUtil.createValidClientUser(username), Object.class);
 
         AuthDto.Login loginDto = TestUtil.createValidLoginDto(username);
 
@@ -106,7 +107,7 @@ public class AuthControllerTest {
     public void postLogin_validLoginDto_receiveOauth2Token() {
         String username = "123123";
 
-        signUp(TestUtil.createValidUser(username), Object.class);
+        signUp(TestUtil.createValidClientUser(username), Object.class);
 
         AuthDto.Login loginDto = TestUtil.createValidLoginDto(username);
 
@@ -118,7 +119,7 @@ public class AuthControllerTest {
     public void postRefreshToken_withValidRefreshToken_receiveOk() {
         String username = "123123";
 
-        signUp(TestUtil.createValidUser(username), Object.class);
+        signUp(TestUtil.createValidClientUser(username), Object.class);
 
         AuthDto.Login loginDto = TestUtil.createValidLoginDto(username);
 
@@ -136,7 +137,7 @@ public class AuthControllerTest {
     public void postRefreshToken_withValidRefreshToken_receiveRefreshedOauth2Token() {
         String username = "123123";
 
-        signUp(TestUtil.createValidUser(username), Object.class);
+        signUp(TestUtil.createValidClientUser(username), Object.class);
 
         AuthDto.Login loginDto = TestUtil.createValidLoginDto(username);
 

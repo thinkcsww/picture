@@ -14,7 +14,7 @@ public class UserDto {
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class UserVM {
+    public static class VM {
         private UUID id;
         private String username;
         private String nickname;
@@ -27,7 +27,7 @@ public class UserDto {
         private LocalDateTime createdDt;
         private LocalDateTime updatedDt;;
 
-        public UserVM(User user) {
+        public VM(User user) {
             this.id = user.getId();
             this.username = user.getUsername();
             this.nickname = user.getNickname();

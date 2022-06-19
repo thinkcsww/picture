@@ -1,8 +1,12 @@
 package com.applory.pictureserver;
 
 import com.applory.pictureserver.domain.oauth.AuthDto;
+import com.applory.pictureserver.domain.request.Request;
+import com.applory.pictureserver.domain.request.RequestDto;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserDto;
+
+import java.time.LocalDateTime;
 
 public class TestUtil {
     public static UserDto.Create createValidClientUser(String username) {
@@ -40,5 +44,16 @@ public class TestUtil {
         login.setKakaoToken("test");
 
         return login;
+    }
+
+    public static RequestDto.Create createValidRequestDto() {
+        RequestDto.Create dto = new RequestDto.Create();
+        dto.setRequestType(Request.RequestType.BACKGROUND);
+        dto.setDesiredPrice(2000);
+        dto.setDescription("설명입니다");
+        dto.setTitle("제목입니다");
+        dto.setDueDate(LocalDateTime.of(2022, 12, 25, 23, 59));
+
+        return dto;
     }
 }

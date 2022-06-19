@@ -1,6 +1,7 @@
 package com.applory.pictureserver.domain.user;
 
 import com.applory.pictureserver.domain.exception.BadRequestException;
+import com.applory.pictureserver.domain.shared.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,7 +56,9 @@ public class UserService {
         return userRepository.findClientUserBySearch(search, pageable);
     }
 
-    public User getUserMe(CustomUserDetail user) {
-        return null;
+    public User getUserMe() {
+        String username = SecurityUtils.getPrincipal();
+
+        return userRepository.findByUsername(username);
     }
 }

@@ -2,6 +2,7 @@ package com.applory.pictureserver.domain.user;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
@@ -44,7 +45,7 @@ public class UserRepositoryCustomImpl extends QuerydslRepositorySupport implemen
         return new PageImpl<>(result.getResults(), pageable, result.getTotal());
     }
 
-    private BooleanBuilder createSellerPredicate(UserDto.SearchSeller search) {
+    private Predicate createSellerPredicate(UserDto.SearchSeller search) {
         QUser qUser = QUser.user;
         BooleanBuilder booleanBuilder = new BooleanBuilder();
 

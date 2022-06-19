@@ -15,16 +15,16 @@ import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.net.URI;
+
+import static com.applory.pictureserver.TestConstants.API_1_0_AUTH_LOGIN;
+import static com.applory.pictureserver.TestConstants.API_1_0_AUTH_REFRESH_TOKEN;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public class AuthControllerTest {
-
-    public static final String API_1_0_AUTH = "/api/v1/auth";
-    public static final String API_1_0_AUTH_LOGIN = API_1_0_AUTH + "/login";
-    public static final String API_1_0_AUTH_REFRESH_TOKEN = API_1_0_AUTH + "/token/refresh";
 
     @Autowired
     TestRestTemplate testRestTemplate;

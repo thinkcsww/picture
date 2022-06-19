@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -21,24 +20,23 @@ public class UserController {
 
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto.UserVM createUser(@Valid @RequestBody UserDto.Create dto) {
+    public UserDto.VM createUser(@Valid @RequestBody UserDto.Create dto) {
         User newUser = userService.createUser(dto);
-        return new UserDto.UserVM(newUser);
+        return new UserDto.VM(newUser);
     }
 
     @GetMapping("/me")
-    public UserDto.UserVM getUserMe(@CurrentUser User user) {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return null;
+    public UserDto.VM getUserMe(@CurrentUser User user) {
+        return new UserDto.VM(userService.getUserMe());
     }
 
     @GetMapping("")
-    public Page<UserDto.UserVM> getSellerUsers(@Valid UserDto.SearchSeller search, Pageable pageable) {
-        return userService.getSellerUsers(search, pageable).map(UserDto.UserVM::new);
+    public Page<UserDto.VM> getSellerUsers(@Valid UserDto.SearchSeller search, Pageable pageable) {
+        return userService.getSellerUsers(search, pageable).map(UserDto.VM::new);
     }
 
     @GetMapping("/client")
-    public Page<UserDto.UserVM> getClientUsers(@Valid UserDto.SearchClient search, Pageable pageable) {
-        return userService.getClientUsers(search, pageable).map(UserDto.UserVM::new);
+    public Page<UserDto.VM> getClientUsers(@Valid UserDto.SearchClient search, Pageable pageable) {
+        return userService.getClientUsers(search, pageable).map(UserDto.VM::new);
     }
 }

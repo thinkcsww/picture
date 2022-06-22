@@ -7,6 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public class RequestDto {
@@ -28,6 +29,10 @@ public class RequestDto {
 
         @NotNull
         private String description;
+
+        private String matchYn;
+
+        private String completeYn;
     }
 
     @Getter
@@ -37,12 +42,16 @@ public class RequestDto {
         private UUID id;
         private UUID userId;
         private String userNickname;
+        private Double userAcceptRate;
         private Request.RequestType requestType;
         private String title;
         private Integer desiredPrice;
         private LocalDateTime dueDate;
         private String description;
+        private String matchYn;
         private Integer readCount;
+        private Integer chatCount;
+        private List<RequestDto.VM> anotherRequests;
 
         public VM(Request request) {
             this.id = request.getId();
@@ -54,6 +63,7 @@ public class RequestDto {
             this.dueDate = request.getDueDate();
             this.description = request.getDescription();
             this.readCount = request.getReadCount();
+            this.matchYn = request.getMatchYN();
         }
     }
 
@@ -67,6 +77,10 @@ public class RequestDto {
 
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         private LocalDateTime toForDueDt;
+
+        private UUID userId;
+
+        private UUID exceptThisId;
 
     }
 

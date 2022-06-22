@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/requests")
@@ -24,5 +25,10 @@ public class RequestController {
     @GetMapping("")
     public Page<RequestDto.VM> getRequests(RequestDto.Search search, Pageable pageable) {
         return requestService.getRequests(search, pageable).map(RequestDto.VM::new);
+    }
+
+    @GetMapping("/{id}")
+    public RequestDto.VM getRequests(@PathVariable UUID id) {
+        return requestService.getRequest(id);
     }
 }

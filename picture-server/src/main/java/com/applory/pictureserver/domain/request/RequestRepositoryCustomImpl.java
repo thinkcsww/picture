@@ -21,7 +21,7 @@ public class RequestRepositoryCustomImpl extends QuerydslRepositorySupport imple
     }
 
     @Override
-    public Page<Request> findRequestBySearch(RequestDto.Search search, Pageable pageable) {
+    public Page<Request> findRequestBySearchQ(RequestDto.Search search, Pageable pageable) {
         QRequest qRequest = QRequest.request;
         JPQLQuery<Request> query = jpaQueryFactory.select(qRequest)
                 .from(qRequest)
@@ -38,6 +38,7 @@ public class RequestRepositoryCustomImpl extends QuerydslRepositorySupport imple
         BooleanBuilder booleanBuilder = new BooleanBuilder();
 
         booleanBuilder.and(qRequest.dueDate.after(LocalDateTime.now()));
+        booleanBuilder.and(qRequest.matchYN.eq("N"));
 
         if (search.getRequestType() != null) {
             booleanBuilder.and(qRequest.requestType.eq(search.getRequestType()));
@@ -45,6 +46,14 @@ public class RequestRepositoryCustomImpl extends QuerydslRepositorySupport imple
 
         if (search.getFromForDueDt() != null && search.getToForDueDt() != null) {
             booleanBuilder.and(qRequest.dueDate.between(search.getFromForDueDt(), search.getToForDueDt()));
+        }
+
+        if (search.getUserId() != null) {
+            booleanBuilder.and(qRequest.user.id.eq(search.getUserId()));
+        }
+
+        if (search.getExceptThisId() != null) {
+            booleanBuilder.and(qRequest.id.ne(search.getExceptThisId()));
         }
 
         return booleanBuilder;

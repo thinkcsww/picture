@@ -53,6 +53,8 @@ public class TestUtil {
         dto.setDescription("설명입니다");
         dto.setTitle("제목입니다");
         dto.setDueDate(LocalDateTime.of(2022, 12, 25, 23, 59));
+        dto.setMatchYn("N");
+        dto.setCompleteYn("N");
 
         return dto;
     }

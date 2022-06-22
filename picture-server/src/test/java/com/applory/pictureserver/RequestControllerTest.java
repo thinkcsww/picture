@@ -26,6 +26,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.applory.pictureserver.TestConstants.*;
 import static com.applory.pictureserver.TestUtil.createValidRequestDto;
@@ -169,6 +170,25 @@ public class RequestControllerTest {
         authenticate(tokenResponse.getBody().getAccess_token());
 
         RequestDto.Create dto1 = createValidRequestDto();
+        dto1.setDesiredPrice(10000);
+        postRequest(dto1, RequestDto.VM.class);
+
+        RequestDto.Create dto2 = createValidRequestDto();
+        postRequest(dto2, RequestDto.VM.class);
+
+        ResponseEntity<TestPage<RequestDto.VM>> response = getRequests(null, new ParameterizedTypeReference<TestPage<RequestDto.VM>>() {}, "&sort=desiredPrice,desc");
+
+        assertThat(response.getBody().getContent().get(0).getDesiredPrice()).isEqualTo(10000);
+    }
+
+    @Test
+    public void getRequests_withValidToken_receivePageOrderByPriceDesc() {
+        signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
+
+        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        authenticate(tokenResponse.getBody().getAccess_token());
+
+        RequestDto.Create dto1 = createValidRequestDto();
         dto1.setDueDate(LocalDateTime.of(2025, 12, 31, 12, 12));
         postRequest(dto1, RequestDto.VM.class);
 
@@ -179,6 +199,7 @@ public class RequestControllerTest {
 
         assertThat(response.getBody().getContent().get(0).getDueDate()).isBefore(response.getBody().getContent().get(1).getDueDate());
     }
+
 
     @Test
     void getRequests_withValidToken_receiveOnlyRequestsDueDateIsNotOver() {
@@ -246,6 +267,164 @@ public class RequestControllerTest {
                 );
     }
 
+    @Test
+    void getRequest_withInValidToken_receive401() {
+        authenticate("invalid_token");
+
+        ResponseEntity<Object> response = getRequest(UUID.randomUUID(), new ParameterizedTypeReference<Object>() {});
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void getRequest_withValidTokenButNotExistId_receive404() {
+        signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
+
+        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        authenticate(tokenResponse.getBody().getAccess_token());
+
+        postRequest(createValidRequestDto(), Object.class);
+        ResponseEntity<Object> response = getRequest(UUID.randomUUID(), new ParameterizedTypeReference<Object>() {});
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void getRequest_withValid_receive200() {
+        signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
+
+        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        authenticate(tokenResponse.getBody().getAccess_token());
+
+        ResponseEntity<RequestDto.VM> requestResponse = postRequest(createValidRequestDto(), RequestDto.VM.class);
+
+        ResponseEntity<Object> response = getRequest(requestResponse.getBody().getId(), new ParameterizedTypeReference<Object>() {});
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    void getRequest_withValid_receiveVmWithBasicInfo() {
+        signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
+
+        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        authenticate(tokenResponse.getBody().getAccess_token());
+
+        ResponseEntity<RequestDto.VM> requestResponse = postRequest(createValidRequestDto(), RequestDto.VM.class);
+
+        ResponseEntity<RequestDto.VM> response = getRequest(requestResponse.getBody().getId(), new ParameterizedTypeReference<RequestDto.VM>() {});
+
+        assertThat(response.getBody().getUserNickname()).isEqualTo("test-nickname");
+        assertThat(response.getBody().getDesiredPrice()).isEqualTo(2000);
+        assertThat(response.getBody().getTitle()).isEqualTo("제목입니다");
+        assertThat(response.getBody().getDescription()).isEqualTo("설명입니다");
+        assertThat(response.getBody().getRequestType()).isEqualTo(Request.RequestType.BACKGROUND);
+        assertThat(response.getBody().getReadCount()).isEqualTo(0);
+        assertThat(response.getBody().getDueDate()).isEqualTo(LocalDateTime.of(2022, 12, 25, 23, 59));
+
+    }
+
+    @Test
+    void getRequest_withValid_receiveVmWithChatCount() {
+        signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
+
+        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        authenticate(tokenResponse.getBody().getAccess_token());
+
+        postRequest(createValidRequestDto(), RequestDto.VM.class);
+
+        ResponseEntity<RequestDto.VM> response = getRequest(UUID.randomUUID(), new ParameterizedTypeReference<RequestDto.VM>() {});
+
+        assertThat(response.getBody().getChatCount()).isNotNull();
+    }
+
+    @Test
+    void getRequest_withValid_receiveVmWithUsersAnotherRequests() {
+        signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
+
+        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        authenticate(tokenResponse.getBody().getAccess_token());
+        RequestDto.Create dto1 = createValidRequestDto();
+        RequestDto.Create dto2 = createValidRequestDto();
+        dto1.setTitle("1");
+        dto2.setTitle("2");
+        postRequest(dto1, RequestDto.VM.class);
+        postRequest(dto2, RequestDto.VM.class);
+        ResponseEntity<RequestDto.VM> requestResponse = postRequest(createValidRequestDto(), RequestDto.VM.class);
+
+        ResponseEntity<RequestDto.VM> response = getRequest(requestResponse.getBody().getId(), new ParameterizedTypeReference<RequestDto.VM>() {});
+
+        assertThat(response.getBody().getAnotherRequests()).isNotNull();
+    }
+
+    @Test
+    void getRequest_withCompleteRequest_receiveVmWithAcceptRate() {
+        signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
+
+        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        authenticate(tokenResponse.getBody().getAccess_token());
+
+        RequestDto.Create dto1 = createValidRequestDto();
+        dto1.setDueDate(LocalDateTime.of(2022,6,1,12,12));
+        dto1.setMatchYn("Y");
+        dto1.setCompleteYn("Y");
+
+        RequestDto.Create dto2 = createValidRequestDto();
+        dto2.setDueDate(LocalDateTime.of(2022,6,1,12,12));
+        dto2.setMatchYn("Y");
+        dto2.setCompleteYn("N");
+
+        RequestDto.Create dto3 = createValidRequestDto();
+        dto3.setDueDate(LocalDateTime.of(2022,6,1,12,12));
+        dto3.setMatchYn("Y");
+        dto3.setCompleteYn("N");
+
+        RequestDto.Create dto4 = createValidRequestDto();
+        dto4.setDueDate(LocalDateTime.of(2022,6,1,12,12));
+        dto4.setMatchYn("Y");
+        dto4.setCompleteYn("N");
+
+        RequestDto.Create dto5 = createValidRequestDto();
+        dto5.setDueDate(LocalDateTime.of(2022,6,1,12,12));
+        dto5.setMatchYn("Y");
+        dto5.setCompleteYn("N");
+
+        postRequest(dto1, RequestDto.VM.class);
+        postRequest(dto2, RequestDto.VM.class);
+        postRequest(dto3, RequestDto.VM.class);
+        postRequest(dto4, RequestDto.VM.class);
+        ResponseEntity<RequestDto.VM> requestResponse = postRequest(dto5, RequestDto.VM.class);
+
+        ResponseEntity<RequestDto.VM> response = getRequest(requestResponse.getBody().getId(), new ParameterizedTypeReference<RequestDto.VM>() {});
+
+        assertThat(response.getBody().getUserAcceptRate()).isEqualTo(20.0);
+    }
+
+    @Test
+    void getRequest_withoutCompleteRequest_receiveVmWithAcceptRate() {
+        signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
+
+        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        authenticate(tokenResponse.getBody().getAccess_token());
+
+        RequestDto.Create dto1 = createValidRequestDto();
+        dto1.setDueDate(LocalDateTime.of(2022,6,1,12,12));
+        dto1.setMatchYn("Y");
+        dto1.setCompleteYn("N");
+
+        RequestDto.Create dto2 = createValidRequestDto();
+        dto2.setDueDate(LocalDateTime.of(2022,6,1,12,12));
+        dto2.setMatchYn("Y");
+        dto2.setCompleteYn("N");
+
+        postRequest(dto1, RequestDto.VM.class);
+        ResponseEntity<RequestDto.VM> requestResponse = postRequest(dto2, RequestDto.VM.class);
+
+        ResponseEntity<RequestDto.VM> response = getRequest(requestResponse.getBody().getId(), new ParameterizedTypeReference<RequestDto.VM>() {});
+
+        assertThat(response.getBody().getUserAcceptRate()).isEqualTo(-1.0);
+    }
+
     public <T> ResponseEntity<T> postRequest(RequestDto.Create dto, Class<T> responseType) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
@@ -278,6 +457,11 @@ public class RequestControllerTest {
 
         url += sortString;
 
+        return testRestTemplate.exchange(url, HttpMethod.GET, null, responseType);
+    }
+
+    public <T> ResponseEntity<T> getRequest(UUID id, ParameterizedTypeReference<T> responseType) {
+        String url = API_V_1_REQUESTS + "/" + id;
         return testRestTemplate.exchange(url, HttpMethod.GET, null, responseType);
     }
 

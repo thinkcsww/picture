@@ -55,4 +55,7 @@ public class Request extends BaseTimeEntity {
     @Column(name = "matchYN", length = 1, columnDefinition = "varchar(1) default 'N'")
     private String matchYN;
 
+    @Column(name = "completeYN", length = 1, columnDefinition = "varchar(1) default 'N'")
+    private String completeYN;
+
 }

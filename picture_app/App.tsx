@@ -8,108 +8,72 @@
  * @format
  */
 
-import React from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-const Section: React.FC<{
-  title: string;
-}> = ({children, title}) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
+import React, {useEffect, useRef, useState} from 'react';
+import {Alert, Button, SafeAreaView, TextInput} from 'react-native';
+import {Client, IMessage, Message, Stomp} from '@stomp/stompjs';
+import SockJS from "sockjs-client";
 
 const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+    const stompClient = useRef<Client>();
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+    const [text, setText] = useState('');
+
+
+    useEffect(() => {
+        stompClient.current = new Client();
+
+        stompClient.current.configure({
+            brokerURL: 'http://192.168.200.138:8080/ws',
+            connectHeaders: {},
+            debug: (str) => {
+                console.log(str);
+            },
+            reconnectDelay: 500,
+            heartbeatIncoming: 4000,
+            heartbeatOutgoing: 4000,
+            logRawCommunication: false,
+            webSocketFactory: () => {
+              return SockJS('http://192.168.200.138:8080/ws')
+            },
+            onConnect: (frame) => {
+                console.log('==== Connected ==== ');
+                const subscription = stompClient.current.subscribe('/room/1', (message: IMessage) =>{
+                    console.log('message: ', message.body)
+                });
+            },
+            onStompError: (err) => {
+                Alert.alert('stomp error');
+            },
+            onDisconnect: (frame) => {
+                console.log("Stomp Disconnect", frame);
+            },
+            onWebSocketClose: (frame) => {
+                console.log("Stomp WebSocket Closed", frame);
+            },
+            onWebSocketError: (frame) => {
+                console.log("Stomp WebSocket Error", frame);
+            },
+        })
+
+        stompClient.current.activate();
+
+    }, [])
+
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="사진 보정 할끄야">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="사진 보정 할끄야">
-            <ReloadInstructions />
-          </Section>
-          <Section title="사진 보정 할끄야">
-            <DebugInstructions />
-          </Section>
-          <Section title="사진 보정 할끄야">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
+    <SafeAreaView>
+        <TextInput value={text} onChangeText={(text) => setText(text)}/>
+      <Button
+        title={'hi'}
+        onPress={() => {
+            stompClient.current.publish({
+                destination: '/api/v1/chat/send',
+                body: text
+            })
+        }}
+      />
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;

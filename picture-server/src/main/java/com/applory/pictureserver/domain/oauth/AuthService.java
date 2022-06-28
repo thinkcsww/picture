@@ -54,7 +54,7 @@ public class AuthService {
     }
 
     private void checkKakaoToken(String token) {
-        if (environment.acceptsProfiles(Profiles.of("test")) && "test".equals(token)) {
+        if (environment.acceptsProfiles(Profiles.of("test")) || "test".equals(token)) {
             return;
         }
 

@@ -25,6 +25,7 @@ public class Oauth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
                 .antMatchers(
                         "/api/v1/auth/login",
                         "/api/v1/auth/token/refresh",
+                        "/ws/**",
                         "/h2-console/**").permitAll()
                 .anyRequest().authenticated();
 

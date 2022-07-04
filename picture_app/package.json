@@ -13,8 +13,6 @@
     "@stomp/stompjs": "^6.1.2",
     "react": "17.0.2",
     "react-native": "0.68.2",
-    "react-native-stomp-websocket": "^1.0.8",
-    "react-stomp": "^5.1.0",
     "sockjs-client": "^1.6.1",
     "text-encoding": "^0.7.0"
   },

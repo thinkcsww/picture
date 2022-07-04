@@ -10,7 +10,7 @@
 
 import React, {useEffect, useRef, useState} from 'react';
 import {Alert, Button, SafeAreaView, TextInput} from 'react-native';
-import {Client, IMessage, Message, Stomp} from '@stomp/stompjs';
+import {Client, IMessage} from '@stomp/stompjs';
 import SockJS from "sockjs-client";
 
 const App = () => {
@@ -24,11 +24,13 @@ const App = () => {
 
         stompClient.current.configure({
             brokerURL: 'http://192.168.200.138:8080/ws',
-            connectHeaders: {},
+            connectHeaders: {
+                "Authorization": "Bearer eyJhbGciOiJII1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTY1MDAzMzMsInVzZXJfbmFtZSI6IjEyMzEyMyIsImF1dGhvcml0aWVzIjpbIlVTRVJfUk9MRSJdLCJqdGkiOiJkQmRPQTlQejZQZWY0eEV3NkNoQnJnUTQyR1kiLCJjbGllbnRfaWQiOiJhcHBsb3J5Iiwic2NvcGUiOlsicmVhZCIsIndyaXRlIl19.vyfW1EQLSKhbinp9Nbc9UD491cs75OIyOxvru3K7N_E"
+            },
             debug: (str) => {
                 console.log(str);
             },
-            reconnectDelay: 500,
+            reconnectDelay: 5000,
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,
             logRawCommunication: false,
@@ -68,7 +70,7 @@ const App = () => {
         onPress={() => {
             stompClient.current.publish({
                 destination: '/api/v1/chat/send',
-                body: text
+                body: JSON.stringify({roomId: "1", message: text})
             })
         }}
       />

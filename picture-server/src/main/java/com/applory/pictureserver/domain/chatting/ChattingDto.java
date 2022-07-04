@@ -12,6 +12,8 @@ public class ChattingDto {
     public static class Message {
         private String roomId;
 
+
+
         private String sendTo;
 
         private String message;

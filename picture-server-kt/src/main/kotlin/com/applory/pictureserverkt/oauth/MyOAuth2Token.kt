@@ -1,6 +1,6 @@
 package com.applory.pictureserverkt.oauth
 
-data class Oauth2Token(
+data class MyOAuth2Token(
     val access_token: String,
     val token_type: String,
     val refresh_token: String,

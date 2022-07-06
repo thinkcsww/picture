@@ -12,12 +12,12 @@ import javax.validation.Valid
 class AuthController(private val authService: AuthService) {
 
     @PostMapping("/login")
-    fun login(@Valid @RequestBody dto: AuthDto.Login, request: HttpServletRequest): Oauth2Token {
+    fun login(@Valid @RequestBody dto: AuthDto.Login, request: HttpServletRequest): MyOAuth2Token {
         return authService.login(dto, "${request.scheme}://${request.localName}:${request.localPort}");
     }
 
     @PostMapping("/token/refresh")
-    fun refreshToken(@Valid @RequestBody dto: AuthDto.RefreshToken, request: HttpServletRequest): Oauth2Token {
+    fun refreshToken(@Valid @RequestBody dto: AuthDto.RefreshToken, request: HttpServletRequest): MyOAuth2Token {
         return authService.refreshToken(dto, "${request.scheme}://${request.localName}:${request.localPort}");
     }
 

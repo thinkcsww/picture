@@ -6,7 +6,6 @@ import com.applory.pictureserverkt.exception.UnauthorizedException
 import com.applory.pictureserverkt.user.UserRepository
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
-import lombok.extern.slf4j.Slf4j
 import org.slf4j.LoggerFactory
 import org.springframework.core.env.Environment
 import org.springframework.core.env.Profiles
@@ -30,7 +29,7 @@ class AuthService(
 
     private val log = LoggerFactory.getLogger(AuthService::class.java)
 
-    fun login(dto: AuthDto.Login, baseUrl: String): Oauth2Token {
+    fun login(dto: AuthDto.Login, baseUrl: String): MyOAuth2Token {
         val userInDB = userRepository.findByUsername(dto.username)
 
         if (userInDB == null) {
@@ -39,7 +38,7 @@ class AuthService(
 
         checkKakaoToken(dto.kakaoToken, baseUrl)
 
-        val oauth2Token: Oauth2Token = getToken(dto, baseUrl)
+        val oauth2Token: MyOAuth2Token = getToken(dto, baseUrl)
 
         return oauth2Token
 
@@ -63,7 +62,7 @@ class AuthService(
         }
     }
 
-    private fun getToken(dto: AuthDto.Login, baseUrl: String): Oauth2Token {
+    private fun getToken(dto: AuthDto.Login, baseUrl: String): MyOAuth2Token {
         val crendentials: String = "${appConfiguration.clientId}:${appConfiguration.clientSecret}"
         val encodedCredentials: String = String(Base64.getEncoder().encode(crendentials.encodeToByteArray()))
 
@@ -82,7 +81,7 @@ class AuthService(
         val response = restTemplate.postForEntity("$baseUrl/oauth/token", httpEntity, String::class.java)
         if (response.statusCode == HttpStatus.OK) {
             return try {
-                objectMapper.readValue(response.body, Oauth2Token::class.java)
+                objectMapper.readValue(response.body, MyOAuth2Token::class.java)
             } catch (e: JsonProcessingException) {
                 throw UnauthorizedException("Invalid Oauth token request")
             }
@@ -92,7 +91,7 @@ class AuthService(
 
     }
 
-    fun refreshToken(dto: AuthDto.RefreshToken, baseUrl: String): Oauth2Token {
+    fun refreshToken(dto: AuthDto.RefreshToken, baseUrl: String): MyOAuth2Token {
         val crendentials: String = "${appConfiguration.clientId}:${appConfiguration.clientSecret}"
         val encodedCredentials: String = String(Base64.getEncoder().encode(crendentials.encodeToByteArray()))
 
@@ -110,7 +109,7 @@ class AuthService(
             val response = restTemplate.postForEntity("$baseUrl/oauth/token", httpEntity, String::class.java)
 
             if (response.statusCode == HttpStatus.OK) {
-                return objectMapper.readValue(response.body, Oauth2Token::class.java)
+                return objectMapper.readValue(response.body, MyOAuth2Token::class.java)
             }
         } catch (e: Exception) {
             log.error("refreshToken error: " + e.message)

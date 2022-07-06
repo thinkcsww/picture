@@ -1,8 +1,11 @@
 package com.applory.pictureserverkt
 
+import com.applory.pictureserverkt.TestConstant.API_1_0_AUTH_LOGIN
+import com.applory.pictureserverkt.TestConstant.API_1_0_AUTH_REFRESH_TOKEN
+import com.applory.pictureserverkt.TestConstant.API_V_1_USERS
 import com.applory.pictureserverkt.error.ApiError
 import com.applory.pictureserverkt.oauth.AuthDto
-import com.applory.pictureserverkt.oauth.Oauth2Token
+import com.applory.pictureserverkt.oauth.MyOAuth2Token
 import com.applory.pictureserverkt.user.UserDto
 import com.applory.pictureserverkt.user.UserRepository
 import org.assertj.core.api.Assertions.assertThat
@@ -21,11 +24,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class AuthControllerTest(@Autowired private val testRestTemplate: TestRestTemplate, @Autowired private val userRepository: UserRepository) {
-    private val API_1_0_AUTH = "/api/v1/auth"
-    private val API_1_0_AUTH_LOGIN = "$API_1_0_AUTH/login"
-    private val API_1_0_AUTH_REFRESH_TOKEN = "$API_1_0_AUTH/token/refresh"
-
-    private val API_V_1_USERS = "/api/v1/users"
 
     @BeforeEach
     fun cleanUp() {
@@ -73,7 +71,7 @@ class AuthControllerTest(@Autowired private val testRestTemplate: TestRestTempla
     @Test
     fun postLogin_loginDtoWithInvalidKakaoToken_receiveUnauthorized() {
 
-        signUp(TestUtil.createValidUser("123"), Any::class.java)
+        signUp(TestUtil.createValidClientUser("123"), Any::class.java)
 
         val dto = TestUtil.createValidLoginDto("123")
         dto.kakaoToken = "asdasd"
@@ -86,7 +84,7 @@ class AuthControllerTest(@Autowired private val testRestTemplate: TestRestTempla
     fun postLogin_validLoginDto_receiveOk() {
         val username = "123123"
 
-        signUp(TestUtil.createValidUser(username), Any::class.java)
+        signUp(TestUtil.createValidClientUser(username), Any::class.java)
 
         val dto = TestUtil.createValidLoginDto(username)
 
@@ -98,11 +96,11 @@ class AuthControllerTest(@Autowired private val testRestTemplate: TestRestTempla
     fun postLogin_validLoginDto_receiveOauth2Token() {
         val username = "123123"
 
-        signUp(TestUtil.createValidUser(username), Any::class.java)
+        signUp(TestUtil.createValidClientUser(username), Any::class.java)
 
         val dto = TestUtil.createValidLoginDto(username)
 
-        val response: ResponseEntity<Oauth2Token> = login(dto, Oauth2Token::class.java)
+        val response: ResponseEntity<MyOAuth2Token> = login(dto, MyOAuth2Token::class.java)
         assertThat(response.body?.expires_in).isEqualTo(86399)
     }
 
@@ -110,21 +108,21 @@ class AuthControllerTest(@Autowired private val testRestTemplate: TestRestTempla
     fun getRefreshToken_validLoginDto_receiveOauth2Token() {
         val username = "123123"
 
-        signUp(TestUtil.createValidUser(username), Any::class.java)
+        signUp(TestUtil.createValidClientUser(username), Any::class.java)
 
         val dto = TestUtil.createValidLoginDto(username)
 
-        val response: ResponseEntity<Oauth2Token> = login(dto, Oauth2Token::class.java)
+        val response: ResponseEntity<MyOAuth2Token> = login(dto, MyOAuth2Token::class.java)
         assertThat(response.body?.expires_in).isEqualTo(86399)
     }
 
     @Test
     fun postRefreshToken_withValidRefreshToken_receiveOk() {
         val username = "123123"
-        signUp(TestUtil.createValidUser(username), Any::class.java)
+        signUp(TestUtil.createValidClientUser(username), Any::class.java)
 
         val loginDto = TestUtil.createValidLoginDto(username)
-        val tokenResponse = login(loginDto, Oauth2Token::class.java)
+        val tokenResponse = login(loginDto, MyOAuth2Token::class.java)
 
         val refreshTokenDto = AuthDto.RefreshToken(tokenResponse.body!!.refresh_token)
         val refreshTokenResponse = getRefreshToken(refreshTokenDto, Any::class.java)
@@ -135,13 +133,13 @@ class AuthControllerTest(@Autowired private val testRestTemplate: TestRestTempla
     @Test
     fun postRefreshToken_withValidRefreshToken_receiveRefreshedOauth2Token() {
         val username = "123123"
-        signUp(TestUtil.createValidUser(username), Any::class.java)
+        signUp(TestUtil.createValidClientUser(username), Any::class.java)
 
         val loginDto = TestUtil.createValidLoginDto(username)
-        val tokenResponse = login(loginDto, Oauth2Token::class.java)
+        val tokenResponse = login(loginDto, MyOAuth2Token::class.java)
 
         val refreshTokenDto = AuthDto.RefreshToken(tokenResponse.body!!.refresh_token)
-        val refreshTokenResponse = getRefreshToken(refreshTokenDto, Oauth2Token::class.java)
+        val refreshTokenResponse = getRefreshToken(refreshTokenDto, MyOAuth2Token::class.java)
 
         assertThat(refreshTokenResponse?.body?.expires_in).isEqualTo(86399)
     }
@@ -149,10 +147,10 @@ class AuthControllerTest(@Autowired private val testRestTemplate: TestRestTempla
     @Test
     fun postRefreshToken_withInValidRefreshToken_receiveUnauthorized() {
         val username = "123123"
-        signUp(TestUtil.createValidUser(username), Any::class.java)
+        signUp(TestUtil.createValidClientUser(username), Any::class.java)
 
         val loginDto = TestUtil.createValidLoginDto(username)
-        val tokenResponse = login(loginDto, Oauth2Token::class.java)
+        val tokenResponse = login(loginDto, MyOAuth2Token::class.java)
 
         val refreshTokenDto = AuthDto.RefreshToken("abc")
         val refreshTokenResponse = getRefreshToken(refreshTokenDto, Any::class.java)

@@ -25,7 +25,7 @@ public class UserDto {
         private String specialty;
         private String sellerEnabledYn;
         private LocalDateTime createdDt;
-        private LocalDateTime updatedDt;;
+        private LocalDateTime updatedDt;
 
         public VM(User user) {
             this.id = user.getId();

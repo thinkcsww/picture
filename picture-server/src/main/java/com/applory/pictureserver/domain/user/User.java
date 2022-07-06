@@ -19,7 +19,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "user")
+@Table(name = "USER")
 public class User extends BaseTimeEntity implements UserDetails {
 
     @Override

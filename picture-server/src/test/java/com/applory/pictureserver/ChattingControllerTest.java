@@ -1,8 +1,9 @@
 package com.applory.pictureserver;
 
-import com.applory.pictureserver.domain.chatting.ChattingDto;
+import com.applory.pictureserver.domain.chatting.*;
 import com.applory.pictureserver.domain.oauth.AuthDto;
 import com.applory.pictureserver.domain.oauth.OAuth2Token;
+import com.applory.pictureserver.domain.request.RequestRepository;
 import com.applory.pictureserver.domain.user.UserDto;
 import com.applory.pictureserver.domain.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,14 +26,15 @@ import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.springframework.web.socket.sockjs.client.SockJsClient;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
 import java.lang.reflect.Type;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.UUID;
 import java.util.concurrent.*;
 
 import static com.applory.pictureserver.TestConstants.*;
@@ -59,7 +61,19 @@ public class ChattingControllerTest {
     private UserRepository userRepository;
 
     @Autowired
+    private RequestRepository requestRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private ChattingRoomRepository chattingRoomRepository;
+
+    @Autowired
+    private ChattingRoomMemberRepository chattingRoomMemberRepository;
+
+    @Autowired
+    private ChattingMessageRepository chattingMessageRepository;
 
     @BeforeEach
     public void setup() throws ExecutionException, InterruptedException, TimeoutException {
@@ -67,6 +81,12 @@ public class ChattingControllerTest {
         stompClient = new WebSocketStompClient(new SockJsClient(
                 asList(new WebSocketTransport(new StandardWebSocketClient()))));
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+        requestRepository.deleteAll();
+        chattingMessageRepository.deleteAll();
+        chattingRoomMemberRepository.deleteAll();
+        chattingRoomRepository.deleteAll();
+        userRepository.deleteAll();
+
     }
 
     @AfterEach
@@ -77,31 +97,22 @@ public class ChattingControllerTest {
     }
 
     @Test
-    public void startChatting_withInvalidToken_receiveUnauthorized() {
-        ChattingDto.Message message = new ChattingDto.Message();
-        message.setMessage("HI");
-        message.setRoomId("13");
-        message.setSendTo("asd");
+    public void startChatting_withInvalidToken_stompSessionIsNull() {
 
         try {
             connectStomp(null);
         } catch (Exception e) {
-            assertThat(e.getMessage().contains("401")).isTrue();
         }
 
+        assertThat(stompSession).isNull();
     }
 
     @Test
-    public void startChatting_withValidToken_receiveOk() throws ExecutionException, InterruptedException, TimeoutException {
+    public void startChatting_withValidToken_stompSessionIsNotNull() throws ExecutionException, InterruptedException, TimeoutException, URISyntaxException {
 
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
         ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
-
-        ChattingDto.Message message = new ChattingDto.Message();
-        message.setMessage("HI");
-        message.setRoomId("13");
-        message.setSendTo("asd");
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
@@ -109,9 +120,200 @@ public class ChattingControllerTest {
     }
 
     @Test
-    public void startChatting_whenRoomIsNotExistCreateRoom_receiveChatRoomVM() {
+    public void startChatting_whenRoomIsNotExistCreateRoom_chatroomIsCreated() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
+        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
+
+        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+
+        connectStomp(tokenResponse.getBody().getAccess_token());
+
+        ChattingDto.Message message = new ChattingDto.Message();
+        message.setMessage("HI");
+        message.setReceiverId(receiver.getId());
+        message.setSenderId(sender.getId());
+        message.setRoomId(UUID.randomUUID());
+        message.setIsFirst(true);
+
+        sendMessage(message);
+
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
+        assertThat(chattingRoomRepository.count()).isEqualTo(1);
 
     }
+
+    @Test
+    public void startChatting_whenRoomIsNotExistCreateRoom_chatroomMemberIsCreated() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
+        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
+
+        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+
+        connectStomp(tokenResponse.getBody().getAccess_token());
+
+        ChattingDto.Message message = new ChattingDto.Message();
+        message.setMessage("HI");
+        message.setReceiverId(receiver.getId());
+        message.setSenderId(sender.getId());
+        message.setRoomId(UUID.randomUUID());
+        message.setIsFirst(true);
+
+        sendMessage(message);
+
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
+
+        assertThat(chattingRoomMemberRepository.count()).isEqualTo(2);
+    }
+
+    @Test
+    public void startChatting_whenRoomIsNotExistCreateRoom_chatroomMemberIsConnectedWithRightChattingRoom() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
+        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
+
+        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+
+        connectStomp(tokenResponse.getBody().getAccess_token());
+
+        ChattingDto.Message message = new ChattingDto.Message();
+        message.setMessage("HI");
+        message.setReceiverId(receiver.getId());
+        message.setSenderId(sender.getId());
+        message.setRoomId(UUID.randomUUID());
+        message.setIsFirst(true);
+
+        sendMessage(message);
+
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
+
+        ChattingRoom chattingRoom = chattingRoomRepository.findAll().get(0);
+        ChattingRoomMember chattingRoomMember = chattingRoomMemberRepository.findAll().get(0);
+        assertThat(chattingRoomMember.getChattingRoom().getId()).isEqualTo(chattingRoom.getId());
+    }
+
+    @Test
+    public void startChatting_whenRoomIsNotExistCreateRoom_chatMessageIsCreated() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
+        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
+
+        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+
+        connectStomp(tokenResponse.getBody().getAccess_token());
+
+        ChattingDto.Message message = new ChattingDto.Message();
+        message.setMessage("HI");
+        message.setReceiverId(receiver.getId());
+        message.setSenderId(sender.getId());
+        message.setRoomId(UUID.randomUUID());
+        message.setIsFirst(true);
+
+        sendMessage(message);
+
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
+
+        assertThat(chattingMessageRepository.count()).isEqualTo(1);
+    }
+
+    @Test
+    public void startChatting_whenRoomIsNotExistCreateRoom_chatMessageIsConnectedWithRightChatRoom() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
+        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
+
+        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+
+        connectStomp(tokenResponse.getBody().getAccess_token());
+
+        ChattingDto.Message message = new ChattingDto.Message();
+        message.setMessage("HI");
+        message.setReceiverId(receiver.getId());
+        message.setSenderId(sender.getId());
+        message.setRoomId(UUID.randomUUID());
+        message.setIsFirst(true);
+
+        sendMessage(message);
+
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
+
+        ChattingRoom chattingRoom = chattingRoomRepository.findAll().get(0);
+        ChattingMessage chattingMessage = chattingMessageRepository.findAll().get(0);
+        assertThat(chattingMessage.getChattingRoom().getId()).isEqualTo(chattingRoom.getId());
+    }
+
+    @Test
+    public void startChatting_whenRoomIsNotExistCreateRoom_chatMessageIsConnectedWithRightSenderAndReceiver() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
+        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
+
+        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+
+        connectStomp(tokenResponse.getBody().getAccess_token());
+
+        ChattingDto.Message message = new ChattingDto.Message();
+        message.setMessage("HI");
+        message.setReceiverId(receiver.getId());
+        message.setSenderId(sender.getId());
+        message.setRoomId(UUID.randomUUID());
+        message.setIsFirst(true);
+
+        sendMessage(message);
+
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
+
+        ChattingRoom chattingRoom = chattingRoomRepository.findAll().get(0);
+        assertThat(chattingMessageRepository.findAll().get(0).getSender().getId()).isEqualTo(sender.getId());
+        assertThat(chattingMessageRepository.findAll().get(0).getReceiver().getId()).isEqualTo(receiver.getId());
+    }
+
+    @Test
+    public void sendMessage_withValidDto_sentMessageIsCorrect() throws ExecutionException, InterruptedException, TimeoutException, URISyntaxException {
+
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
+        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
+
+        ChattingDto.Message message = new ChattingDto.Message();
+        message.setRoomId(UUID.randomUUID());
+        message.setReceiverId(receiver.getId());
+        message.setSenderId(sender.getId());
+        message.setMessage("HI");
+        message.setIsFirst(true);
+
+        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+
+        connectStomp(tokenResponse.getBody().getAccess_token());
+
+        stompSession.subscribe("/room/" + message.getRoomId(), new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return ChattingDto.Message.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                System.out.println("Received message: " + payload);
+                blockingQueue.add((ChattingDto.Message) payload);
+            }
+        });
+
+
+        stompSession.send("/api/v1/chat/send", message);
+
+
+        assertThat(blockingQueue.poll(100, TimeUnit.MILLISECONDS).getMessage()).isEqualTo(message.getMessage());
+    }
+
 
     @Test
     public void leaveRoom_whenBothUserInRoom_deleteRoomJoin() {
@@ -138,35 +340,10 @@ public class ChattingControllerTest {
 
     }
 
-    @Test
-    public void sendMessage_withValidDto_receiveOk() throws ExecutionException, InterruptedException, TimeoutException {
-
-
-        ChattingDto.Message message = new ChattingDto.Message();
-        message.setMessage("Test");
-        message.setRoomId("1");
-
-        stompSession.send("/api/v1/chat/send", message);
-
-        stompSession.subscribe("/room/1", new StompFrameHandler() {
-            @Override
-            public Type getPayloadType(StompHeaders headers) {
-                return ChattingDto.Message.class;
-            }
-
-            @Override
-            public void handleFrame(StompHeaders headers, Object payload) {
-                System.out.println("Received message: " + payload);
-                blockingQueue.add((ChattingDto.Message) payload);
-            }
-        });
-        assertThat(blockingQueue.poll(5, TimeUnit.SECONDS).getMessage()).isEqualTo(message.getMessage());
-    }
-
-    private void connectStomp(String token) throws ExecutionException, InterruptedException, TimeoutException {
-        WebSocketHttpHeaders webSocketHttpHeaders = new WebSocketHttpHeaders();
-        webSocketHttpHeaders.add("Authorization", "bearer " + token);
-        stompSession = stompClient.connect(String.format("http://localhost:%d/ws", port), webSocketHttpHeaders, new StompSessionHandlerAdapter() {}).get(1, TimeUnit.SECONDS);
+    private void connectStomp(String token) throws ExecutionException, InterruptedException, TimeoutException, URISyntaxException {
+        StompHeaders stompHeaders = new StompHeaders();
+        stompHeaders.add("Authorization", "bearer " + token);
+        stompSession = stompClient.connect(new URI(String.format("http://localhost:%d/ws", port)), null, stompHeaders, new StompSessionHandlerAdapter() {}).get(5, TimeUnit.SECONDS);
     }
 
     private void sendMessage(ChattingDto.Message message) {

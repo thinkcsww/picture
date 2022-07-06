@@ -16,7 +16,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "request")
+@Table(name = "REQUEST")
 public class Request extends BaseTimeEntity {
 
     public enum RequestType {

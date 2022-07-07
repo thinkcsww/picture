@@ -23,7 +23,7 @@ public class UserRepositoryCustomImpl extends QuerydslRepositorySupport implemen
         QUser qUser = QUser.user;
         JPQLQuery<User> query = jpaQueryFactory.select(qUser)
                 .from(qUser)
-                .where(isSeller("N"));
+                .where(qUser.sellerEnabledYn.eq("N"));
 
         query = getQuerydsl().applyPagination(pageable, query);
         QueryResults<User> result = query.fetchResults();
@@ -56,19 +56,12 @@ public class UserRepositoryCustomImpl extends QuerydslRepositorySupport implemen
         }
 
         if (StringUtils.hasLength(search.getNickname())) {
-            booleanBuilder.and(qUser.nickname.eq(search.getNickname()));
+            booleanBuilder.and(qUser.nickname.like("%" + search.getNickname() + "%"));
         }
 
         return booleanBuilder;
     }
 
-    private BooleanBuilder isSeller(String sellerYN) {
-        QUser qUser = QUser.user;
-        BooleanBuilder booleanBuilder = new BooleanBuilder();
-        booleanBuilder.and(qUser.sellerEnabledYn.eq(sellerYN));
-
-        return booleanBuilder;
-    }
 
 // TODO: 시간에 따른 조회 (TO BE)
 //    private BooleanBuilder isWorkHour(int currentTime) {

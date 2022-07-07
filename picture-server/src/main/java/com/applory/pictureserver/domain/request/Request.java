@@ -30,6 +30,7 @@ public class Request extends BaseTimeEntity {
     private UUID id;
 
     @ManyToOne
+    @JoinColumn(name = "userId")
     User user;
 
     @NotNull

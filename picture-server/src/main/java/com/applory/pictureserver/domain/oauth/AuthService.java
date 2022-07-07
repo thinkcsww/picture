@@ -37,7 +37,7 @@ public class AuthService {
 
     private final ObjectMapper objectMapper;
 
-    public OAuth2Token login(AuthDto.Login dto, String baseUrl) {
+    public MyOAuth2Token login(AuthDto.Login dto, String baseUrl) {
 
         User userInDB = userRepository.findByUsername(dto.getUsername());
 
@@ -47,7 +47,7 @@ public class AuthService {
 
         checkKakaoToken(dto.getKakaoToken());
 
-        OAuth2Token oAuth2Token = getToken(dto, baseUrl);
+        MyOAuth2Token oAuth2Token = getToken(dto, baseUrl);
 
         return oAuth2Token;
 
@@ -71,7 +71,7 @@ public class AuthService {
         }
     }
 
-    private OAuth2Token getToken(AuthDto.Login dto, String baseUrl) {
+    private MyOAuth2Token getToken(AuthDto.Login dto, String baseUrl) {
         String credentials = appConfiguration.getClientId() + ":" + appConfiguration.getPwSalt();
         String encodedCredentials = new String(Base64.encodeBase64(credentials.getBytes()));
 
@@ -90,7 +90,7 @@ public class AuthService {
         ResponseEntity<String> response = restTemplate.postForEntity(baseUrl + "/oauth/token", httpEntity, String.class);
         if(response.getStatusCode() == HttpStatus.OK) {
             try {
-                return objectMapper.readValue(response.getBody(), OAuth2Token.class);
+                return objectMapper.readValue(response.getBody(), MyOAuth2Token.class);
             } catch (JsonProcessingException e) {
                 throw new UnauthorizedException("Invalid Oauth token request");
             }
@@ -99,7 +99,7 @@ public class AuthService {
         throw new UnauthorizedException("Invalid Oauth token request");
     }
 
-    public OAuth2Token refreshToken(AuthDto.RefreshToken dto, String baseUrl) {
+    public MyOAuth2Token refreshToken(AuthDto.RefreshToken dto, String baseUrl) {
 
         String credentials = appConfiguration.getClientId() + ":" + appConfiguration.getClientSecret();
         String encodedCredentials = new String(Base64.encodeBase64(credentials.getBytes()));
@@ -118,7 +118,7 @@ public class AuthService {
         try {
             ResponseEntity<String> response = restTemplate.postForEntity(baseUrl + "/oauth/token", httpEntity, String.class);
             if (response.getStatusCode() == HttpStatus.OK) {
-                return objectMapper.readValue(response.getBody(), OAuth2Token.class);
+                return objectMapper.readValue(response.getBody(), MyOAuth2Token.class);
             }
         } catch (Exception e) {
             log.error("refreshToken error: " + e.getMessage());

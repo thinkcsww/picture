@@ -2,7 +2,7 @@ package com.applory.pictureserver;
 
 import com.applory.pictureserver.domain.error.ApiError;
 import com.applory.pictureserver.domain.oauth.AuthDto;
-import com.applory.pictureserver.domain.oauth.OAuth2Token;
+import com.applory.pictureserver.domain.oauth.MyOAuth2Token;
 import com.applory.pictureserver.domain.request.Request;
 import com.applory.pictureserver.domain.request.RequestDto;
 import com.applory.pictureserver.domain.request.RequestRepository;
@@ -72,7 +72,7 @@ public class RequestControllerTest {
     public void postRequest_withValidToken_receiveCreated() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         RequestDto.Create dto = createValidRequestDto();
@@ -85,7 +85,7 @@ public class RequestControllerTest {
     public void postRequest_withInvalidDto_receiveBadRequest() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         RequestDto.Create dto = createValidRequestDto();
@@ -99,7 +99,7 @@ public class RequestControllerTest {
     public void postRequest_withInvalidDto_receiveApiErrorWithValidationErrors() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         RequestDto.Create dto = createValidRequestDto();
@@ -113,7 +113,7 @@ public class RequestControllerTest {
     public void postRequest_withValidDto_receiveRequestVM() {
         ResponseEntity<User> userResponse = signUp(TestUtil.createValidClientUser(TEST_USERNAME), User.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         RequestDto.Create dto = createValidRequestDto();
@@ -137,7 +137,7 @@ public class RequestControllerTest {
     public void getRequests_withValidToken_receiveOk() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         postRequest(createValidRequestDto(), RequestDto.VM.class);
@@ -151,7 +151,7 @@ public class RequestControllerTest {
     public void getRequests_withValidToken_receivePage() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         postRequest(createValidRequestDto(), RequestDto.VM.class);
@@ -166,7 +166,7 @@ public class RequestControllerTest {
     public void getRequests_withValidToken_receivePageOrderByDueDateAsc() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         RequestDto.Create dto1 = createValidRequestDto();
@@ -185,7 +185,7 @@ public class RequestControllerTest {
     public void getRequests_withValidToken_receivePageOrderByPriceDesc() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         RequestDto.Create dto1 = createValidRequestDto();
@@ -205,7 +205,7 @@ public class RequestControllerTest {
     void getRequests_withValidToken_receiveOnlyRequestsDueDateIsNotOver() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         RequestDto.Create dto1 = createValidRequestDto();
@@ -225,7 +225,7 @@ public class RequestControllerTest {
     void getRequests_searchByRequestType_receiveResultByRequestType() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         postRequest(createValidRequestDto(), RequestDto.VM.class);
@@ -243,7 +243,7 @@ public class RequestControllerTest {
     void getRequests_searchByDueDate_receiveResultByDueDate() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         RequestDto.Create dto1 = createValidRequestDto();
@@ -280,7 +280,7 @@ public class RequestControllerTest {
     void getRequest_withValidTokenButNotExistId_receive404() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         postRequest(createValidRequestDto(), Object.class);
@@ -293,7 +293,7 @@ public class RequestControllerTest {
     void getRequest_withValid_receive200() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         ResponseEntity<RequestDto.VM> requestResponse = postRequest(createValidRequestDto(), RequestDto.VM.class);
@@ -307,7 +307,7 @@ public class RequestControllerTest {
     void getRequest_withValid_receiveVmWithBasicInfo() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         ResponseEntity<RequestDto.VM> requestResponse = postRequest(createValidRequestDto(), RequestDto.VM.class);
@@ -328,7 +328,7 @@ public class RequestControllerTest {
     void getRequest_withValid_receiveVmWithChatCount() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         postRequest(createValidRequestDto(), RequestDto.VM.class);
@@ -342,7 +342,7 @@ public class RequestControllerTest {
     void getRequest_withValid_receiveVmWithUsersAnotherRequests() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
         RequestDto.Create dto1 = createValidRequestDto();
         RequestDto.Create dto2 = createValidRequestDto();
@@ -361,7 +361,7 @@ public class RequestControllerTest {
     void getRequest_withCompleteRequest_receiveVmWithAcceptRate() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         RequestDto.Create dto1 = createValidRequestDto();
@@ -404,7 +404,7 @@ public class RequestControllerTest {
     void getRequest_withoutCompleteRequest_receiveVmWithAcceptRate() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         RequestDto.Create dto1 = createValidRequestDto();

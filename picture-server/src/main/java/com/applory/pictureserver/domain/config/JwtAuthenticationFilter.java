@@ -22,16 +22,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = request.getHeader("Authorization");
-        if (token != null) {   // token 검증
-            token = token.split(" ")[1];
-
-            if (jwtTokenProvider.validateToken(token)) {
-                Authentication auth = jwtTokenProvider.getAuthentication(token);    // 인증 객체 생성
-                SecurityContextHolder.getContext().setAuthentication(auth); // SecurityContextHolder에 인증 객체 저장
-            }
-
-        }
+//        String token = request.getHeader("Authorization");
+//        if (token != null) {   // token 검증
+//            token = token.split(" ")[1];
+//
+//            if (jwtTokenProvider.validateToken(token)) {
+//                Authentication auth = jwtTokenProvider.getAuthentication(token);    // 인증 객체 생성
+//                SecurityContextHolder.getContext().setAuthentication(auth); // SecurityContextHolder에 인증 객체 저장
+//            }
+//
+//        }
         filterChain.doFilter(request, response);
     }
 }

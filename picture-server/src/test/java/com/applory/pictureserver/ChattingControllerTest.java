@@ -2,7 +2,7 @@ package com.applory.pictureserver;
 
 import com.applory.pictureserver.domain.chatting.*;
 import com.applory.pictureserver.domain.oauth.AuthDto;
-import com.applory.pictureserver.domain.oauth.OAuth2Token;
+import com.applory.pictureserver.domain.oauth.MyOAuth2Token;
 import com.applory.pictureserver.domain.request.RequestRepository;
 import com.applory.pictureserver.domain.user.UserDto;
 import com.applory.pictureserver.domain.user.UserRepository;
@@ -112,7 +112,7 @@ public class ChattingControllerTest {
 
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
@@ -126,7 +126,7 @@ public class ChattingControllerTest {
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
@@ -151,7 +151,7 @@ public class ChattingControllerTest {
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
@@ -176,7 +176,7 @@ public class ChattingControllerTest {
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
@@ -203,7 +203,7 @@ public class ChattingControllerTest {
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
@@ -228,7 +228,7 @@ public class ChattingControllerTest {
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
@@ -255,7 +255,7 @@ public class ChattingControllerTest {
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
@@ -290,7 +290,7 @@ public class ChattingControllerTest {
         message.setMessage("HI");
         message.setIsFirst(true);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 

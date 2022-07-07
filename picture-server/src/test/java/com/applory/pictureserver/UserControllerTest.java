@@ -3,7 +3,7 @@ package com.applory.pictureserver;
 import com.applory.pictureserver.domain.config.AppConfiguration;
 import com.applory.pictureserver.domain.error.ApiError;
 import com.applory.pictureserver.domain.oauth.AuthDto;
-import com.applory.pictureserver.domain.oauth.OAuth2Token;
+import com.applory.pictureserver.domain.oauth.MyOAuth2Token;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserDto;
 import com.applory.pictureserver.domain.user.UserRepository;
@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 public class UserControllerTest {
 
+    @LocalServerPort
+    private Integer port;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -117,7 +120,7 @@ public class UserControllerTest {
     public void getUserMe_withValidToken_receiveUserVM() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         ResponseEntity<UserDto.VM> response = getUserMe(new ParameterizedTypeReference<UserDto.VM>() {});
@@ -129,7 +132,7 @@ public class UserControllerTest {
     public void getUserMe_withValidToken_receiveUserVMWithoutPassword() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         ResponseEntity<String> response = getUserMe(new ParameterizedTypeReference<String>() {});
@@ -140,34 +143,16 @@ public class UserControllerTest {
     public void getClientUser_withValidToken_receivePage() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         ResponseEntity<TestPage<UserDto.VM>> userResponse = getClientUser(new ParameterizedTypeReference<TestPage<UserDto.VM>>() {}, null);
         assertThat(userResponse.getBody().getContent().get(0).getSellerEnabledYn()).isEqualTo("N");
     }
 
-
     @Test
-    public void getSellerUser_withValidToken_receiveOk() {
+    public void getSellerUsers_withValidRequest_receivePage() {
         signUp(TestUtil.createValidSellerUser(TEST_USERNAME), Object.class);
-
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
-        authenticate(tokenResponse.getBody().getAccess_token());
-
-        UserDto.SearchSeller search = new UserDto.SearchSeller();
-        search.setCurrentTime("1750");
-
-        ResponseEntity<Object> userResponse = getSellerUser(new ParameterizedTypeReference<Object>() {}, search, null);
-        assertThat(userResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-    @Test
-    public void getSellerUsers_withValidToken_receivePage() {
-        signUp(TestUtil.createValidSellerUser(TEST_USERNAME), Object.class);
-
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
-        authenticate(tokenResponse.getBody().getAccess_token());
 
         UserDto.SearchSeller search = new UserDto.SearchSeller();
         search.setCurrentTime("1750");
@@ -179,9 +164,6 @@ public class UserControllerTest {
     @Test
     public void getSellerUsers_withInvalidWorkTime_receiveApiError() {
         signUp(TestUtil.createValidSellerUser(TEST_USERNAME), Object.class);
-
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
-        authenticate(tokenResponse.getBody().getAccess_token());
 
         UserDto.SearchSeller search = new UserDto.SearchSeller();
         search.setCurrentTime("5555");
@@ -195,9 +177,6 @@ public class UserControllerTest {
 //    public void getSellerUsers_withWorkTimeSomeOneIsWorking_receiveOneSellerWithPage() {
 //        signUp(TestUtil.createValidSellerUser(COMMON_USERNAME), Object.class);
 //
-//        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(COMMON_USERNAME), OAuth2Token.class);
-//        authenticate(tokenResponse.getBody().getAccess_token());
-//
 //        UserDto.SearchSeller search = new UserDto.SearchSeller();
 //        search.setCurrentTime("1730");
 //
@@ -206,7 +185,7 @@ public class UserControllerTest {
 //    }
 
     @Test
-    public void getSellerUsers_searchWithName_receiveSellerBySpecialty() {
+    public void getSellerUsers_searchWithNickname_receiveSellerByNickname() {
         UserDto.Create user1 = TestUtil.createValidSellerUser("123123");
         UserDto.Create user2 = TestUtil.createValidSellerUser("1231232");
         UserDto.Create user3 = TestUtil.createValidSellerUser("1231233");
@@ -218,8 +197,6 @@ public class UserControllerTest {
         signUp(user2, Object.class);
         signUp(user3, Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
-        authenticate(tokenResponse.getBody().getAccess_token());
 
         UserDto.SearchSeller search = new UserDto.SearchSeller();
         search.setCurrentTime("1730");
@@ -241,9 +218,6 @@ public class UserControllerTest {
         signUp(user2, Object.class);
         signUp(user3, Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
-        authenticate(tokenResponse.getBody().getAccess_token());
-
         UserDto.SearchSeller search = new UserDto.SearchSeller();
         search.setCurrentTime("1730");
         search.setSpecialty(User.SellerSpecialty.OFFICIAL.toString());
@@ -264,9 +238,6 @@ public class UserControllerTest {
         signUp(user2, Object.class);
         signUp(user3, Object.class);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), OAuth2Token.class);
-        authenticate(tokenResponse.getBody().getAccess_token());
-
         UserDto.SearchSeller search = new UserDto.SearchSeller();
         search.setCurrentTime("1730");
         search.setSpecialty(User.SellerSpecialty.OFFICIAL.toString());
@@ -274,21 +245,6 @@ public class UserControllerTest {
         ResponseEntity<TestPage<UserDto.VM>> userResponse = getSellerUser(new ParameterizedTypeReference<TestPage<UserDto.VM>>() {}, search, PageRequest.of(0, 5));
         assertThat(userResponse.getBody().getContent().get(0).getSpecialty()).contains(User.SellerSpecialty.OFFICIAL.toString());
     }
-
-// TODO: 시간에 따른 조회 (TO BE)
-//    @Test
-//    public void getSellerUsers_withWorkTimeNoOneIsWorking_receiveZeroSellerWithPage() {
-//        signUp(TestUtil.createValidSellerUser(COMMON_USERNAME), Object.class);
-//
-//        ResponseEntity<OAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(COMMON_USERNAME), OAuth2Token.class);
-//        authenticate(tokenResponse.getBody().getAccess_token());
-//
-//        UserDto.SearchSeller search = new UserDto.SearchSeller();
-//        search.setCurrentTime("500");
-//
-//        ResponseEntity<TestPage<UserDto.UserVM>> userResponse = getSellerUser(new ParameterizedTypeReference<TestPage<UserDto.UserVM>>() {}, search, null);
-//        assertThat(userResponse.getBody().getTotalElements()).isEqualTo(0);
-//    }
 
     public <T> ResponseEntity<T> signUp(UserDto.Create dto, Class<T> responseType) {
         return testRestTemplate.postForEntity(API_V_1_USERS, dto, responseType);
@@ -319,7 +275,7 @@ public class UserControllerTest {
     }
 
     private String createUrlWithRequestParamsSeller(UserDto.SearchSeller search, Pageable pageable) {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost:8080" + API_V_1_USERS);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost" + port + API_V_1_USERS_SELLER);
         MultiValueMap params = new LinkedMultiValueMap<>();
         if (search != null) {
             params.setAll(objectMapper.convertValue(search, Map.class));
@@ -331,18 +287,18 @@ public class UserControllerTest {
             params.set("size", pageable.getPageSize());
         }
 
-        return builder.toUriString().split("8080")[1];
+        return builder.toUriString().split(port + "")[1];
     }
 
     private String createUrlWithRequestParamsClient(UserDto.SearchClient search) {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost:8080" + API_V_1_USERS_CLIENT);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost:" + port + API_V_1_USERS_CLIENT);
         if (search != null) {
             MultiValueMap params = new LinkedMultiValueMap<>();
             params.setAll(objectMapper.convertValue(search, Map.class));
             builder.queryParams(params);
         }
 
-        return builder.toUriString().split("8080")[1];
+        return builder.toUriString().split(port + "")[1];
     }
 
     private void authenticate(String token) {

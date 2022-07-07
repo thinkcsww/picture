@@ -37,8 +37,8 @@ public class RequestService {
         request.setCompleteYN(dto.getCompleteYn() != null ? dto.getCompleteYn() : "N");
         request.setReadCount(0);
 
-        // TODO - authentication principal로 가져올 수 있는지 알아보기
-        User user = userRepository.findByUsername(SecurityUtils.getPrincipal());
+        String username = SecurityUtils.getPrincipal();
+        User user = userRepository.findByUsername(username);
         request.setUser(user);
 
         return requestRepository.save(request);

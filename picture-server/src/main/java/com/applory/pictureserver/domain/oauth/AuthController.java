@@ -18,12 +18,12 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public OAuth2Token login(@Valid @RequestBody AuthDto.Login dto, HttpServletRequest request) {
+    public MyOAuth2Token login(@Valid @RequestBody AuthDto.Login dto, HttpServletRequest request) {
         return authService.login(dto, request.getScheme() + "://" + request.getLocalName() + ":" + request.getLocalPort());
     }
 
     @PostMapping(value = "/token/refresh")
-    public OAuth2Token refreshToken(@Valid @RequestBody AuthDto.RefreshToken dto, HttpServletRequest request) throws JsonProcessingException {
+    public MyOAuth2Token refreshToken(@Valid @RequestBody AuthDto.RefreshToken dto, HttpServletRequest request) throws JsonProcessingException {
         return authService.refreshToken(dto, request.getScheme() + "://" + request.getLocalName() + ":" + request.getLocalPort());
     }
 }

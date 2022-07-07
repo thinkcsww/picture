@@ -6,6 +6,8 @@ public class TestConstants {
 
     public static final String API_V_1_USERS = "/api/v1/users";
     public static final String API_V_1_USERS_ME = "/api/v1/users/me";
+
+    public static final String API_V_1_USERS_SELLER = "/api/v1/users/seller";
     public static final String API_V_1_USERS_CLIENT = "/api/v1/users/client";
 
     public static final String API_V_1_REQUESTS = "/api/v1/requests";

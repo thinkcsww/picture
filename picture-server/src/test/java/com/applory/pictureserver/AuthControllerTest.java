@@ -2,7 +2,7 @@ package com.applory.pictureserver;
 
 import com.applory.pictureserver.domain.error.ApiError;
 import com.applory.pictureserver.domain.oauth.AuthDto;
-import com.applory.pictureserver.domain.oauth.OAuth2Token;
+import com.applory.pictureserver.domain.oauth.MyOAuth2Token;
 import com.applory.pictureserver.domain.user.UserDto;
 import com.applory.pictureserver.domain.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,8 +14,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.net.URI;
 
 import static com.applory.pictureserver.TestConstants.API_1_0_AUTH_LOGIN;
 import static com.applory.pictureserver.TestConstants.API_1_0_AUTH_REFRESH_TOKEN;
@@ -99,7 +97,7 @@ public class AuthControllerTest {
 
         AuthDto.Login loginDto = TestUtil.createValidLoginDto(username);
 
-        ResponseEntity<OAuth2Token> response = login(loginDto, OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> response = login(loginDto, MyOAuth2Token.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -111,7 +109,7 @@ public class AuthControllerTest {
 
         AuthDto.Login loginDto = TestUtil.createValidLoginDto(username);
 
-        ResponseEntity<OAuth2Token> response = login(loginDto, OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> response = login(loginDto, MyOAuth2Token.class);
         assertThat(response.getBody().getExpires_in()).isEqualTo(86399);
     }
 
@@ -123,7 +121,7 @@ public class AuthControllerTest {
 
         AuthDto.Login loginDto = TestUtil.createValidLoginDto(username);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(loginDto, OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(loginDto, MyOAuth2Token.class);
 
         AuthDto.RefreshToken refreshTokenDto = new AuthDto.RefreshToken();
         refreshTokenDto.setRefreshToken(tokenResponse.getBody().getRefresh_token());
@@ -141,11 +139,11 @@ public class AuthControllerTest {
 
         AuthDto.Login loginDto = TestUtil.createValidLoginDto(username);
 
-        ResponseEntity<OAuth2Token> tokenResponse = login(loginDto, OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(loginDto, MyOAuth2Token.class);
 
         AuthDto.RefreshToken refreshTokenDto = new AuthDto.RefreshToken();
         refreshTokenDto.setRefreshToken(tokenResponse.getBody().getRefresh_token());
-        ResponseEntity<OAuth2Token> refreshTokenResponse = getRefreshToken(refreshTokenDto, OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> refreshTokenResponse = getRefreshToken(refreshTokenDto, MyOAuth2Token.class);
 
         assertThat(refreshTokenResponse.getBody().getExpires_in()).isEqualTo(86399);
     }
@@ -154,7 +152,7 @@ public class AuthControllerTest {
     public void postRefreshToken_withInValidRefreshToken_receiveUnauthorized() {
         AuthDto.RefreshToken refreshTokenDto = new AuthDto.RefreshToken();
         refreshTokenDto.setRefreshToken("abc");
-        ResponseEntity<OAuth2Token> refreshTokenResponse = getRefreshToken(refreshTokenDto, OAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> refreshTokenResponse = getRefreshToken(refreshTokenDto, MyOAuth2Token.class);
 
         assertThat(refreshTokenResponse.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }

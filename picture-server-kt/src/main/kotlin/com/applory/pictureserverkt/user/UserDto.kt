@@ -1,45 +1,52 @@
 package com.applory.pictureserverkt.user
 
+import org.springframework.lang.Nullable
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
+import javax.validation.constraints.Max
+import javax.validation.constraints.Min
 
 class UserDto {
+
+    companion object {
+        @JvmStatic fun convertToVM(user: User): VM {
+            return VM(
+                id = user.id,
+                username = user.username,
+                nickname = user.nickname,
+                description = user.description,
+                sellerEnabledYn = user.sellerEnabledYn,
+                snsType = user.snsType,
+                createdDt = user.createdDt,
+                updatedDt = user.updatedDt,
+                workHourToDt = user.workHourToDt,
+                workHourFromDt = user.workHourFromDt,
+                specialty = user.specialty
+            )
+        }
+    }
 
     data class VM(
         val id: UUID? = null,
         val username: String? = null,
-        var nickname: String? = null,
-        var description: String? = null,
-        var sellerEnabledYn: String? = null,
-        var workHourFromDt: Int? = null,
-        var workHourToDt: Int? = null,
-        var specialty: String? = null,
-        var useTermAgreeYn: String? = null,
-        var personalInfoUseTermAgreeYn: String? = null,
-        var snsType: User.SnsType? = null,
-        var createdDt: LocalDateTime? = null,
-        var updatedDt: LocalDateTime? = null)
+        val nickname: String? = null,
+        val description: String? = null,
+        val sellerEnabledYn: String? = null,
+        val workHourFromDt: Int? = null,
+        val workHourToDt: Int? = null,
+        val specialty: String? = null,
+        val useTermAgreeYn: String? = null,
+        val personalInfoUseTermAgreeYn: String? = null,
+        val snsType: User.SnsType? = null,
+        val createdDt: LocalDateTime? = null,
+        val updatedDt: LocalDateTime? = null)
 
-//    data class VM(val user: User) {
-//        var id = user.id
-//        var username = user.username
-//        var nickname = user.nickname
-//        var description = user.description
-//        var sellerEnabledYn = user.sellerEnabledYn
-//        var workHourFromDt = user.workHourFromDt
-//        var workHourToDt = user.workHourToDt
-//        var specialty = user.specialty
-//        var useTermAgreeYn = user.useTermAgreeYn
-//        var personalInfoUseTermAgreeYn = user.personalInfoUseTermAgreeYn
-//        var snsType = user.snsType
-//        var createdDt = user.createdDt
-//        var updatedDt = user.updatedDt
-//    }
+
 
     data class Create(
         val username: String,
         val password: String,
-        val nickname: String,
+        var nickname: String,
         val useTermAgreeYN: String,
         val personalInfoUseTermAgreeYn: String,
         val snsType: User.SnsType,
@@ -47,7 +54,20 @@ class UserDto {
         val sellerEnabledYn: String? = null,
         val workHourFromDt: Int? = null,
         val workHourToDt: Int? = null,
-        val specialty: String? = null
+        var specialty: String? = null
+    )
+
+    class SearchClient()
+
+    data class SearchSeller(
+        @field:Min(0)
+        @field:Max(2400)
+        @field:Nullable
+        val currentTime: String? = null,
+
+        val specialty: String? = null,
+
+        val nickname: String? = null
     )
 
 

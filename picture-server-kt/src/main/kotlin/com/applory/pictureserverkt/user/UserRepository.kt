@@ -1,9 +1,11 @@
 package com.applory.pictureserverkt.user
 
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
 import java.util.UUID
 
-interface UserRepository: JpaRepository<User, UUID> {
+@Repository
+interface UserRepository: JpaRepository<User, UUID>, UserRepositoryCustom {
 
     fun findByUsername(username: String): User?
 }

@@ -5,8 +5,8 @@ import kotlin.collections.HashMap
 
 data class ApiError(
     val timestamp: Long = Date().time,
-    val status: Int,
-    val message: String,
-    val url: String,
+    val status: Int? = null,
+    val message: String? = null,
+    val url: String? = null,
     var validationErrors: Map<String, String?> = HashMap()
 )

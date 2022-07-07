@@ -7,6 +7,7 @@ object TestConstant {
     const val API_V_1_USERS = "/api/v1/users"
     const val API_V_1_USERS_ME = "/api/v1/users/me"
     const val API_V_1_USERS_CLIENT = "/api/v1/users/client"
+    const val API_V_1_USERS_SELLER = "/api/v1/users/seller"
 
     const val API_V_1_REQUESTS = "/api/v1/requests"
 

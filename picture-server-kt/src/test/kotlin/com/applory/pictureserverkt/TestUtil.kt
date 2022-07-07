@@ -1,8 +1,11 @@
 package com.applory.pictureserverkt
 
 import com.applory.pictureserverkt.oauth.AuthDto
+import com.applory.pictureserverkt.request.Request
+import com.applory.pictureserverkt.request.RequestDto
 import com.applory.pictureserverkt.user.User
 import com.applory.pictureserverkt.user.UserDto
+import java.time.LocalDateTime
 
 class TestUtil {
     companion object {
@@ -38,6 +41,16 @@ class TestUtil {
                 useTermAgreeYN = "Y",
                 personalInfoUseTermAgreeYn = "Y",
                 snsType = User.SnsType.KAKAO
+            )
+        }
+
+        @JvmStatic fun createValidRequestDto(): RequestDto.Create {
+            return RequestDto.Create(
+                requestType = Request.RequestType.BACKGROUND,
+                title = "제목입니다",
+                description = "설명입니다",
+                desiredPrice = 2000,
+                dueDate = LocalDateTime.of(2022, 12, 25, 23, 59)
             )
         }
 

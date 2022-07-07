@@ -1,6 +1,10 @@
 package com.applory.pictureserverkt.user
 
 import com.applory.pictureserverkt.exception.BadRequestException
+import com.applory.pictureserverkt.shared.SecurityUtils
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -9,17 +13,10 @@ import org.springframework.stereotype.Service
 import org.springframework.util.StringUtils
 
 @Service
-class UserService(private val userRepository: UserRepository, private val passwordEncoder: PasswordEncoder): UserDetailsService {
+class UserService(private val userRepository: UserRepository,
+                  private val passwordEncoder: PasswordEncoder): UserDetailsService {
 
-    override fun loadUserByUsername(username: String): UserDetails {
-        val userInDB = userRepository.findByUsername(username)
 
-        if (userInDB == null) {
-            throw UsernameNotFoundException("User not found")
-        }
-
-        return CustomUserDetails.from(userInDB)
-    }
 
     fun createUser(dto: UserDto.Create): User {
         val password = passwordEncoder.encode(dto.password)
@@ -53,6 +50,27 @@ class UserService(private val userRepository: UserRepository, private val passwo
     }
 
     fun getUserMe(): User {
-        TODO("Not yet implemented")
+        val username = SecurityUtils.getPrincipal()
+
+        return userRepository.findByUsername(username)!!
+    }
+
+
+    override fun loadUserByUsername(username: String): UserDetails {
+        val userInDB = userRepository.findByUsername(username)
+
+        if (userInDB == null) {
+            throw UsernameNotFoundException("User not found")
+        }
+
+        return userInDB
+    }
+
+    fun getClientUsers(search: UserDto.SearchClient, pageable: Pageable): Page<User> {
+        return userRepository.findClientUserBySearch(search, pageable)
+    }
+
+    fun getSellerUsers(search: UserDto.SearchSeller, pageable: Pageable): Page<User> {
+        return userRepository.findSellerUserBySearch(search, pageable)
     }
 }

@@ -27,12 +27,12 @@ class User(username: String, password: String): BaseTimeEntity(), UserDetails {
     @Column(columnDefinition = "BINARY(16)")
     val id: UUID? = null
 
-    @Column(name = "USER_NAME")
+    @Column(name = "username")
     @NotEmpty
     private val username: String = username
 
 
-    @Column(name = "PASSWORD")
+    @Column(name = "password")
     @NotEmpty
     private val password: String = password
 

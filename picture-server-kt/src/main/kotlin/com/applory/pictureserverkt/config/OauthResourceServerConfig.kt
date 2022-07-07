@@ -16,6 +16,7 @@ class OauthResourceServerConfig: ResourceServerConfigurerAdapter() {
         http.headers().frameOptions().disable()
         http.authorizeRequests()
             .antMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/v1/users/seller").permitAll()
             .antMatchers(
                 "/api/v1/auth/login",
                 "/api/v1/auth/token/refresh",

@@ -20,7 +20,7 @@ public class ChattingRoomMember {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name="chattingRoomId")
+    @JoinColumn(name="CHATTING_ROOM_ID")
     private ChattingRoom chattingRoom;
 
     @OneToOne

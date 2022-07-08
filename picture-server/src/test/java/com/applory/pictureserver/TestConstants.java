@@ -12,6 +12,8 @@ public class TestConstants {
 
     public static final String API_V_1_REQUESTS = "/api/v1/requests";
 
+    public static final String API_V_1_CHATTINGS = "/api/v1/chattings";
+
 
     public static final String TEST_USERNAME = "123123";
 }

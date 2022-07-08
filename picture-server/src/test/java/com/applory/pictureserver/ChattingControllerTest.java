@@ -15,10 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -34,6 +31,7 @@ import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.*;
 
@@ -94,6 +92,7 @@ public class ChattingControllerTest {
         if (stompSession != null && stompSession.isConnected()) {
             stompSession.disconnect();
         }
+        clearInterceptors();
     }
 
     @Test
@@ -270,7 +269,6 @@ public class ChattingControllerTest {
 
         blockingQueue.poll(100, TimeUnit.MILLISECONDS);
 
-        ChattingRoom chattingRoom = chattingRoomRepository.findAll().get(0);
         assertThat(chattingMessageRepository.findAll().get(0).getSender().getId()).isEqualTo(sender.getId());
         assertThat(chattingMessageRepository.findAll().get(0).getReceiver().getId()).isEqualTo(receiver.getId());
     }
@@ -314,29 +312,285 @@ public class ChattingControllerTest {
         assertThat(blockingQueue.poll(100, TimeUnit.MILLISECONDS).getMessage()).isEqualTo(message.getMessage());
     }
 
-
     @Test
-    public void leaveRoom_whenBothUserInRoom_deleteRoomJoin() {
+    public void getRooms_withInvalidToken_receive401() {
 
     }
 
     @Test
-    public void leaveRoom_whenBothUserInRoom_updateMessageReadabilityToOnlyOpponentCanReadMessage() {
+    public void enterRoom_withInvalidToken_receive401() {
+        authenticate("asda");
+
+        ResponseEntity<Object> response = enterRoom(UUID.randomUUID(), Object.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    public void enterRoom_withValidToken_receive200() {
 
     }
 
     @Test
-    public void leaveRoom_whenOnlyOneUserInRoom_deleteRoomJoin() {
+    public void enterRoom_withValidToken_receiveRoomVM() {
 
     }
 
     @Test
-    public void leaveRoom_whenOnlyOneUserInRoom_updateMessageReadabilityToNoOneCanRead() {
+    public void enterRoom_withValidToken_receiveRoomVMWithMessages() {
 
     }
 
     @Test
-    public void startChatting_afterBothLeftRoom_useExistedRoomButCannotReadOldMessage() {
+    public void leaveRoom_withInvalidToken_receive401() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
+        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
+
+        ChattingDto.Message message = new ChattingDto.Message();
+        message.setRoomId(UUID.randomUUID());
+        message.setReceiverId(receiver.getId());
+        message.setSenderId(sender.getId());
+        message.setMessage("HI");
+        message.setIsFirst(true);
+
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        String token = tokenResponse.getBody().getAccess_token();
+        authenticate(token);
+        connectStomp(token);
+
+        stompSession.send("/api/v1/chat/send", message);
+        blockingQueue.poll(1000, TimeUnit.MILLISECONDS);
+
+        clearInterceptors();
+
+        authenticate("asda");
+
+        ResponseEntity<Object> response = leaveRoom(message.getRoomId(), Object.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+
+    }
+
+    @Test
+    public void leaveRoom_whenBothUserInRoom_receive204() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
+        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
+
+        ChattingDto.Message message = new ChattingDto.Message();
+        message.setRoomId(UUID.randomUUID());
+        message.setReceiverId(receiver.getId());
+        message.setSenderId(sender.getId());
+        message.setMessage("HI");
+        message.setIsFirst(true);
+
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        String token = tokenResponse.getBody().getAccess_token();
+        authenticate(token);
+        connectStomp(token);
+
+        stompSession.send("/api/v1/chat/send", message);
+        blockingQueue.poll(1000, TimeUnit.MILLISECONDS);
+        ResponseEntity<Object> response = leaveRoom(message.getRoomId(), Object.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+    }
+
+    @Test
+    public void leaveRoom_whenBothUserInRoom_deleteRoomJoin() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
+        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
+
+        ChattingDto.Message message = new ChattingDto.Message();
+        message.setRoomId(UUID.randomUUID());
+        message.setReceiverId(receiver.getId());
+        message.setSenderId(sender.getId());
+        message.setMessage("HI");
+        message.setIsFirst(true);
+
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        String token = tokenResponse.getBody().getAccess_token();
+        authenticate(token);
+        connectStomp(token);
+
+        stompSession.send("/api/v1/chat/send", message);
+        blockingQueue.poll(1000, TimeUnit.MILLISECONDS);
+        leaveRoom(message.getRoomId(), Object.class);
+
+        List<ChattingRoomMember> roomMembers = chattingRoomMemberRepository.findByChattingRoom_Id(message.getRoomId());
+
+        assertThat(roomMembers.size()).isEqualTo(1);
+
+    }
+
+    @Test
+    public void leaveRoom_whenBothUserInRoom_updateMessageVisibleToRoomMemberWhoLeft() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
+        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
+
+        ChattingDto.Message message = new ChattingDto.Message();
+        message.setRoomId(UUID.randomUUID());
+        message.setReceiverId(receiver.getId());
+        message.setSenderId(sender.getId());
+        message.setMessage("HI");
+        message.setIsFirst(true);
+
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        String token = tokenResponse.getBody().getAccess_token();
+        authenticate(token);
+        connectStomp(token);
+
+        stompSession.send("/api/v1/chat/send", message);
+        blockingQueue.poll(1000, TimeUnit.MILLISECONDS);
+        leaveRoom(message.getRoomId(), Object.class);
+
+        boolean flag = true;
+        List<ChattingMessage> messages = chattingMessageRepository.findByChattingRoom_Id(message.getRoomId());
+
+        for (ChattingMessage m : messages) {
+            if (!m.getVisibleTo().equals(receiver.getId().toString())) {
+                flag = false;
+            }
+        }
+
+        assertThat(flag).isTrue();
+    }
+
+    @Test
+    public void leaveRoom_whenOnlyOneUserIsInRoom_deleteRoomJoin() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+
+        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
+        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
+
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(user1.getUsername()), MyOAuth2Token.class);
+        String token = tokenResponse.getBody().getAccess_token();
+
+        ResponseEntity<MyOAuth2Token> tokenResponse2 = login(TestUtil.createValidLoginDto(user2.getUsername()), MyOAuth2Token.class);
+        String token2 = tokenResponse2.getBody().getAccess_token();
+
+        ChattingDto.Message message = new ChattingDto.Message();
+        message.setRoomId(UUID.randomUUID());
+        message.setReceiverId(receiver.getId());
+        message.setSenderId(sender.getId());
+        message.setMessage("HI");
+        message.setIsFirst(true);
+
+        authenticate(token);
+        connectStomp(token);
+
+        stompSession.send("/api/v1/chat/send", message);
+
+        blockingQueue.poll(1000, TimeUnit.MILLISECONDS);
+
+        leaveRoom(message.getRoomId(), Object.class);
+
+        clearInterceptors();
+
+        // 2번쨰 leaveRoom 시작
+        authenticate(token2);
+        leaveRoom(message.getRoomId(), Object.class);
+
+        List<ChattingRoomMember> roomMembers = chattingRoomMemberRepository.findByChattingRoom_Id(message.getRoomId());
+
+        assertThat(roomMembers.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void leaveRoom_whenOnlyOneUserInRoom_updateMessageReadabilityToNoOneCanRead() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+
+        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
+        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
+
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(user1.getUsername()), MyOAuth2Token.class);
+        String token = tokenResponse.getBody().getAccess_token();
+
+        ResponseEntity<MyOAuth2Token> tokenResponse2 = login(TestUtil.createValidLoginDto(user2.getUsername()), MyOAuth2Token.class);
+        String token2 = tokenResponse2.getBody().getAccess_token();
+
+        ChattingDto.Message message = new ChattingDto.Message();
+        message.setRoomId(UUID.randomUUID());
+        message.setReceiverId(receiver.getId());
+        message.setSenderId(sender.getId());
+        message.setMessage("HI");
+        message.setIsFirst(true);
+
+        authenticate(token);
+        connectStomp(token);
+
+        stompSession.send("/api/v1/chat/send", message);
+
+        blockingQueue.poll(1000, TimeUnit.MILLISECONDS);
+
+        leaveRoom(message.getRoomId(), Object.class);
+
+        clearInterceptors();
+
+        // 2번쨰 leaveRoom 시작
+        authenticate(token2);
+        leaveRoom(message.getRoomId(), Object.class);
+
+        boolean flag = true;
+        List<ChattingMessage> messages = chattingMessageRepository.findByChattingRoom_Id(message.getRoomId());
+
+        for (ChattingMessage m : messages) {
+            if (!m.getVisibleTo().equals(ChattingMessage.VisibleToType.NONE.toString())) {
+                flag = false;
+            }
+        }
+
+        assertThat(flag).isTrue();
+    }
+
+    @Test
+    public void startChatting_afterBothLeftRoom_useExistedRoomButCannotReadOldMessage() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+
+        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
+        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
+
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(user1.getUsername()), MyOAuth2Token.class);
+        String token = tokenResponse.getBody().getAccess_token();
+
+        ResponseEntity<MyOAuth2Token> tokenResponse2 = login(TestUtil.createValidLoginDto(user2.getUsername()), MyOAuth2Token.class);
+        String token2 = tokenResponse2.getBody().getAccess_token();
+
+        ChattingDto.Message message = new ChattingDto.Message();
+        message.setRoomId(UUID.randomUUID());
+        message.setReceiverId(receiver.getId());
+        message.setSenderId(sender.getId());
+        message.setMessage("HI");
+        message.setIsFirst(true);
+
+        authenticate(token);
+        connectStomp(token);
+
+        stompSession.send("/api/v1/chat/send", message);
+
+        blockingQueue.poll(1000, TimeUnit.MILLISECONDS);
+
+        leaveRoom(message.getRoomId(), Object.class);
+
+        clearInterceptors();
+
+        // 2번쨰 leaveRoom 시작
+        authenticate(token2);
+        leaveRoom(message.getRoomId(), Object.class);
+
+        stompSession.send("/api/v1/chat/send", message);
+
 
     }
 
@@ -350,6 +604,13 @@ public class ChattingControllerTest {
         stompSession.send("/api/v1/chat/send", message);
     }
 
+    private <T> ResponseEntity<T> enterRoom (UUID roomId, Class<T> responseType) {
+        return testRestTemplate.exchange(API_V_1_CHATTINGS + "/" + roomId, HttpMethod.GET, null, responseType);
+    }
+
+    private <T> ResponseEntity<T> leaveRoom (UUID roomId, Class<T> responseType) {
+        return testRestTemplate.exchange(API_V_1_CHATTINGS + "/" + roomId, HttpMethod.DELETE, null, responseType);
+    }
 
     public <T> ResponseEntity<T> signUp(UserDto.Create dto, Class<T> responseType) {
         return testRestTemplate.postForEntity(API_V_1_USERS, dto, responseType);
@@ -365,5 +626,9 @@ public class ChattingControllerTest {
 
     private void authenticate(String token) {
         testRestTemplate.getRestTemplate().getInterceptors().add(new RestTemplateInterceptor(token));
+    }
+
+    private void clearInterceptors() {
+        testRestTemplate.getRestTemplate().getInterceptors().clear();
     }
 }

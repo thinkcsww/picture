@@ -15,6 +15,11 @@ import java.util.UUID;
 @Entity
 @Table(name = "CHATTING_MESSAGE")
 public class ChattingMessage {
+
+    public enum VisibleToType {
+        NONE,
+        ALL
+    }
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
@@ -22,19 +27,23 @@ public class ChattingMessage {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "chattingRoomId")
+    @JoinColumn(name = "CHATTING_ROOM_ID")
     private ChattingRoom chattingRoom;
 
     @NotEmpty
-    @Column(name = "message", length = 20)
+    @Column(name = "MESSAGE", length = 20)
     private String message;
 
     @NotNull
     @OneToOne
     private User sender;
 
-    @OneToOne
     @NotNull
+    @OneToOne
     private User receiver;
+
+    // ALL, NONE, UserId - UserId일 경우 저장된 userId의 소유자만 읽을 수 있다
+    @Column(name = "VISIBLE_TO", columnDefinition = "varchar(50) default 'ALL'")
+    private String visibleTo;
 
 }

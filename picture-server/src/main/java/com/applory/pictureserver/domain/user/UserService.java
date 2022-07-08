@@ -25,8 +25,8 @@ public class UserService {
         user.setUsername(dto.getUsername());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setNickname(dto.getNickname());
-        user.setUseTermAgreeYn("Y");
-        user.setPersonalInfoUseTermAgreeYn("Y");
+        user.setUseTermAgreeYN("Y");
+        user.setPersonalInfoUseTermAgreeYN("Y");
         user.setSellerEnabledYn("N");
         user.setSnsType(dto.getSnsType());
 

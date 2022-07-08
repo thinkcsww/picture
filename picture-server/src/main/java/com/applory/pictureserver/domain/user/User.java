@@ -62,44 +62,44 @@ public class User extends BaseTimeEntity implements UserDetails {
     private UUID id;
 
     @NotEmpty
-    @Column(name = "username")
+    @Column(name = "USERNAME")
     private String username;
 
     @NotEmpty
-    @Column(name = "password")
+    @Column(name = "PASSWORD")
     private String password;
 
     @NotEmpty
-    @Column(name = "nickname", length = 20)
+    @Column(name = "NICKNAME", length = 20)
     private String nickname;
 
-    @Column(name = "description")
+    @Column(name = "DESCRIPTION")
     private String description;
 
-    @Column(name = "sellerEnabledYn", length = 1, columnDefinition = "varchar(1) default 'N'")
+    @Column(name = "SELLER_ENABLED_YN", length = 1, columnDefinition = "varchar(1) default 'N'")
     private String sellerEnabledYn;
 
-    @Column(name = "workHourFromDt")
+    @Column(name = "WORK_HOUR_FROM_DT")
     private Integer workHourFromDt;
 
-    @Column(name = "workHourToDt")
+    @Column(name = "WORK_HOUR_TO_DT")
     private Integer workHourToDt;
 
     // people, bg, official
-    @Column(name = "specialty")
+    @Column(name = "SPECIALTY")
     private String specialty;
 
     @NotEmpty
-    @Column(name = "useTermAgreeYn", length = 1, columnDefinition = "varchar(1) default 'Y'")
-    private String useTermAgreeYn;
+    @Column(name = "USE_TERM_AGREE_YN", length = 1, columnDefinition = "varchar(1) default 'Y'")
+    private String useTermAgreeYN;
 
     @NotEmpty
-    @Column(name = "personalInfoUseTermAgreeYn", length = 1, columnDefinition = "varchar(1) default 'Y'")
-    private String personalInfoUseTermAgreeYn;
+    @Column(name = "PERSONAL_INF_OUSE_TERM_AGREE_YN", length = 1, columnDefinition = "varchar(1) default 'Y'")
+    private String personalInfoUseTermAgreeYN;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "snsType")
+    @Column(name = "SNS_TYPE")
     private SnsType snsType;
 
 //    @Column(name = "profileFileGroupId")

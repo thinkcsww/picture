@@ -30,33 +30,33 @@ public class Request extends BaseTimeEntity {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "USER_ID")
     User user;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "requestType")
+    @Column(name = "REQUEST_TYPE")
     private RequestType requestType;
 
-    @Column(name = "title")
+    @Column(name = "TITLE")
     private String title;
 
-    @Column(name = "desiredPrice")
+    @Column(name = "DESIRED_PRICE")
     private Integer desiredPrice;
 
-    @Column(name = "dueDate")
+    @Column(name = "DUE_DATE")
     private LocalDateTime dueDate;
 
-    @Column(name = "description")
+    @Column(name = "DESCRIPTION")
     private String description;
 
-    @Column(name = "readCount")
+    @Column(name = "READ_COUNT")
     private Integer readCount;
 
-    @Column(name = "matchYN", length = 1, columnDefinition = "varchar(1) default 'N'")
+    @Column(name = "MATCH_YN", length = 1, columnDefinition = "varchar(1) default 'N'")
     private String matchYN;
 
-    @Column(name = "completeYN", length = 1, columnDefinition = "varchar(1) default 'N'")
+    @Column(name = "COMPLETE_YN", length = 1, columnDefinition = "varchar(1) default 'N'")
     private String completeYN;
 
 }

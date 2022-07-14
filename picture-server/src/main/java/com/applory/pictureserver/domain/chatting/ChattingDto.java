@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class ChattingDto {
@@ -25,6 +26,21 @@ public class ChattingDto {
         private String message;
 
         private Boolean isFirst;
+
+    }
+
+    @Getter
+    @Setter
+    public static class ChattingRoomVM {
+        private UUID id;
+
+        private String opponentNickname;
+
+        private LocalDateTime lastMessageDt;
+
+        private String lastMessage;
+
+        private Integer unreadCount;
 
     }
 }

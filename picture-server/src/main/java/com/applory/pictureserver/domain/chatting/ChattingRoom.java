@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -16,4 +17,8 @@ public class ChattingRoom extends BaseTimeEntity {
     @Id
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
+
+    @OneToMany(mappedBy = "chattingRoom")
+    private List<ChattingRoomMember> chattingRoomMembers;
+
 }

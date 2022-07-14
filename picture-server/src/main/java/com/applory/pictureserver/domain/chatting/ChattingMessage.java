@@ -1,5 +1,6 @@
 package com.applory.pictureserver.domain.chatting;
 
+import com.applory.pictureserver.domain.shared.BaseTimeEntity;
 import com.applory.pictureserver.domain.user.User;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +15,7 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name = "CHATTING_MESSAGE")
-public class ChattingMessage {
+public class ChattingMessage extends BaseTimeEntity {
 
     public enum VisibleToType {
         NONE,
@@ -45,5 +46,8 @@ public class ChattingMessage {
     // ALL, NONE, UserId - UserId일 경우 저장된 userId의 소유자만 읽을 수 있다
     @Column(name = "VISIBLE_TO", columnDefinition = "varchar(50) default 'ALL'")
     private String visibleTo;
+
+    @Column(name ="READ_BY")
+    private String readBy;
 
 }

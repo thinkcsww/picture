@@ -3,6 +3,7 @@ package com.applory.pictureserver;
 import com.applory.pictureserver.domain.chatting.*;
 import com.applory.pictureserver.domain.oauth.AuthDto;
 import com.applory.pictureserver.domain.oauth.MyOAuth2Token;
+import com.applory.pictureserver.domain.request.RequestDto;
 import com.applory.pictureserver.domain.request.RequestRepository;
 import com.applory.pictureserver.domain.user.UserDto;
 import com.applory.pictureserver.domain.user.UserRepository;
@@ -23,15 +24,19 @@ import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.springframework.web.socket.sockjs.client.SockJsClient;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.*;
 
@@ -314,6 +319,46 @@ public class ChattingControllerTest {
 
     @Test
     public void getRooms_withInvalidToken_receive401() {
+        authenticate("asda");
+        ResponseEntity<Object> response = getRooms(0, 5, Object.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    public void getRooms_withValidToken_receive200() {
+        signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
+
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        authenticate(tokenResponse.getBody().getAccess_token());
+
+        ResponseEntity<Object> response = getRooms(0, 5, Object.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void getRooms_withValidToken_receivePagedRoomVmList() {
+
+    }
+
+    @Test
+    public void getRooms_withValidToken_receiveRoomsOrderByLatestTime() {
+
+    }
+
+    @Test
+    public void getRooms_withValidToken_receiveRoomWithLastMessageAndSentTime() {
+
+    }
+
+    @Test
+    public void getRooms_withValidToken_receiveRoomWithUnreadCount() {
+
+    }
+
+    @Test
+    public void getRooms_withValidToken_receiveRoomWithOpponentNickname() {
 
     }
 
@@ -610,6 +655,13 @@ public class ChattingControllerTest {
 
     private <T> ResponseEntity<T> leaveRoom (UUID roomId, Class<T> responseType) {
         return testRestTemplate.exchange(API_V_1_CHATTINGS + "/" + roomId, HttpMethod.DELETE, null, responseType);
+    }
+
+    private <T> ResponseEntity<T> getRooms (int page, int size, Class<T> responseType) {
+        String url = API_V_1_CHATTINGS;
+        url += "?page=" + page + "&size=" + size;
+
+        return testRestTemplate.exchange(url, HttpMethod.GET, null, responseType);
     }
 
     public <T> ResponseEntity<T> signUp(UserDto.Create dto, Class<T> responseType) {

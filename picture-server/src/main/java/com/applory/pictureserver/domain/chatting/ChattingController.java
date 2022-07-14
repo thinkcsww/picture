@@ -1,6 +1,8 @@
 package com.applory.pictureserver.domain.chatting;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +27,15 @@ public class ChattingController {
         chattingService.leaveRoom(roomId);
     }
 
+    @GetMapping("")
+    public Page<ChattingDto.ChattingRoomVM> getRooms(Pageable pageable) {
+        return chattingService.getRooms(pageable);
+    }
+
     @GetMapping("/{roomId}")
     public void getRoom(@PathVariable UUID roomId) {
 
     }
+
+
 }

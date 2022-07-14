@@ -5,6 +5,8 @@ import com.applory.pictureserver.domain.shared.SecurityUtils;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -97,5 +99,39 @@ public class ChattingService {
             }
         }
 
+    }
+
+    public Page<ChattingDto.ChattingRoomVM> getRooms(Pageable pageable) {
+        String username = SecurityUtils.getPrincipal();
+        User user = userRepository.findByUsername(username);
+
+        Page<ChattingRoom> chattingRoomsInDB = chattingRoomRepository.findAllByChattingRoomMembers_User(user, pageable);
+
+
+
+        return chattingRoomsInDB.map(room -> {
+            ChattingDto.ChattingRoomVM chattingRoomVM = new ChattingDto.ChattingRoomVM();
+
+            ChattingMessage lastMessage = chattingMessageRepository.findTopByChattingRoom(room);
+
+            int unreadCount = chattingMessageRepository.countUnreadMessageOfRoom(room.getId(), user.getId());
+
+            String opponentNickname = "";
+
+            for (ChattingRoomMember member : room.getChattingRoomMembers()) {
+                if (!member.getUser().getId().equals(user.getId())) {
+                    opponentNickname = member.getUser().getNickname();
+                }
+            }
+
+
+            chattingRoomVM.setId(room.getId());
+            chattingRoomVM.setLastMessage(lastMessage.getMessage());
+            chattingRoomVM.setLastMessageDt(lastMessage.getCreatedDt());
+            chattingRoomVM.setUnreadCount(unreadCount);
+            chattingRoomVM.setOpponentNickname(opponentNickname);
+
+            return chattingRoomVM;
+        });
     }
 }

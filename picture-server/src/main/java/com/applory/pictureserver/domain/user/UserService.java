@@ -1,13 +1,11 @@
 package com.applory.pictureserver.domain.user;
 
+import com.applory.pictureserver.domain.config.AppConfiguration;
 import com.applory.pictureserver.domain.exception.BadRequestException;
 import com.applory.pictureserver.domain.shared.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -16,6 +14,8 @@ import org.springframework.util.StringUtils;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final AppConfiguration appConfiguration;
+
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
@@ -23,10 +23,11 @@ public class UserService {
     public User createUser(UserDto.Create dto) {
         User user = new User();
         user.setUsername(dto.getUsername());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setPassword(passwordEncoder.encode(dto.getUsername() + appConfiguration.getPwSalt()));
         user.setNickname(dto.getNickname());
         user.setUseTermAgreeYN("Y");
         user.setPersonalInfoUseTermAgreeYN("Y");
+        user.setAgeOver14AgreeYN("Y");
         user.setSellerEnabledYn("N");
         user.setSnsType(dto.getSnsType());
 
@@ -43,13 +44,22 @@ public class UserService {
             user.setWorkHourFromDt(dto.getWorkHourFromDt());
             user.setWorkHourToDt(dto.getWorkHourToDt());
             user.setSpecialty(dto.getSpecialty());
+            user.setPeoplePrice(dto.getPeoplePrice());
+            user.setBackgroundPrice(dto.getBackgroundPrice());
+            user.setOfficialPrice(dto.getOfficialPrice());
         }
 
         return userRepository.save(user);
     }
 
-    public Page<User> getSellerUsers(UserDto.SearchSeller search, Pageable pageable) {
-        return userRepository.findSellerUserBySearch(search, pageable);
+    public Page<UserDto.SellerVM> getSellerUsers(UserDto.SearchSeller search, Pageable pageable) {
+        Page<User> sellersInDB = userRepository.findSellerUserBySearch(search, pageable);
+
+        return sellersInDB.map((seller) -> {
+            UserDto.SellerVM sellerVM = new UserDto.SellerVM(seller);
+
+            return sellerVM;
+        });
     }
 
     public Page<User> getClientUsers(UserDto.SearchClient search, Pageable pageable) {

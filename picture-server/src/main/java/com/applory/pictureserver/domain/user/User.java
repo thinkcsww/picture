@@ -85,7 +85,6 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(name = "WORK_HOUR_TO_DT")
     private Integer workHourToDt;
 
-    // people, bg, official
     @Column(name = "SPECIALTY")
     private String specialty;
 
@@ -94,13 +93,27 @@ public class User extends BaseTimeEntity implements UserDetails {
     private String useTermAgreeYN;
 
     @NotEmpty
-    @Column(name = "PERSONAL_INF_OUSE_TERM_AGREE_YN", length = 1, columnDefinition = "varchar(1) default 'Y'")
+    @Column(name = "PERSONAL_INFO_USE_TERM_AGREE_YN", length = 1, columnDefinition = "varchar(1) default 'Y'")
     private String personalInfoUseTermAgreeYN;
+
+    @NotEmpty
+    @Column(name = "AGE_OVER_14_AGREE_YN", length = 1, columnDefinition = "varchar(1) default 'Y'")
+    private String ageOver14AgreeYN;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "SNS_TYPE")
     private SnsType snsType;
+
+    @Column(name = "PEOPLE_PRICE")
+    private Integer peoplePrice;
+
+    @Column(name = "BACKGROUND_PRICE")
+    private Integer backgroundPrice;
+
+    @Column(name = "OFFICIAL_PRICE")
+    private Integer officialPrice;
+
 
 //    @Column(name = "profileFileGroupId")
 //    private String profileFileGroupId;

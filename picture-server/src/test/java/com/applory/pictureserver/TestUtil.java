@@ -14,8 +14,6 @@ public class TestUtil {
         user.setUsername(username);
         user.setPassword(username + "durtnlchrhtn@1");
         user.setNickname("test-nickname");
-        user.setUseTermAgreeYN("Y");
-        user.setPersonalInfoUseTermAgreeYn("Y");
         user.setSnsType(User.SnsType.KAKAO);
 
         return user;
@@ -31,9 +29,10 @@ public class TestUtil {
         user.setWorkHourFromDt(1700);
         user.setWorkHourToDt(1830);
         user.setSpecialty(User.SellerSpecialty.PEOPLE.toString());
-        user.setUseTermAgreeYN("Y");
-        user.setPersonalInfoUseTermAgreeYn("Y");
         user.setSnsType(User.SnsType.KAKAO);
+        user.setPeoplePrice(2000);
+        user.setBackgroundPrice(2000);
+        user.setOfficialPrice(2000);
 
         return user;
     }

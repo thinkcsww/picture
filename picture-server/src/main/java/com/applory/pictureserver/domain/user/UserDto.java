@@ -44,6 +44,50 @@ public class UserDto {
 
     @Getter
     @Setter
+    @NoArgsConstructor
+    public static class SellerVM {
+        private UUID id;
+        private String username;
+        private String nickname;
+        private User.SnsType snsType;
+        private String description;
+        private Integer workHourFromDt;
+        private Integer workHourToDt;
+        private String specialty;
+        private String sellerEnabledYn;
+        private LocalDateTime createdDt;
+        private LocalDateTime updatedDt;
+
+        private Integer peoplePrice;
+        private Integer backgroundPrice;
+        private Integer officialPrice;
+
+        private int rating;
+
+        private int closingRate;
+
+        private int reviewCount;
+
+        public SellerVM(User user) {
+            this.id = user.getId();
+            this.username = user.getUsername();
+            this.nickname = user.getNickname();
+            this.snsType = user.getSnsType();
+            this.description = user.getDescription();
+            this.workHourFromDt = user.getWorkHourFromDt();
+            this.workHourToDt = user.getWorkHourToDt();
+            this.specialty = user.getSpecialty();
+            this.sellerEnabledYn = user.getSellerEnabledYn();
+            this.createdDt = user.getCreatedDt();
+            this.updatedDt = user.getUpdatedDt();
+            this.peoplePrice = user.getPeoplePrice();
+            this.backgroundPrice = user.getBackgroundPrice();
+            this.officialPrice = user.getOfficialPrice();
+        }
+    }
+
+    @Getter
+    @Setter
     public static class Create {
         @NotEmpty
         private String username;
@@ -52,15 +96,8 @@ public class UserDto {
         private String password;
 
         @NotEmpty
+        @UniqueNickname
         private String nickname;
-
-        @NotEmpty
-        @Size(max = 1, min = 1)
-        private String useTermAgreeYN;
-
-        @NotEmpty
-        @Size(max = 1, min = 1)
-        private String personalInfoUseTermAgreeYn;
 
         @NotNull
         private User.SnsType snsType;
@@ -74,6 +111,12 @@ public class UserDto {
         private Integer workHourToDt;
 
         private String specialty;
+
+        private Integer peoplePrice;
+
+        private Integer backgroundPrice;
+
+        private Integer officialPrice;
 
     }
 

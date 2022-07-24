@@ -19,6 +19,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -27,6 +28,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.applory.pictureserver.TestConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,6 +69,17 @@ public class UserControllerTest {
         ResponseEntity<Object> response = signUp(dto, Object.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    }
+
+    @Test
+    public void postUser_withDuplicateNickname_receiveApiError() {
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME);
+
+        signUp(user1, Object.class);
+        ResponseEntity<ApiError> response = signUp(user2, ApiError.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody().getValidationErrors().get("nickname")).isNotNull();
     }
 
     @Test
@@ -157,7 +170,7 @@ public class UserControllerTest {
         UserDto.SearchSeller search = new UserDto.SearchSeller();
         search.setCurrentTime("1750");
 
-        ResponseEntity<TestPage<UserDto.VM>> userResponse = getSellerUser(new ParameterizedTypeReference<TestPage<UserDto.VM>>() {}, search, null);
+        ResponseEntity<TestPage<UserDto.SellerVM>> userResponse = getSellerUser(new ParameterizedTypeReference<TestPage<UserDto.SellerVM>>() {}, search, null);
         assertThat(userResponse.getBody().getContent().get(0).getSellerEnabledYn()).isEqualTo("Y");
     }
 
@@ -185,6 +198,25 @@ public class UserControllerTest {
 //    }
 
     @Test
+    public void getSellerUsers_withValidRequest_receiveWithBasicValues() {
+        UserDto.Create dto = TestUtil.createValidSellerUser(TEST_USERNAME);
+        signUp(dto, Object.class);
+
+        UserDto.SearchSeller search = new UserDto.SearchSeller();
+        search.setCurrentTime("1750");
+
+        ResponseEntity<TestPage<UserDto.SellerVM>> userResponse = getSellerUser(new ParameterizedTypeReference<TestPage<UserDto.SellerVM>>() {}, search, null);
+
+        assertThat(userResponse.getBody().getContent().get(0).getSellerEnabledYn()).isEqualTo("Y");
+        assertThat(userResponse.getBody().getContent().get(0).getNickname()).isEqualTo(dto.getNickname());
+        assertThat(userResponse.getBody().getContent().get(0).getDescription()).isEqualTo(dto.getDescription());
+        assertThat(userResponse.getBody().getContent().get(0).getSpecialty()).isEqualTo(User.SellerSpecialty.PEOPLE.toString());
+        assertThat(userResponse.getBody().getContent().get(0).getPeoplePrice()).isEqualTo(dto.getPeoplePrice());
+        assertThat(userResponse.getBody().getContent().get(0).getOfficialPrice()).isEqualTo(dto.getOfficialPrice());
+        assertThat(userResponse.getBody().getContent().get(0).getBackgroundPrice()).isEqualTo(dto.getBackgroundPrice());
+    }
+
+    @Test
     public void getSellerUsers_searchWithNickname_receiveSellerByNickname() {
         UserDto.Create user1 = TestUtil.createValidSellerUser("123123");
         UserDto.Create user2 = TestUtil.createValidSellerUser("1231232");
@@ -202,7 +234,7 @@ public class UserControllerTest {
         search.setCurrentTime("1730");
         search.setNickname(user1.getNickname());
 
-        ResponseEntity<TestPage<UserDto.VM>> userResponse = getSellerUser(new ParameterizedTypeReference<TestPage<UserDto.VM>>() {}, search, PageRequest.of(0, 5));
+        ResponseEntity<TestPage<UserDto.SellerVM>> userResponse = getSellerUser(new ParameterizedTypeReference<TestPage<UserDto.SellerVM>>() {}, search, PageRequest.of(0, 5));
         assertThat(userResponse.getBody().getContent().get(0).getNickname()).isEqualTo(user1.getNickname());
     }
 
@@ -210,9 +242,12 @@ public class UserControllerTest {
     public void getSellerUsers_searchWithSpecialty_receiveSellerBySpecialty() {
         UserDto.Create user1 = TestUtil.createValidSellerUser("123123");
         UserDto.Create user2 = TestUtil.createValidSellerUser("1231232");
-        UserDto.Create user3 = TestUtil.createValidSellerUser("1231233");
+        user2.setNickname("test-nickname2");
         user2.setSpecialty(User.SellerSpecialty.BACKGROUND.toString());
+        UserDto.Create user3 = TestUtil.createValidSellerUser("1231233");
+        user3.setNickname("test-nickname3");
         user3.setSpecialty(User.SellerSpecialty.OFFICIAL.toString());
+
 
         signUp(user1, Object.class);
         signUp(user2, Object.class);
@@ -222,7 +257,7 @@ public class UserControllerTest {
         search.setCurrentTime("1730");
         search.setSpecialty(User.SellerSpecialty.OFFICIAL.toString());
 
-        ResponseEntity<TestPage<UserDto.VM>> userResponse = getSellerUser(new ParameterizedTypeReference<TestPage<UserDto.VM>>() {}, search, PageRequest.of(0, 5));
+        ResponseEntity<TestPage<UserDto.SellerVM>> userResponse = getSellerUser(new ParameterizedTypeReference<TestPage<UserDto.SellerVM>>() {}, search, PageRequest.of(0, 5));
         assertThat(userResponse.getBody().getContent().get(0).getSpecialty()).contains(User.SellerSpecialty.OFFICIAL.toString());
     }
 
@@ -230,8 +265,10 @@ public class UserControllerTest {
     public void getSellerUsers_searchWithSpecialty_receiveSellerWhoHasMultipleSpecialty() {
         UserDto.Create user1 = TestUtil.createValidSellerUser("123123");
         UserDto.Create user2 = TestUtil.createValidSellerUser("1231232");
-        UserDto.Create user3 = TestUtil.createValidSellerUser("1231233");
+        user2.setNickname("test-nickname2");
         user2.setSpecialty(User.SellerSpecialty.BACKGROUND.toString());
+        UserDto.Create user3 = TestUtil.createValidSellerUser("1231233");
+        user3.setNickname("test-nickname3");
         user3.setSpecialty(User.SellerSpecialty.OFFICIAL.toString() + "," + User.SellerSpecialty.BACKGROUND);
 
         signUp(user1, Object.class);
@@ -242,8 +279,60 @@ public class UserControllerTest {
         search.setCurrentTime("1730");
         search.setSpecialty(User.SellerSpecialty.OFFICIAL.toString());
 
-        ResponseEntity<TestPage<UserDto.VM>> userResponse = getSellerUser(new ParameterizedTypeReference<TestPage<UserDto.VM>>() {}, search, PageRequest.of(0, 5));
+        ResponseEntity<TestPage<UserDto.SellerVM>> userResponse = getSellerUser(new ParameterizedTypeReference<TestPage<UserDto.SellerVM>>() {}, search, PageRequest.of(0, 5));
         assertThat(userResponse.getBody().getContent().get(0).getSpecialty()).contains(User.SellerSpecialty.OFFICIAL.toString());
+    }
+
+    @Test
+    public void getSellerUsers_orderByPriceDesc_receiveSellerOrderByPriceAsc() {
+        UserDto.Create user1 = TestUtil.createValidSellerUser("123123");
+        UserDto.Create user2 = TestUtil.createValidSellerUser("1231232");
+        UserDto.Create user3 = TestUtil.createValidSellerUser("1231233");
+        user2.setSpecialty(User.SellerSpecialty.PEOPLE.toString());
+        user2.setPeoplePrice(3000);
+        user2.setNickname("test-nickname2");
+        user3.setSpecialty(User.SellerSpecialty.PEOPLE.toString() + "," + User.SellerSpecialty.BACKGROUND);
+        user3.setPeoplePrice(5000);
+        user3.setNickname("test-nickname3");
+
+        signUp(user1, Object.class);
+        signUp(user2, Object.class);
+        signUp(user3, Object.class);
+
+        UserDto.SearchSeller search = new UserDto.SearchSeller();
+        search.setCurrentTime("1730");
+        search.setSpecialty(User.SellerSpecialty.PEOPLE.toString());
+
+        ResponseEntity<TestPage<UserDto.SellerVM>> userResponse = getSellerUser(new ParameterizedTypeReference<TestPage<UserDto.SellerVM>>() {}, search, PageRequest.of(0, 5, Sort.by("peoplePrice").ascending()));
+        assertThat(userResponse.getBody().getContent().get(0).getNickname()).isEqualTo(user1.getNickname());
+        assertThat(userResponse.getBody().getContent().get(1).getNickname()).isEqualTo(user2.getNickname());
+        assertThat(userResponse.getBody().getContent().get(2).getNickname()).isEqualTo(user3.getNickname());
+    }
+
+    @Test
+    public void getSellerUsers_orderByPriceAsc_receiveSellerOrderByPriceDesc() {
+        UserDto.Create user1 = TestUtil.createValidSellerUser("123123");
+        UserDto.Create user2 = TestUtil.createValidSellerUser("1231232");
+        UserDto.Create user3 = TestUtil.createValidSellerUser("1231233");
+        user2.setNickname("test-nickname2");
+        user2.setSpecialty(User.SellerSpecialty.PEOPLE.toString());
+        user2.setPeoplePrice(3000);
+        user3.setNickname("test-nickname3");
+        user3.setSpecialty(User.SellerSpecialty.PEOPLE.toString() + "," + User.SellerSpecialty.BACKGROUND);
+        user3.setPeoplePrice(5000);
+
+        signUp(user1, Object.class);
+        signUp(user2, Object.class);
+        signUp(user3, Object.class);
+
+        UserDto.SearchSeller search = new UserDto.SearchSeller();
+        search.setCurrentTime("1730");
+        search.setSpecialty(User.SellerSpecialty.PEOPLE.toString());
+
+        ResponseEntity<TestPage<UserDto.SellerVM>> userResponse = getSellerUser(new ParameterizedTypeReference<TestPage<UserDto.SellerVM>>() {}, search, PageRequest.of(0, 5, Sort.by("peoplePrice").descending()));
+        assertThat(userResponse.getBody().getContent().get(0).getNickname()).isEqualTo(user3.getNickname());
+        assertThat(userResponse.getBody().getContent().get(1).getNickname()).isEqualTo(user2.getNickname());
+        assertThat(userResponse.getBody().getContent().get(2).getNickname()).isEqualTo(user1.getNickname());
     }
 
     public <T> ResponseEntity<T> signUp(UserDto.Create dto, Class<T> responseType) {
@@ -277,15 +366,24 @@ public class UserControllerTest {
     private String createUrlWithRequestParamsSeller(UserDto.SearchSeller search, Pageable pageable) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost" + port + API_V_1_USERS_SELLER);
         MultiValueMap params = new LinkedMultiValueMap<>();
+
+        if (pageable != null) {
+            params.set("page", String.valueOf(pageable.getPageNumber()));
+            params.set("size", String.valueOf(pageable.getPageSize()));
+            if (!pageable.getSort().get().collect(Collectors.toList()).isEmpty()) {
+                params.set("sort", pageable.getSort().get().collect(Collectors.toList()).get(0).getProperty() + "," + pageable.getSort().get().collect(Collectors.toList()).get(0).getDirection().toString());
+            }
+        }
+
         if (search != null) {
             params.setAll(objectMapper.convertValue(search, Map.class));
+
+        }
+
+        if (!params.keySet().isEmpty()) {
             builder.queryParams(params);
         }
 
-        if (pageable != null) {
-            params.set("page", pageable.getPageNumber());
-            params.set("size", pageable.getPageSize());
-        }
 
         return builder.toUriString().split(port + "")[1];
     }

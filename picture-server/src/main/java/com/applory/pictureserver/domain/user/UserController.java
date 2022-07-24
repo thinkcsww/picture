@@ -31,8 +31,8 @@ public class UserController {
     }
 
     @GetMapping("/seller")
-    public Page<UserDto.VM> getSellerUsers(@Valid UserDto.SearchSeller search, Pageable pageable) {
-        return userService.getSellerUsers(search, pageable).map(UserDto.VM::new);
+    public Page<UserDto.SellerVM> getSellerUsers(@Valid UserDto.SearchSeller search, Pageable pageable) {
+        return userService.getSellerUsers(search, pageable);
     }
 
     @GetMapping("/client")

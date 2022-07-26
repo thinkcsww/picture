@@ -1,6 +1,10 @@
-import React from "react";
+import React, { FC, useEffect } from "react";
+import { useAxiosLoader } from "./hooks/useAxiosLoader";
 
-const AbstractHoc = ({children}) => {
+const AbstractHoc: FC = ({children}) => {
+
+  const [loading, ready] = useAxiosLoader();
+
   return (
     <>
       {children}

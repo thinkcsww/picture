@@ -3,41 +3,103 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import RequestScreen from "./screens/request/RequestScreen";
 import ChattingScreen from "./screens/chatting/ChattingScreen";
 import MyPageScreen from "./screens/mypage/MyPageScreen";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
+import { useNavigation } from "@react-navigation/native";
+import { createStackNavigator, TransitionPresets } from "@react-navigation/stack";
 import SellerScreen from "./screens/seller/SellerScreen";
 import SellerDetailScreen from "./screens/seller/SellerDetailScreen";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
+import { useAppSelector } from "./store/config";
+import SignUpSelectTypeScreen from "./screens/signup/SignUpSelectTypeScreen";
+import SignUpGuideScreen from "./screens/signup/SignUpGuideScreen";
+import SignUpSellerScreen from "./screens/signup/SignUpSellerScreen";
+import SignUpClientScreen from "./screens/signup/SignUpClientScreen";
+import AddRequestScreen from "./screens/request/AddRequestScreen";
+import RequestDetailScreen from "./screens/request/RequestDetailScreen";
+
+export const RouteNames = {
+  SignUpClient: "SignUpClient",
+  SignUpSeller: "SignUpSeller",
+  SignUpGuide: "SignUpGuide",
+  SignUpSelectType: "SignUpSelectType",
+
+  SellerTab: "SellerTab",
+  Seller: "Seller",
+  SellerDetail: "SellerDetail",
+
+  RequestTab: "RequestTab",
+  Request: "Request",
+  RequestDetail: "RequestDetail",
+  AddRequest: "AddRequest",
+
+  ChattingTab: "ChattingTab",
+  Chatting: "Chatting",
+
+  MyPageTab: "MyPageTab",
+  MyPage: "MyPage",
+};
 
 const AppNav = () => {
 
+  const { user } = useAppSelector(state => state.common);
+  const navigation = useNavigation<any>();
   const Stack = createStackNavigator();
 
-  const SellerStack = ({ navigation }) => {
+  const SellerStack = () => {
     return (
       <Stack.Navigator screenOptions={{
-        headerLeft: () => <MaterialCommunityIcons name={"arrow-left-bold"} size={26} onPress={() => navigation.goBack()} style={{ paddingLeft: 10 }}/>,
-        headerTitleAlign: 'center'
+        headerTitleAlign: "center",
+        cardStyle: { backgroundColor: '#fff' }
       }}>
-        <Stack.Screen name={"Seller"} component={SellerScreen} options={{ headerShown: false }}/>
-        <Stack.Screen name={"SellerDetail"} component={SellerDetailScreen}/>
+        <Stack.Screen name={RouteNames.Seller} component={SellerScreen} options={{ headerShown: false }} />
+      </Stack.Navigator>
+    );
+  };
+
+  const RequestStack = () => {
+    return (
+      <Stack.Navigator screenOptions={{
+        headerTitleAlign: "center",
+        cardStyle: { backgroundColor: '#fff' }
+      }}>
+        <Stack.Screen name={RouteNames.Request} component={RequestScreen} options={{ headerShown: false }} />
+      </Stack.Navigator>
+    )
+  }
+
+  const ChattingStack = () => {
+    return (
+      <Stack.Navigator screenOptions={{
+        headerTitleAlign: "center",
+        cardStyle: { backgroundColor: '#fff' }
+      }}>
+        <Stack.Screen name={RouteNames.Chatting} component={ChattingScreen} options={{ headerShown: false }} />
+      </Stack.Navigator>
+    )
+  }
+
+  const MyPageStack = () => {
+    return (
+      <Stack.Navigator screenOptions={{
+        headerTitleAlign: "center",
+        cardStyle: { backgroundColor: '#fff' }
+      }}>
+        <Stack.Screen name={RouteNames.MyPage} component={MyPageScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     )
   }
 
 
-
   const Tab = createMaterialBottomTabNavigator();
 
-  return (
-    <NavigationContainer>
+  const HomeTabs = () => {
+    return (
       <Tab.Navigator
         shifting={false}
         barStyle={{ backgroundColor: "#ffffff" }}
         activeColor={"#f6ec78"}
-        initialRouteName="작가">
+        initialRouteName={RouteNames.Seller}>
         <Tab.Screen
-          name="작가"
+          name={RouteNames.SellerTab}
           component={SellerStack}
           options={{
             tabBarLabel: "홈",
@@ -47,17 +109,19 @@ const AppNav = () => {
           }}
         />
         <Tab.Screen
-          name="의뢰"
-          component={RequestScreen}
+          name={RouteNames.RequestTab}
+          component={RequestStack}
           options={{
+            tabBarLabel: "의뢰",
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons name="human-handsup" color={color} size={26} />
             ),
           }}
         />
         <Tab.Screen
-          name="의뢰하기"
-          component={RequestScreen}
+          name={RouteNames.AddRequest}
+          component={AddRequestScreen}
+          // listeners={tabEventListenerShowLoginScreen}
           options={{
             tabBarLabel: "의뢰하기",
             tabBarIcon: ({ color }) => (
@@ -66,19 +130,19 @@ const AppNav = () => {
           }}
         />
         <Tab.Screen
-          name="채팅"
-          component={ChattingScreen}
+          name={RouteNames.ChattingTab}
+          component={ChattingStack}
+          listeners={tabEventListenerShowLoginScreen}
           options={{
             tabBarLabel: "채팅",
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons name="chat" color={color} size={26} />
             ),
-            tabBarBadge: 5
-
-          }}/>
+            tabBarBadge: 5,
+          }} />
         <Tab.Screen
-          name="마이페이지"
-          component={MyPageScreen}
+          name={RouteNames.MyPageTab}
+          component={MyPageStack}
           options={{
             tabBarLabel: "마이페이지",
             tabBarIcon: ({ color }) => (
@@ -87,8 +151,34 @@ const AppNav = () => {
           }}
         />
       </Tab.Navigator>
-    </NavigationContainer>
-  )
-}
+    );
+  };
+
+  const tabEventListenerShowLoginScreen = {
+    tabPress: (e: any) => {
+      if (user === undefined) {
+        navigation.navigate(RouteNames.SignUpGuide)
+        e.preventDefault();
+        return;
+      }
+    },
+  }
+
+  return (
+    <Stack.Navigator initialRouteName={"Tabs"} screenOptions={{ headerShown: false, cardStyle: { backgroundColor: '#fff' } }}>
+      <Stack.Screen name="Tabs" component={HomeTabs} options={{ headerShown: false }} />
+      <Stack.Screen name={RouteNames.SellerDetail} component={SellerDetailScreen} options={{ headerShown: false }} />
+      <Stack.Screen name={RouteNames.RequestDetail} component={RequestDetailScreen} options={{ headerShown: false }} />
+
+      <Stack.Group>
+        <Stack.Screen name={RouteNames.SignUpGuide} component={SignUpGuideScreen} options={{ headerShown: false, ...TransitionPresets.ModalSlideFromBottomIOS}} />
+        <Stack.Screen name={RouteNames.SignUpSelectType} component={SignUpSelectTypeScreen} options={{ headerShown: false }} />
+        <Stack.Screen name={RouteNames.SignUpSeller} component={SignUpSellerScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name={RouteNames.SignUpClient} component={SignUpClientScreen} options={{ headerShown: false }}/>
+      </Stack.Group>
+
+    </Stack.Navigator>
+  );
+};
 
 export default AppNav;

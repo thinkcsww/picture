@@ -7,10 +7,10 @@
  *
  * @format
  */
-import 'react-native-gesture-handler';
+import "react-native-gesture-handler";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, Button, SafeAreaView, TextInput } from "react-native";
+import { Alert, Button, LogBox, SafeAreaView, TextInput } from "react-native";
 import { Client, IMessage } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { NavigationContainer } from "@react-navigation/native";
@@ -24,7 +24,7 @@ import { createMaterialBottomTabNavigator } from "@react-navigation/material-bot
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { createStackNavigator } from "@react-navigation/stack";
 import SellerDetailScreen from "./src/screens/seller/SellerDetailScreen";
-import AppNav from "./src/AppNav";
+import AppNavContainer from "./src/AppNavContainer";
 import AbstractHoc from "./src/AbstractHoc";
 import { Provider } from "react-redux";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -80,15 +80,13 @@ const App = () => {
 
 
   const queryClient = new QueryClient();
+  LogBox.ignoreLogs(['image'])
 
   return (
-
     <Provider store={store}>
-      <AbstractHoc>
-        <QueryClientProvider client={queryClient}>
-          <AppNav/>
-        </QueryClientProvider>
-      </AbstractHoc>
+      <QueryClientProvider client={queryClient}>
+        <AppNavContainer />
+      </QueryClientProvider>
     </Provider>
 
   );

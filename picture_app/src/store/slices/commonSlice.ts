@@ -5,7 +5,7 @@ export interface CommonState {
 }
 
 const initialState: CommonState = {
-  user: {},
+  user: undefined,
 };
 
 export const commonSlice = createSlice({
@@ -18,5 +18,5 @@ export const commonSlice = createSlice({
   },
 });
 
-export const { setUser } = commonSlice.actions;
+export const { setUser, setShowLoginGuideModal } = commonSlice.actions;
 export default commonSlice;

@@ -8,3 +8,5 @@ const AddRequestScreen = () => {
     </SafeAreaView>
   )
 }
+
+export default AddRequestScreen;

@@ -23,6 +23,7 @@ public class Oauth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
         http.authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/users/seller").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/requests").permitAll()
                 .antMatchers(
                         "/api/v1/auth/login",
                         "/api/v1/auth/token/refresh",

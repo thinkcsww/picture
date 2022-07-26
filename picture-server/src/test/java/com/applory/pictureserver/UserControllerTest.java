@@ -110,14 +110,17 @@ public class UserControllerTest {
 
         ResponseEntity<UserDto.VM> response = signUp(dto, UserDto.VM.class);
 
-        assertThat(response.getBody().getNickname()).isNotNull();
-        assertThat(response.getBody().getSellerEnabledYn()).isNotNull();
-        assertThat(response.getBody().getWorkHourFromDt()).isNotNull();
-        assertThat(response.getBody().getWorkHourToDt()).isNotNull();
-        assertThat(response.getBody().getSpecialty()).isNotNull();
-        assertThat(response.getBody().getSnsType()).isNotNull();
+        assertThat(response.getBody().getNickname()).isEqualTo(dto.getNickname());
+        assertThat(response.getBody().getSellerEnabledYn()).isEqualTo(dto.getSellerEnabledYn());
+        assertThat(response.getBody().getWorkHourFromDt()).isEqualTo(dto.getWorkHourFromDt());
+        assertThat(response.getBody().getWorkHourToDt()).isEqualTo(dto.getWorkHourToDt());
+        assertThat(response.getBody().getSpecialty()).isEqualTo(dto.getSpecialty());
+        assertThat(response.getBody().getSnsType()).isEqualTo(dto.getSnsType());
         assertThat(response.getBody().getCreatedDt()).isNotNull();
         assertThat(response.getBody().getUpdatedDt()).isNotNull();
+        assertThat(response.getBody().getPeoplePrice()).isEqualTo(dto.getPeoplePrice());
+        assertThat(response.getBody().getBackgroundPrice()).isEqualTo(dto.getBackgroundPrice());
+        assertThat(response.getBody().getOfficialPrice()).isEqualTo(dto.getOfficialPrice());
     }
 
     @Test

@@ -26,6 +26,9 @@ public class UserDto {
         private String sellerEnabledYn;
         private LocalDateTime createdDt;
         private LocalDateTime updatedDt;
+        private Integer peoplePrice;
+        private Integer backgroundPrice;
+        private Integer officialPrice;
 
         public VM(User user) {
             this.id = user.getId();
@@ -39,6 +42,9 @@ public class UserDto {
             this.sellerEnabledYn = user.getSellerEnabledYn();
             this.createdDt = user.getCreatedDt();
             this.updatedDt = user.getUpdatedDt();
+            this.peoplePrice = user.getPeoplePrice();
+            this.backgroundPrice = user.getBackgroundPrice();
+            this.officialPrice = user.getOfficialPrice();
         }
     }
 
@@ -57,7 +63,6 @@ public class UserDto {
         private String sellerEnabledYn;
         private LocalDateTime createdDt;
         private LocalDateTime updatedDt;
-
         private Integer peoplePrice;
         private Integer backgroundPrice;
         private Integer officialPrice;

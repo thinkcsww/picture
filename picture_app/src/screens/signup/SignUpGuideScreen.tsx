@@ -1,16 +1,51 @@
 import React from "react";
-import { Modal, Platform, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Platform, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { Colors } from "../../colors";
+import { useMutation } from "react-query";
+import { AuthService } from "../../services/AuthService";
+import { AxiosError } from "axios";
+import { getProfile, KakaoOAuthToken, KakaoProfile, login } from "@react-native-seoul/kakao-login";
+import { Auth } from "../../types/Auth";
 import { RouteNames } from "../../AppNav";
 
 const SignUpGuideScreen = () => {
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
 
-  const onPressKakao = () => {
-    navigation.navigate(RouteNames.SignUpSelectType);
+  const loginMutation = useMutation(AuthService.QueryKey.login, (dto: Auth.LoginDto) => {
+    return AuthService.login(dto);
+  }, {
+    onSuccess: (result: Auth.MyOAuth2Token) => {
+      console.log('==== 로그인 성공 ====');
+      console.log(result);
+    },
+    onError: (error: AxiosError<any>) => {
+      if (error.response && error.response.data.message.includes('not found')) {
+        console.log('==== 회원가입 시작 ====');
+        navigation.navigate(RouteNames.SignUpSelectType)
+
+      } else {
+        console.log('==== 로그인 실패 ====');
+      }
+
+    }
+  })
+
+  const onPressKakao = async () => {
+    const token: KakaoOAuthToken = await login();
+    const profile: KakaoProfile = await getProfile() as KakaoProfile;
+    console.log('==== 카카오 토큰 ====');
+    console.log(token);
+    console.log(token.accessToken)
+    console.log('==== 카카오 프로필 ====');
+    console.log(profile);
+
+    const dto = new Auth.LoginDto(profile.id, token.accessToken);
+
+    loginMutation.mutate(dto);
+
   };
 
   const onPressBack = () => {

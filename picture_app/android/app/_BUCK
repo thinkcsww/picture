@@ -35,12 +35,12 @@ android_library(
 
 android_build_config(
     name = "build_config",
-    package = "com.picture_app",
+    package = "com.applory.picture",
 )
 
 android_resource(
     name = "res",
-    package = "com.picture_app",
+    package = "com.applory.picture",
     res = "src/main/res",
 )
 

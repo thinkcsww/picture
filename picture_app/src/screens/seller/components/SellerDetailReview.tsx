@@ -103,9 +103,8 @@ const styles = StyleSheet.create({
     color: Colors.GRAY_TEXT,
     fontSize: 10,
   },
-  profile: {
+  rateContainer: {
     flexDirection: "row",
-    height: 100,
     alignItems: "center",
   },
   rateLeftContainer: {

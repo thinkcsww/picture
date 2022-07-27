@@ -1,4 +1,4 @@
-package com.picture_app.newarchitecture.modules;
+package com.applory.picture.newarchitecture.modules;
 
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;

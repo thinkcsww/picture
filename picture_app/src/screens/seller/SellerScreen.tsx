@@ -6,7 +6,7 @@ import { Seller } from "../../types/Seller";
 import { SelectValue } from "../../types/SelectValue";
 import SellerList from "./components/SellerList";
 import { useQuery } from "react-query";
-import { UserService } from "../../services/UserService";
+import { SellerService } from "../../services/SellerService";
 import { AxiosError } from "axios";
 import TabListHeader from "../../components/tab-list/TabListHeader";
 import TabListFilter from "../../components/tab-list/TabListFilter";
@@ -40,8 +40,8 @@ const SellerScreen: FC<SellerScreenProps> = ({ navigation }) => {
   | Hooks
   |-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
 
-  const getSellersQuery = useQuery([UserService.QueryKey.getSellers, selectedSpecialty, selectedFilter], () => {
-    return UserService.getSellers(selectedSpecialty.value, selectedFilter.value);
+  const getSellersQuery = useQuery([SellerService.QueryKey.getSellers, selectedSpecialty, selectedFilter], () => {
+    return SellerService.getSellers(selectedSpecialty.value, selectedFilter.value);
   }, {
     onSuccess: (result: any) => {
       console.log('==== Seller 리스트 조회 성공 ====');

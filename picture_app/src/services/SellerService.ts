@@ -5,7 +5,7 @@ import { Specialty } from "../types/Common";
 
 const USER_API_URL = '/v1/users';
 
-export const UserService = {
+export const SellerService = {
   QueryKey: {
     getSellers: 'getSellers'
   },

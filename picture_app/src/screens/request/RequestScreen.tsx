@@ -3,7 +3,7 @@ import { SafeAreaView, StyleSheet } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import { SelectValue } from "../../types/SelectValue";
 import { useQuery } from "react-query";
-import { UserService } from "../../services/UserService";
+import { SellerService } from "../../services/SellerService";
 import { AxiosError } from "axios";
 import TabListHeader from "../../components/tab-list/TabListHeader";
 import TabListFilter from "../../components/tab-list/TabListFilter";

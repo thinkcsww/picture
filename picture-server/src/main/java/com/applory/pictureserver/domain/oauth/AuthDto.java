@@ -15,7 +15,7 @@ public class AuthDto {
         private String username;
 
         @NotNull
-        private String kakaoToken;
+        private String token;
     }
 
     @Getter

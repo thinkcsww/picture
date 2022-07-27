@@ -45,7 +45,7 @@ public class AuthService {
             throw new NotFoundException(dto.getUsername() + " not found");
         }
 
-        checkKakaoToken(dto.getKakaoToken());
+        checkKakaoToken(dto.getToken());
 
         MyOAuth2Token oAuth2Token = getToken(dto, baseUrl);
 

@@ -127,13 +127,6 @@ public class RequestControllerTest {
 
 
     @Test
-    public void getRequests_withInvalidToken_receiveUnauthorized() {
-        ResponseEntity<Object> response = getRequests(null, new ParameterizedTypeReference<Object>() {
-        });
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-    }
-
-    @Test
     public void getRequests_withValidToken_receiveOk() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 

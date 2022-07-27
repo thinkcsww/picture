@@ -40,7 +40,7 @@ public class TestUtil {
     public static AuthDto.Login createValidLoginDto(String username) {
         AuthDto.Login login = new AuthDto.Login();
         login.setUsername(username);
-        login.setKakaoToken("test");
+        login.setToken("test");
 
         return login;
     }

@@ -51,7 +51,7 @@ public class AuthControllerTest {
     @Test
     public void postLogin_loginDtoWithoutUsername_receiveApiErrorWithValidationErrors() {
         AuthDto.Login loginDto = new AuthDto.Login();
-        loginDto.setKakaoToken("abc");
+        loginDto.setToken("abc");
 
         ResponseEntity<String> response = login(loginDto, String.class);
         assertThat(response.getBody().contains("validationErrors")).isTrue();
@@ -70,7 +70,7 @@ public class AuthControllerTest {
     public void postLogin_validLoginDtoButUserNotExist_receiveNotFound404() {
         AuthDto.Login loginDto = new AuthDto.Login();
         loginDto.setUsername("123");
-        loginDto.setKakaoToken("abc");
+        loginDto.setToken("abc");
 
         ResponseEntity<String> response = login(loginDto, String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
@@ -83,7 +83,7 @@ public class AuthControllerTest {
 
         AuthDto.Login loginDto = new AuthDto.Login();
         loginDto.setUsername(username);
-        loginDto.setKakaoToken("abc");
+        loginDto.setToken("abc");
 
         ResponseEntity<String> response = login(loginDto, String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);

@@ -25,6 +25,11 @@ public class UserController {
         return new UserDto.VM(newUser);
     }
 
+    @GetMapping("/check-nickname")
+    public void checkNickname(@RequestParam String nickname) {
+        userService.checkNickname(nickname);
+    }
+
     @GetMapping("/me")
     public UserDto.VM getUserMe(@CurrentUser User user) {
         return new UserDto.VM(userService.getUserMe());

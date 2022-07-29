@@ -63,6 +63,37 @@ public class UserControllerTest {
     }
 
     @Test
+    public void checkNickname_withDuplicateNickname_receive400() {
+        UserDto.Create dto = TestUtil.createValidClientUser(TEST_USERNAME);
+
+        signUp(dto, Object.class);
+
+        ResponseEntity<Object> response = checkNickname(dto.getNickname(), Object.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+
+    }
+
+    @Test
+    public void checkNickname_withDuplicateNickname_receiveMessage() {
+        UserDto.Create dto = TestUtil.createValidClientUser(TEST_USERNAME);
+
+        signUp(dto, Object.class);
+
+        ResponseEntity<ApiError> response = checkNickname(dto.getNickname(), ApiError.class);
+
+        assertThat(response.getBody().getMessage()).contains("is already in use");
+
+    }
+
+    @Test
+    public void checkNickname_withValidNickname_receive200() {
+        ResponseEntity<Object> response = checkNickname("fresh-nickname", Object.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
     public void postClientUser_withValidUserDto_receive201() {
         UserDto.Create dto = TestUtil.createValidClientUser(TEST_USERNAME);
 
@@ -111,7 +142,7 @@ public class UserControllerTest {
         ResponseEntity<UserDto.VM> response = signUp(dto, UserDto.VM.class);
 
         assertThat(response.getBody().getNickname()).isEqualTo(dto.getNickname());
-        assertThat(response.getBody().getSellerEnabledYn()).isEqualTo(dto.getSellerEnabledYn());
+        assertThat(response.getBody().getSellerEnabledYn()).isEqualTo(dto.getSellerEnabledYN());
         assertThat(response.getBody().getWorkHourFromDt()).isEqualTo(dto.getWorkHourFromDt());
         assertThat(response.getBody().getWorkHourToDt()).isEqualTo(dto.getWorkHourToDt());
         assertThat(response.getBody().getSpecialty()).isEqualTo(dto.getSpecialty());
@@ -336,6 +367,11 @@ public class UserControllerTest {
         assertThat(userResponse.getBody().getContent().get(0).getNickname()).isEqualTo(user3.getNickname());
         assertThat(userResponse.getBody().getContent().get(1).getNickname()).isEqualTo(user2.getNickname());
         assertThat(userResponse.getBody().getContent().get(2).getNickname()).isEqualTo(user1.getNickname());
+    }
+
+    public <T> ResponseEntity<T> checkNickname(String nickname, Class<T> responseType) {
+        String url = API_V_1_USERS_CHECK_NICK_NAME + "?nickname=" + nickname;
+        return testRestTemplate.exchange(url, HttpMethod.GET, null, responseType);
     }
 
     public <T> ResponseEntity<T> signUp(UserDto.Create dto, Class<T> responseType) {

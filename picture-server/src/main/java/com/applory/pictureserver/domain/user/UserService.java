@@ -35,12 +35,12 @@ public class UserService {
             user.setDescription(dto.getDescription());
         }
 
-        if (StringUtils.hasLength(dto.getSellerEnabledYn()) && "Y".equals(dto.getSellerEnabledYn())) {
+        if (StringUtils.hasLength(dto.getSellerEnabledYN()) && "Y".equals(dto.getSellerEnabledYN())) {
             if (dto.getWorkHourFromDt() > dto.getWorkHourToDt()) {
                 throw new BadRequestException("fromDt is bigger than toDt");
             }
 
-            user.setSellerEnabledYn(dto.getSellerEnabledYn());
+            user.setSellerEnabledYn(dto.getSellerEnabledYN());
             user.setWorkHourFromDt(dto.getWorkHourFromDt());
             user.setWorkHourToDt(dto.getWorkHourToDt());
             user.setSpecialty(dto.getSpecialty());
@@ -70,5 +70,13 @@ public class UserService {
         String username = SecurityUtils.getPrincipal();
 
         return userRepository.findByUsername(username);
+    }
+
+    public void checkNickname(String nickname) {
+        User userInDB = userRepository.findByNickname(nickname);
+
+        if (userInDB != null) {
+            throw new BadRequestException(nickname + " is already in use");
+        }
     }
 }

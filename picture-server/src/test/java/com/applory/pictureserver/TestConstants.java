@@ -5,6 +5,7 @@ public class TestConstants {
     public static final String API_1_0_AUTH_REFRESH_TOKEN = "/api/v1/auth/token/refresh";
 
     public static final String API_V_1_USERS = "/api/v1/users";
+    public static final String API_V_1_USERS_CHECK_NICK_NAME = "/api/v1/users/check-nickname";
     public static final String API_V_1_USERS_ME = "/api/v1/users/me";
 
     public static final String API_V_1_USERS_SELLER = "/api/v1/users/seller";

@@ -25,7 +25,7 @@ public class TestUtil {
         user.setPassword(username + "durtnlchrhtn@1");
         user.setNickname("test-nickname");
         user.setDescription("test-description");
-        user.setSellerEnabledYn("Y");
+        user.setSellerEnabledYN("Y");
         user.setWorkHourFromDt(1700);
         user.setWorkHourToDt(1830);
         user.setSpecialty(User.SellerSpecialty.PEOPLE.toString());

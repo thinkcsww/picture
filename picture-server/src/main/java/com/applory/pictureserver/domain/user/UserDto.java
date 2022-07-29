@@ -109,7 +109,7 @@ public class UserDto {
 
         private String description;
 
-        private String sellerEnabledYn;
+        private String sellerEnabledYN;
 
         private Integer workHourFromDt;
 

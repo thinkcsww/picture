@@ -18,5 +18,5 @@ export const commonSlice = createSlice({
   },
 });
 
-export const { setUser, setShowLoginGuideModal } = commonSlice.actions;
+export const { setUser } = commonSlice.actions;
 export default commonSlice;

@@ -1,14 +1,12 @@
 import React from "react";
 import { useNavigation } from "@react-navigation/native";
-import { useAppDispatch } from "../../store/config";
-import { setShowLoginGuideModal } from "../../store/slices/commonSlice";
-import { Alert, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Colors } from "../../colors";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { RouteNames } from "../../AppNav";
 
 const SignUpSelectTypeScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
 
   const onPressBack = () => {
     navigation.goBack();

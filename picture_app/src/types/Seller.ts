@@ -1,3 +1,5 @@
+import { User } from "./User";
+
 export namespace Seller {
   export interface Seller {
     id: string,
@@ -26,9 +28,9 @@ export namespace Seller {
     public username?: string;
     public password?: string;
     public nickname?: string;
-    public snsType?: 'KAKAO' | 'APPLE';
+    public snsType?: User.SnsType
     public description?: string;
-    public sellerEnabledYn?: string;
+    public sellerEnabledYN?: string;
     public workHourFromDt?: string;
     public workHourToDt?: string;
     public specialty?: string;

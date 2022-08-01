@@ -9,12 +9,16 @@ import { AxiosError } from "axios";
 import { getProfile, KakaoOAuthToken, KakaoProfile, login } from "@react-native-seoul/kakao-login";
 import { Auth } from "../../types/Auth";
 import { RouteNames } from "../../AppNav";
+import { useAppDispatch } from "../../store/config";
+import { setSignUpRedux } from "../../store/slices/signUpSlice";
 
 const SignUpGuideScreen = () => {
 
   const navigation = useNavigation<any>();
+  const dispatch = useAppDispatch();
 
   const loginMutation = useMutation(AuthService.QueryKey.login, (dto: Auth.LoginDto) => {
+    dispatch(setSignUpRedux({ username: dto.username, token: dto.token }))
     return AuthService.login(dto);
   }, {
     onSuccess: (result: Auth.MyOAuth2Token) => {

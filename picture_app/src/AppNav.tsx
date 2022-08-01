@@ -8,13 +8,14 @@ import { createStackNavigator, TransitionPresets } from "@react-navigation/stack
 import SellerScreen from "./screens/seller/SellerScreen";
 import SellerDetailScreen from "./screens/seller/SellerDetailScreen";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
-import { useAppSelector } from "./store/config";
+import { useAppDispatch, useAppSelector } from "./store/config";
 import SignUpSelectTypeScreen from "./screens/signup/SignUpSelectTypeScreen";
 import SignUpGuideScreen from "./screens/signup/SignUpGuideScreen";
 import SignUpSellerScreen from "./screens/signup/SignUpSellerScreen";
 import SignUpClientScreen from "./screens/signup/SignUpClientScreen";
 import AddRequestScreen from "./screens/request/AddRequestScreen";
 import RequestDetailScreen from "./screens/request/RequestDetailScreen";
+import { setSignUpRedux } from "./store/slices/signUpSlice";
 
 export const RouteNames = {
   SignUpClient: "SignUpClient",
@@ -43,6 +44,7 @@ const AppNav = () => {
   const { user } = useAppSelector(state => state.common);
   const navigation = useNavigation<any>();
   const Stack = createStackNavigator();
+  const dispatch = useAppDispatch();
 
   const SellerStack = () => {
     return (
@@ -121,7 +123,7 @@ const AppNav = () => {
         <Tab.Screen
           name={RouteNames.AddRequest}
           component={AddRequestScreen}
-          // listeners={tabEventListenerShowLoginScreen}
+          listeners={tabEventListenerShowLoginScreen}
           options={{
             tabBarLabel: "의뢰하기",
             tabBarIcon: ({ color }) => (
@@ -157,6 +159,9 @@ const AppNav = () => {
   const tabEventListenerShowLoginScreen = {
     tabPress: (e: any) => {
       if (user === undefined) {
+        const navigationKey = e.target.split('-')[0];
+        console.log(navigationKey);
+        dispatch(setSignUpRedux({ destination: navigationKey }))
         navigation.navigate(RouteNames.SignUpGuide)
         e.preventDefault();
         return;

@@ -2,9 +2,11 @@ import { combineReducers, configureStore, ConfigureStoreOptions } from "@reduxjs
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import commonSlice from "./slices/commonSlice";
+import signUpSlice from "./slices/signUpSlice";
 
 const rootReducer = combineReducers({
   common: commonSlice.reducer,
+  signUp: signUpSlice.reducer,
 });
 
 const apiMiddleware: any[] = [];

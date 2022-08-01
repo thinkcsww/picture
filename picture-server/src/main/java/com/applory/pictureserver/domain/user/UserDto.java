@@ -98,9 +98,6 @@ public class UserDto {
         private String username;
 
         @NotEmpty
-        private String password;
-
-        @NotEmpty
         @UniqueNickname
         private String nickname;
 

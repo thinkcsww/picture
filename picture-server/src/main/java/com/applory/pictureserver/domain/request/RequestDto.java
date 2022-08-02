@@ -1,5 +1,6 @@
 package com.applory.pictureserver.domain.request;
 
+import com.applory.pictureserver.domain.shared.Constant;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +17,7 @@ public class RequestDto {
     @Setter
     public static class Create {
         @NotNull
-        private Request.RequestType requestType;
+        private Constant.Specialty specialty;
 
         @NotNull
         private String title;
@@ -43,7 +44,7 @@ public class RequestDto {
         private UUID userId;
         private String userNickname;
         private Double userAcceptRate;
-        private Request.RequestType requestType;
+        private Constant.Specialty requestType;
         private String title;
         private Integer desiredPrice;
         private LocalDateTime dueDate;
@@ -57,7 +58,7 @@ public class RequestDto {
             this.id = request.getId();
             this.userId = request.getUser().getId();
             this.userNickname = request.getUser().getNickname();
-            this.requestType = request.getRequestType();
+            this.requestType = request.getSpecialty();
             this.title = request.getTitle();
             this.desiredPrice = request.getDesiredPrice();
             this.dueDate = request.getDueDate();
@@ -70,7 +71,7 @@ public class RequestDto {
     @Getter
     @Setter
     public static class Search {
-        private Request.RequestType requestType;
+        private Constant.Specialty specialty;
 
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         private LocalDateTime fromForDueDt;

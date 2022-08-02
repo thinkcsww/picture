@@ -1,6 +1,7 @@
 package com.applory.pictureserver.domain.request;
 
 import com.applory.pictureserver.domain.shared.BaseTimeEntity;
+import com.applory.pictureserver.domain.shared.Constant;
 import com.applory.pictureserver.domain.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,10 +20,6 @@ import java.util.UUID;
 @Table(name = "REQUEST")
 public class Request extends BaseTimeEntity {
 
-    public enum RequestType {
-        OFFICIAL, PEOPLE, BACKGROUND, MIX
-    }
-
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
@@ -35,8 +32,8 @@ public class Request extends BaseTimeEntity {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "REQUEST_TYPE")
-    private RequestType requestType;
+    @Column(name = "SPECIALTY")
+    private Constant.Specialty specialty;
 
     @Column(name = "TITLE")
     private String title;

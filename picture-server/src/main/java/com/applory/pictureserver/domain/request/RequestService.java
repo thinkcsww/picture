@@ -28,7 +28,7 @@ public class RequestService {
 
     public Request createRequest(RequestDto.Create dto) {
         Request request = new Request();
-        request.setRequestType(dto.getRequestType());
+        request.setSpecialty(dto.getSpecialty());
         request.setTitle(dto.getTitle());
         request.setDescription(dto.getDescription());
         request.setDueDate(dto.getDueDate());

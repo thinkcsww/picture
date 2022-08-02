@@ -3,6 +3,7 @@ package com.applory.pictureserver;
 import com.applory.pictureserver.domain.oauth.AuthDto;
 import com.applory.pictureserver.domain.request.Request;
 import com.applory.pictureserver.domain.request.RequestDto;
+import com.applory.pictureserver.domain.shared.Constant;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserDto;
 
@@ -12,7 +13,6 @@ public class TestUtil {
     public static UserDto.Create createValidClientUser(String username) {
         UserDto.Create user = new UserDto.Create();
         user.setUsername(username);
-        user.setPassword(username + "durtnlchrhtn@1");
         user.setNickname("test-nickname");
         user.setSnsType(User.SnsType.KAKAO);
 
@@ -22,13 +22,12 @@ public class TestUtil {
     public static UserDto.Create createValidSellerUser(String username) {
         UserDto.Create user = new UserDto.Create();
         user.setUsername(username);
-        user.setPassword(username + "durtnlchrhtn@1");
         user.setNickname("test-nickname");
         user.setDescription("test-description");
         user.setSellerEnabledYN("Y");
         user.setWorkHourFromDt(1700);
         user.setWorkHourToDt(1830);
-        user.setSpecialty(User.SellerSpecialty.PEOPLE.toString());
+        user.setSpecialty(Constant.Specialty.PEOPLE.toString());
         user.setSnsType(User.SnsType.KAKAO);
         user.setPeoplePrice(2000);
         user.setBackgroundPrice(2000);
@@ -47,7 +46,7 @@ public class TestUtil {
 
     public static RequestDto.Create createValidRequestDto() {
         RequestDto.Create dto = new RequestDto.Create();
-        dto.setRequestType(Request.RequestType.BACKGROUND);
+        dto.setSpecialty(Constant.Specialty.BACKGROUND);
         dto.setDesiredPrice(2000);
         dto.setDescription("설명입니다");
         dto.setTitle("제목입니다");

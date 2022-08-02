@@ -4,6 +4,7 @@ import com.applory.pictureserver.domain.config.AppConfiguration;
 import com.applory.pictureserver.domain.error.ApiError;
 import com.applory.pictureserver.domain.oauth.AuthDto;
 import com.applory.pictureserver.domain.oauth.MyOAuth2Token;
+import com.applory.pictureserver.domain.shared.Constant;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserDto;
 import com.applory.pictureserver.domain.user.UserRepository;
@@ -244,7 +245,7 @@ public class UserControllerTest {
         assertThat(userResponse.getBody().getContent().get(0).getSellerEnabledYn()).isEqualTo("Y");
         assertThat(userResponse.getBody().getContent().get(0).getNickname()).isEqualTo(dto.getNickname());
         assertThat(userResponse.getBody().getContent().get(0).getDescription()).isEqualTo(dto.getDescription());
-        assertThat(userResponse.getBody().getContent().get(0).getSpecialty()).isEqualTo(User.SellerSpecialty.PEOPLE.toString());
+        assertThat(userResponse.getBody().getContent().get(0).getSpecialty()).isEqualTo(Constant.Specialty.PEOPLE.toString());
         assertThat(userResponse.getBody().getContent().get(0).getPeoplePrice()).isEqualTo(dto.getPeoplePrice());
         assertThat(userResponse.getBody().getContent().get(0).getOfficialPrice()).isEqualTo(dto.getOfficialPrice());
         assertThat(userResponse.getBody().getContent().get(0).getBackgroundPrice()).isEqualTo(dto.getBackgroundPrice());
@@ -277,10 +278,10 @@ public class UserControllerTest {
         UserDto.Create user1 = TestUtil.createValidSellerUser("123123");
         UserDto.Create user2 = TestUtil.createValidSellerUser("1231232");
         user2.setNickname("test-nickname2");
-        user2.setSpecialty(User.SellerSpecialty.BACKGROUND.toString());
+        user2.setSpecialty(Constant.Specialty.BACKGROUND.toString());
         UserDto.Create user3 = TestUtil.createValidSellerUser("1231233");
         user3.setNickname("test-nickname3");
-        user3.setSpecialty(User.SellerSpecialty.OFFICIAL.toString());
+        user3.setSpecialty(Constant.Specialty.OFFICIAL.toString());
 
 
         signUp(user1, Object.class);
@@ -289,10 +290,10 @@ public class UserControllerTest {
 
         UserDto.SearchSeller search = new UserDto.SearchSeller();
         search.setCurrentTime("1730");
-        search.setSpecialty(User.SellerSpecialty.OFFICIAL.toString());
+        search.setSpecialty(Constant.Specialty.OFFICIAL.toString());
 
         ResponseEntity<TestPage<UserDto.SellerVM>> userResponse = getSellerUser(new ParameterizedTypeReference<TestPage<UserDto.SellerVM>>() {}, search, PageRequest.of(0, 5));
-        assertThat(userResponse.getBody().getContent().get(0).getSpecialty()).contains(User.SellerSpecialty.OFFICIAL.toString());
+        assertThat(userResponse.getBody().getContent().get(0).getSpecialty()).contains(Constant.Specialty.OFFICIAL.toString());
     }
 
     @Test
@@ -300,10 +301,10 @@ public class UserControllerTest {
         UserDto.Create user1 = TestUtil.createValidSellerUser("123123");
         UserDto.Create user2 = TestUtil.createValidSellerUser("1231232");
         user2.setNickname("test-nickname2");
-        user2.setSpecialty(User.SellerSpecialty.BACKGROUND.toString());
+        user2.setSpecialty(Constant.Specialty.BACKGROUND.toString());
         UserDto.Create user3 = TestUtil.createValidSellerUser("1231233");
         user3.setNickname("test-nickname3");
-        user3.setSpecialty(User.SellerSpecialty.OFFICIAL.toString() + "," + User.SellerSpecialty.BACKGROUND);
+        user3.setSpecialty(Constant.Specialty.OFFICIAL.toString() + "," + Constant.Specialty.BACKGROUND);
 
         signUp(user1, Object.class);
         signUp(user2, Object.class);
@@ -311,10 +312,10 @@ public class UserControllerTest {
 
         UserDto.SearchSeller search = new UserDto.SearchSeller();
         search.setCurrentTime("1730");
-        search.setSpecialty(User.SellerSpecialty.OFFICIAL.toString());
+        search.setSpecialty(Constant.Specialty.OFFICIAL.toString());
 
         ResponseEntity<TestPage<UserDto.SellerVM>> userResponse = getSellerUser(new ParameterizedTypeReference<TestPage<UserDto.SellerVM>>() {}, search, PageRequest.of(0, 5));
-        assertThat(userResponse.getBody().getContent().get(0).getSpecialty()).contains(User.SellerSpecialty.OFFICIAL.toString());
+        assertThat(userResponse.getBody().getContent().get(0).getSpecialty()).contains(Constant.Specialty.OFFICIAL.toString());
     }
 
     @Test
@@ -322,10 +323,10 @@ public class UserControllerTest {
         UserDto.Create user1 = TestUtil.createValidSellerUser("123123");
         UserDto.Create user2 = TestUtil.createValidSellerUser("1231232");
         UserDto.Create user3 = TestUtil.createValidSellerUser("1231233");
-        user2.setSpecialty(User.SellerSpecialty.PEOPLE.toString());
+        user2.setSpecialty(Constant.Specialty.PEOPLE.toString());
         user2.setPeoplePrice(3000);
         user2.setNickname("test-nickname2");
-        user3.setSpecialty(User.SellerSpecialty.PEOPLE.toString() + "," + User.SellerSpecialty.BACKGROUND);
+        user3.setSpecialty(Constant.Specialty.PEOPLE.toString() + "," + Constant.Specialty.BACKGROUND);
         user3.setPeoplePrice(5000);
         user3.setNickname("test-nickname3");
 
@@ -335,7 +336,7 @@ public class UserControllerTest {
 
         UserDto.SearchSeller search = new UserDto.SearchSeller();
         search.setCurrentTime("1730");
-        search.setSpecialty(User.SellerSpecialty.PEOPLE.toString());
+        search.setSpecialty(Constant.Specialty.PEOPLE.toString());
 
         ResponseEntity<TestPage<UserDto.SellerVM>> userResponse = getSellerUser(new ParameterizedTypeReference<TestPage<UserDto.SellerVM>>() {}, search, PageRequest.of(0, 5, Sort.by("peoplePrice").ascending()));
         assertThat(userResponse.getBody().getContent().get(0).getNickname()).isEqualTo(user1.getNickname());
@@ -349,10 +350,10 @@ public class UserControllerTest {
         UserDto.Create user2 = TestUtil.createValidSellerUser("1231232");
         UserDto.Create user3 = TestUtil.createValidSellerUser("1231233");
         user2.setNickname("test-nickname2");
-        user2.setSpecialty(User.SellerSpecialty.PEOPLE.toString());
+        user2.setSpecialty(Constant.Specialty.PEOPLE.toString());
         user2.setPeoplePrice(3000);
         user3.setNickname("test-nickname3");
-        user3.setSpecialty(User.SellerSpecialty.PEOPLE.toString() + "," + User.SellerSpecialty.BACKGROUND);
+        user3.setSpecialty(Constant.Specialty.PEOPLE.toString() + "," + Constant.Specialty.BACKGROUND);
         user3.setPeoplePrice(5000);
 
         signUp(user1, Object.class);
@@ -361,7 +362,7 @@ public class UserControllerTest {
 
         UserDto.SearchSeller search = new UserDto.SearchSeller();
         search.setCurrentTime("1730");
-        search.setSpecialty(User.SellerSpecialty.PEOPLE.toString());
+        search.setSpecialty(Constant.Specialty.PEOPLE.toString());
 
         ResponseEntity<TestPage<UserDto.SellerVM>> userResponse = getSellerUser(new ParameterizedTypeReference<TestPage<UserDto.SellerVM>>() {}, search, PageRequest.of(0, 5, Sort.by("peoplePrice").descending()));
         assertThat(userResponse.getBody().getContent().get(0).getNickname()).isEqualTo(user3.getNickname());

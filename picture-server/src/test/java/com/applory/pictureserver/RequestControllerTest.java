@@ -3,9 +3,9 @@ package com.applory.pictureserver;
 import com.applory.pictureserver.domain.error.ApiError;
 import com.applory.pictureserver.domain.oauth.AuthDto;
 import com.applory.pictureserver.domain.oauth.MyOAuth2Token;
-import com.applory.pictureserver.domain.request.Request;
 import com.applory.pictureserver.domain.request.RequestDto;
 import com.applory.pictureserver.domain.request.RequestRepository;
+import com.applory.pictureserver.domain.shared.Constant;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserDto;
 import com.applory.pictureserver.domain.user.UserRepository;
@@ -224,12 +224,12 @@ public class RequestControllerTest {
         postRequest(createValidRequestDto(), RequestDto.VM.class);
 
         RequestDto.Search search = new RequestDto.Search();
-        search.setRequestType(Request.RequestType.BACKGROUND);
+        search.setSpecialty(Constant.Specialty.BACKGROUND);
 
         ResponseEntity<TestPage<RequestDto.VM>> response = getRequests(null, new ParameterizedTypeReference<TestPage<RequestDto.VM>>() {
         });
 
-        assertThat(response.getBody().getContent().get(0).getRequestType()).isEqualTo(Request.RequestType.BACKGROUND);
+        assertThat(response.getBody().getContent().get(0).getRequestType()).isEqualTo(Constant.Specialty.BACKGROUND);
     }
 
     @Test
@@ -311,7 +311,7 @@ public class RequestControllerTest {
         assertThat(response.getBody().getDesiredPrice()).isEqualTo(2000);
         assertThat(response.getBody().getTitle()).isEqualTo("제목입니다");
         assertThat(response.getBody().getDescription()).isEqualTo("설명입니다");
-        assertThat(response.getBody().getRequestType()).isEqualTo(Request.RequestType.BACKGROUND);
+        assertThat(response.getBody().getRequestType()).isEqualTo(Constant.Specialty.BACKGROUND);
         assertThat(response.getBody().getReadCount()).isEqualTo(0);
         assertThat(response.getBody().getDueDate()).isEqualTo(LocalDateTime.of(2022, 12, 25, 23, 59));
 

@@ -22,4 +22,14 @@ export namespace Request {
     PRICE = 'desiredPrice,asc',
     DUE_DATE = 'dueDate,asc',
   }
+
+  export class CreateDto {
+    public specialty?: Specialty;
+    public title?: string;
+    public desiredPrice?: number;
+    public dueDate?: string;
+    public description?: string;
+    public matchYn?: string;
+    public completeYn?: string;
+  }
 }

@@ -11,7 +11,6 @@ import { AxiosError } from "axios";
 import TabListHeader from "../../components/tab-list/TabListHeader";
 import TabListFilter from "../../components/tab-list/TabListFilter";
 import { Specialty } from "../../types/Common";
-import { RouteNames } from "../../AppNav";
 import AsyncStorageService from "../../services/AsyncStorageService";
 
 type SellerScreenProps = {

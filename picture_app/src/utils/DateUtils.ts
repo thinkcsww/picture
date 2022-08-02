@@ -28,6 +28,12 @@ const DateUtils = {
     }
 
     return due;
+  },
+  getFormattedDate: (date: string) => {
+    const d = new Date(date);
+
+    return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 ${d.getHours()}시 ${d.getMinutes()}분`
+
   }
 }
 

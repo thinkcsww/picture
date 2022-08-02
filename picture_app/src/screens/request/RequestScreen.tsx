@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react";
-import { SafeAreaView, StyleSheet } from "react-native";
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import { SelectValue } from "../../types/SelectValue";
 import { useQuery } from "react-query";
@@ -12,6 +12,8 @@ import RequestList from "./components/RequestList";
 import { RequestService } from "../../services/RequestService";
 import { Specialty } from "../../types/Common";
 import { Request } from "../../types/Request";
+import { Colors } from "../../colors";
+import { RouteNames } from "../../AppNav";
 
 type RequestScreenProps = {
   navigation: NavigationProp<any>
@@ -71,6 +73,10 @@ const RequestScreen: FC<RequestScreenProps> = ({ navigation }) => {
     setSelectedFilter(filter);
   }
 
+  const onPressAddRequest = () => {
+    navigation.navigate(RouteNames.AddRequest);
+  }
+
   /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   | Mark Up
   |-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
@@ -86,6 +92,24 @@ const RequestScreen: FC<RequestScreenProps> = ({ navigation }) => {
     <TabListHeader selectedSpecialty={selectedSpecialty} onClickSelector={onClickSelector}/>
     <TabListFilter list={filterList} onPress={onSelectFilter} selectedFilter={selectedFilter}/>
     <RequestList list={getRequestsQuery.data.content}/>
+
+    <TouchableOpacity onPress={onPressAddRequest} style={{
+      position: 'absolute',
+      bottom: 15,
+      right: 15,
+      width: 70,
+      height: 70,
+      borderRadius: 35,
+      backgroundColor: Colors.PRIMARY,
+      alignItems: 'center',
+      justifyContent: 'center'
+    }}>
+      <Text style={{
+        fontSize: 50,
+        color: 'white',
+        fontWeight: '300'
+      }}>+</Text>
+    </TouchableOpacity>
 
   </SafeAreaView>
 }

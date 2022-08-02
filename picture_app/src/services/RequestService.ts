@@ -7,7 +7,8 @@ const REQUEST_API_URL = '/v1/requests';
 
 export const RequestService = {
   QueryKey: {
-    getRequests: 'getRequests'
+    getRequests: 'getRequests',
+    createRequest: 'createRequest'
   },
 
   getRequests: async (specialty: Specialty, filter: Request.Filter) => {
@@ -17,5 +18,14 @@ export const RequestService = {
 
     return data;
   },
+
+  createRequest: async (dto: Request.CreateDto) => {
+    let url = `${REQUEST_API_URL}`;
+
+    const {data} = await instance.post<Request.Request>(url, dto);
+
+    return data;
+
+  }
 
 }

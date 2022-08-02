@@ -9,13 +9,15 @@ import { AxiosError } from "axios";
 import { getProfile, KakaoOAuthToken, KakaoProfile, login } from "@react-native-seoul/kakao-login";
 import { Auth } from "../../types/Auth";
 import { RouteNames } from "../../AppNav";
-import { useAppDispatch } from "../../store/config";
+import { useAppDispatch, useAppSelector } from "../../store/config";
 import { setSignUpRedux } from "../../store/slices/signUpSlice";
+import AsyncStorageService from "../../services/AsyncStorageService";
 
 const SignUpGuideScreen = () => {
 
   const navigation = useNavigation<any>();
   const dispatch = useAppDispatch();
+  const { signUpRedux } = useAppSelector(state => state.signUp);
 
   const loginMutation = useMutation(AuthService.QueryKey.login, (dto: Auth.LoginDto) => {
     dispatch(setSignUpRedux({ username: dto.username, token: dto.token }))
@@ -24,6 +26,9 @@ const SignUpGuideScreen = () => {
     onSuccess: (result: Auth.MyOAuth2Token) => {
       console.log('==== 로그인 성공 ====');
       console.log(result);
+      AsyncStorageService.setStringData(AsyncStorageService.Keys.AccessToken, result.access_token).then();
+      AsyncStorageService.setStringData(AsyncStorageService.Keys.RefreshToken, result.refresh_token).then();
+      navigation.navigate(signUpRedux.destination)
     },
     onError: (error: AxiosError<any>) => {
       if (error.response && error.response.data.message.includes('not found')) {

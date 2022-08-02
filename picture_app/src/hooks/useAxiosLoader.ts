@@ -1,8 +1,9 @@
 import {useCallback, useEffect, useMemo, useState} from "react";
 import axios from "axios";
+import AsyncStorageService from "../services/AsyncStorageService";
 
 export const instance = axios.create({
-  baseURL: 'http://192.168.200.190:8080/api',
+  baseURL: 'http://192.168.200.167:8080/api',
   headers: {
     "Content-Type": "application/json",
   },
@@ -27,12 +28,13 @@ export const useAxiosLoader = () => {
       request: async (config: any) => {
         config.withCredentials = true;
 
-        // 로딩을 숨길 시에만 undefined가 아닌 값을 넣어준다.
-        if (config.headers.Loading === undefined) {
-          inc();
-        }
+        inc();
 
-        // 인증용 메뉴 ID 추가
+        const token = await AsyncStorageService.getStringData(AsyncStorageService.Keys.AccessToken);
+
+        config.headers.Authorization = `Bearer ${token}`;
+
+        console.log(config);
 
         return config;
       },

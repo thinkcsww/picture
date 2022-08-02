@@ -32,6 +32,9 @@ export const RouteNames = {
   RequestDetail: "RequestDetail",
   AddRequest: "AddRequest",
 
+  RegularTab: "RegularTab",
+  Regular: "Regular",
+
   ChattingTab: "ChattingTab",
   Chatting: "Chatting",
 
@@ -41,7 +44,7 @@ export const RouteNames = {
 
 const AppNav = () => {
 
-  const { user } = useAppSelector(state => state.common);
+  const { isTokenExist } = useAppSelector(state => state.common);
   const navigation = useNavigation<any>();
   const Stack = createStackNavigator();
   const dispatch = useAppDispatch();
@@ -121,11 +124,11 @@ const AppNav = () => {
           }}
         />
         <Tab.Screen
-          name={RouteNames.AddRequest}
+          name={RouteNames.RegularTab}
           component={AddRequestScreen}
           listeners={tabEventListenerShowLoginScreen}
           options={{
-            tabBarLabel: "의뢰하기",
+            tabBarLabel: "단골",
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons name="book-edit-outline" color={color} size={26} />
             ),
@@ -158,7 +161,7 @@ const AppNav = () => {
 
   const tabEventListenerShowLoginScreen = {
     tabPress: (e: any) => {
-      if (user === undefined) {
+      if (!isTokenExist) {
         const navigationKey = e.target.split('-')[0];
         console.log(navigationKey);
         dispatch(setSignUpRedux({ destination: navigationKey }))
@@ -174,6 +177,7 @@ const AppNav = () => {
       <Stack.Screen name="Tabs" component={HomeTabs} options={{ headerShown: false }} />
       <Stack.Screen name={RouteNames.SellerDetail} component={SellerDetailScreen} options={{ headerShown: false }} />
       <Stack.Screen name={RouteNames.RequestDetail} component={RequestDetailScreen} options={{ headerShown: false }} />
+      <Stack.Screen name={RouteNames.AddRequest} component={AddRequestScreen} options={{ headerShown: false, ...TransitionPresets.ModalSlideFromBottomIOS}} />
 
       <Stack.Group>
         <Stack.Screen name={RouteNames.SignUpGuide} component={SignUpGuideScreen} options={{ headerShown: false, ...TransitionPresets.ModalSlideFromBottomIOS}} />

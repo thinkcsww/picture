@@ -1,7 +1,8 @@
 export enum Specialty {
   OFFICIAL = 'OFFICIAL',
   PEOPLE = 'PEOPLE',
-  BACKGROUND = 'BACKGROUND'
+  BACKGROUND = 'BACKGROUND',
+  ETC = 'ETC',
 }
 
 

@@ -39,6 +39,13 @@ const AsyncStorageService = {
     } catch (e: any) {
       console.log(e.message)
     }
+  },
+  removeData: async (key: string) => {
+    try {
+      await AsyncStorage.removeItem(key);
+    } catch (e: any) {
+      console.log(e.message)
+    }
   }
 
 }

@@ -13,7 +13,9 @@ export const RequestService = {
 
   getRequests: async (specialty: Specialty, filter: Request.Filter) => {
     let url = `${REQUEST_API_URL}`;
-    url += `?requestType=${specialty}&sort=${filter}`
+    url += `?specialty=${specialty}&sort=${filter}`
+
+    console.log(url);
     const {data} = await instance.get<PageResult<Request.Request>>(url);
 
     return data;

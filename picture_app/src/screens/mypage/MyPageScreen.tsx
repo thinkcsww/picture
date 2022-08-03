@@ -5,8 +5,7 @@ import AsyncStorageService from "../../services/AsyncStorageService";
 const MyPageScreen = () => {
 
   const logout = async () => {
-    await AsyncStorageService.removeData(AsyncStorageService.Keys.AccessToken);
-    await AsyncStorageService.removeData(AsyncStorageService.Keys.RefreshToken);
+    await AsyncStorageService.removeData(AsyncStorageService.Keys.TokenInfo);
   }
   return <SafeAreaView>
     <Text>my page</Text>

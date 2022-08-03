@@ -13,6 +13,7 @@ export const SellerService = {
   getSellers: async (selectedFilter: Specialty, value: Seller.Filter) => {
     let url = `${USER_API_URL}/seller`;
     url += `?specialty=${selectedFilter}`
+    console.log(url);
     const {data} = await instance.get<PageResult<Seller.Seller>>(url);
 
     return data;

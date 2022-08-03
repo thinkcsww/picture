@@ -2,8 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AsyncStorageService = {
   Keys: {
-    AccessToken: 'AccessToken',
-    RefreshToken: 'RefreshToken',
+    TokenInfo: 'TokenInfo',
   },
   getStringData: async (key: string) => {
     try {
@@ -18,7 +17,7 @@ const AsyncStorageService = {
   },
   getObjectData: async (key: string) => {
     try {
-      const jsonValue = await AsyncStorage.getItem('@storage_Key')
+      const jsonValue = await AsyncStorage.getItem(key)
       return jsonValue != null ? JSON.parse(jsonValue) : null;
 
     } catch(e: any) {

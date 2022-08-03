@@ -1,6 +1,8 @@
-import {useCallback, useEffect, useMemo, useState} from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import AsyncStorageService from "../services/AsyncStorageService";
+import { Auth } from "../types/Auth";
+import { AuthService } from "../services/AuthService";
 
 export const instance = axios.create({
   baseURL: 'http://192.168.200.167:8080/api',
@@ -30,15 +32,38 @@ export const useAxiosLoader = () => {
 
         inc();
 
-        const token = await AsyncStorageService.getStringData(AsyncStorageService.Keys.AccessToken);
+        console.log('=== useAxiosLodaer ===');
 
-        config.headers.Authorization = `Bearer ${token}`;
+        const tokenInfo: Auth.MyOAuth2Token = await AsyncStorageService.getObjectData(AsyncStorageService.Keys.TokenInfo);
+        console.log(tokenInfo);
+
+        if (!!tokenInfo) {
+          let accessToken = tokenInfo.access_token;
+          if (tokenInfo.expires_in < new Date().getTime() && !config.url.includes('/token/refresh')) {
+
+            try {
+              const refreshTokenResponse = await AuthService.refreshToken(tokenInfo.refresh_token);
+              console.log('==== useAxiosLoader Refresh Token ====');
+              console.log(refreshTokenResponse);
+              accessToken = refreshTokenResponse.access_token;
+
+              await AuthService.setTokenInfo(refreshTokenResponse);
+            } catch (e: any) {
+              console.log('==== useAxiosLoader Refresh Token Error ====');
+              console.log(e.message);
+            }
+
+          }
+
+          config.headers.Authorization = `Bearer ${accessToken}`;
+        }
 
         console.log(config);
 
         return config;
       },
       response: (response: any) => {
+        console.log(response);
         if (response.config.headers.Loading === undefined) {
           dec();
         }
@@ -61,6 +86,7 @@ export const useAxiosLoader = () => {
       error: (error: any) => {
         dec();
 
+        console.log(error);
         if (!error.response) {
           console.log(error.response);
           // return Promise.reject(error);
@@ -77,7 +103,7 @@ export const useAxiosLoader = () => {
         return Promise.reject(error);
       },
     }),
-    [inc, dec]
+    []
   ); // create the interceptors
 
   useEffect(() => {

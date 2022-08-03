@@ -54,10 +54,6 @@ const SellerScreen: FC<SellerScreenProps> = ({ navigation }) => {
     keepPreviousData: true,
   })
 
-  useEffect(() => {
-    AsyncStorageService.getStringData(AsyncStorageService.Keys.RefreshToken).then(result => console.log(result));
-  }, [])
-
   /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   | Functions
   |-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/

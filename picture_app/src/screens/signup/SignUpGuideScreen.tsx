@@ -26,8 +26,8 @@ const SignUpGuideScreen = () => {
     onSuccess: (result: Auth.MyOAuth2Token) => {
       console.log('==== 로그인 성공 ====');
       console.log(result);
-      AsyncStorageService.setStringData(AsyncStorageService.Keys.AccessToken, result.access_token).then();
-      AsyncStorageService.setStringData(AsyncStorageService.Keys.RefreshToken, result.refresh_token).then();
+
+      AuthService.setTokenInfo(result).then();
       navigation.navigate(signUpRedux.destination)
     },
     onError: (error: AxiosError<any>) => {

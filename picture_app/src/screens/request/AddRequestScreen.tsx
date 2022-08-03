@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import AppCheckBox from "../../components/AppCheckBox";
 import { Specialty } from "../../types/Common";
 import AppHeader from "../../components/AppHeader";
@@ -12,6 +12,7 @@ import { RequestService } from "../../services/RequestService";
 import { Request } from "../../types/Request";
 import { AxiosError } from "axios";
 import { useNavigation } from "@react-navigation/native";
+import { Regex } from "../../utils/Regex";
 
 const AddRequestScreen = () => {
 
@@ -23,7 +24,7 @@ const AddRequestScreen = () => {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false)
   const navigation = useNavigation();
 
-  const createRequestMutation = useMutation(RequestService.QueryKey.getRequests, (dto: Request.CreateDto) => {
+  const createRequestMutation = useMutation(RequestService.QueryKey.createRequest, (dto: Request.CreateDto) => {
     return RequestService.createRequest(dto);
   }, {
     onSuccess: (result) => {
@@ -37,7 +38,27 @@ const AddRequestScreen = () => {
     }
   });
 
+  const checkValidity = () => {
+    if (title.trim() === '') {
+      return false;
+    }
+
+    if (!Regex.numberRegex.test(desiredPrice)) {
+      return false;
+    }
+
+    if (desc.trim() === '') {
+      return false;
+    }
+
+    return true;
+  }
+
   const onClickSave = () => {
+    if (!checkValidity()) {
+      Alert.alert('올바른 값을 입력해주세요');
+      return;
+    }
 
     const dto = new Request.CreateDto();
     dto.specialty = selectedSpecialty;

@@ -161,14 +161,14 @@ const AppNav = () => {
 
   const tabEventListenerShowLoginScreen = {
     tabPress: (e: any) => {
-      if (!isTokenExist) {
+      // if (!isTokenExist) {
         const navigationKey = e.target.split('-')[0];
         console.log(navigationKey);
         dispatch(setSignUpRedux({ destination: navigationKey }))
         navigation.navigate(RouteNames.SignUpGuide)
         e.preventDefault();
         return;
-      }
+      // }
     },
   }
 

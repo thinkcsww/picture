@@ -16,7 +16,11 @@ export const RequestService = {
     url += `?specialty=${specialty}&sort=${filter}`
 
     console.log(url);
-    const {data} = await instance.get<PageResult<Request.Request>>(url);
+    const {data} = await instance.get<PageResult<Request.Request>>(url, {
+      headers: {
+        PermitAll: true
+      }
+    });
 
     return data;
   },
@@ -24,7 +28,11 @@ export const RequestService = {
   createRequest: async (dto: Request.CreateDto) => {
     let url = `${REQUEST_API_URL}`;
 
-    const {data} = await instance.post<Request.Request>(url, dto);
+    const {data} = await instance.post<Request.Request>(url, dto, {
+      headers: {
+        "PermitAll": false
+      }
+    });
 
     return data;
 

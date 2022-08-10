@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button, SafeAreaView, Text } from "react-native";
 import AsyncStorageService from "../../services/AsyncStorageService";
+import UserService from "../../services/UserService";
 
 const MyPageScreen = () => {
 
+  useEffect(() => {
+    UserService.getUserMe().then();
+  }, [])
   const logout = async () => {
     await AsyncStorageService.removeData(AsyncStorageService.Keys.TokenInfo);
   }

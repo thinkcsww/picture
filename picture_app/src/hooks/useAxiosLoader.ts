@@ -3,15 +3,22 @@ import axios from "axios";
 import AsyncStorageService from "../services/AsyncStorageService";
 import { Auth } from "../types/Auth";
 import { AuthService } from "../services/AuthService";
+import { useNavigation } from "@react-navigation/native";
+import { RouteNames } from "../AppNav";
+import { useAppDispatch } from "../store/config";
+import { setUser } from "../store/slices/commonSlice";
 
 export const instance = axios.create({
-  baseURL: 'http://192.168.200.167:8080/api',
+  baseURL: 'http://192.168.200.117:8080/api',
   headers: {
     "Content-Type": "application/json",
+    "PermitAll": false,
   },
 });
 
 export const useAxiosLoader = () => {
+  const navigation = useNavigation<any>();
+  const dispatch = useAppDispatch();
   const [counter, setCounter] = useState(0);
   const [ready, setReady] = useState(false);
   const inc = useCallback(
@@ -37,10 +44,10 @@ export const useAxiosLoader = () => {
         const tokenInfo: Auth.MyOAuth2Token = await AsyncStorageService.getObjectData(AsyncStorageService.Keys.TokenInfo);
         console.log(tokenInfo);
 
-        if (!!tokenInfo) {
+        if (!config.headers.PermitAll && !!tokenInfo ) {
           let accessToken = tokenInfo.access_token;
-          if (tokenInfo.expires_in < new Date().getTime() && !config.url.includes('/token/refresh')) {
-
+          console.log(config.headers.PermitAll);
+          if (tokenInfo.expires_in < new Date().getTime() && !config.url.includes('/token/refresh') && !config.url.includes('/auth/login')) {
             try {
               const refreshTokenResponse = await AuthService.refreshToken(tokenInfo.refresh_token);
               console.log('==== useAxiosLoader Refresh Token ====');
@@ -87,17 +94,10 @@ export const useAxiosLoader = () => {
         dec();
 
         console.log(error);
-        if (!error.response) {
-          console.log(error.response);
-          // return Promise.reject(error);
-          // window.location.href = process.env.REACT_APP_LOGIN_URL!;
-          // window.location.href = '/console/error';
-        }
 
-        switch (error.response.status) {
-          case 401:
-            // window.location.href = '/console/error/unavailable';
-            break;
+        if (error.response && error.response.status === 401 ) {
+          dispatch(setUser(undefined))
+          navigation.navigate(RouteNames.SignUpGuide);
         }
 
         return Promise.reject(error);

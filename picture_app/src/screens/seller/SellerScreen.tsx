@@ -83,7 +83,7 @@ const SellerScreen: FC<SellerScreenProps> = ({ navigation }) => {
   | Mark Up
   |-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
 
-  if (getSellersQuery.isLoading) {
+  if (getSellersQuery.isLoading || getSellersQuery.isError) {
     return null;
   }
 

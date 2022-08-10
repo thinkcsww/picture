@@ -12,7 +12,11 @@ export const AuthService = {
 
   login: async (dto: Auth.LoginDto) => {
     let url = `${AUTH_API_URL}/login`;
-    const {data} = await instance.post<Auth.MyOAuth2Token>(url, dto);
+    const {data} = await instance.post<Auth.MyOAuth2Token>(url, dto, {
+      headers: {
+        PermitAll: true
+      }
+    });
 
     return data;
   },
@@ -20,12 +24,16 @@ export const AuthService = {
     let url = `${AUTH_API_URL}/token/refresh`;
     const {data} = await instance.post<Auth.MyOAuth2Token>(url, {
       refreshToken: refreshToken
+    }, {
+      headers: {
+        PermitAll: true
+      }
     });
 
     return data;
   },
   setTokenInfo: async (tokenInfo: Auth.MyOAuth2Token) => {
-    tokenInfo.expires_in = new Date().getTime() + tokenInfo.expires_in;
+    tokenInfo.expires_in = new Date().getTime() + tokenInfo.expires_in * 1000;
 
     await AsyncStorageService.setObjectData(AsyncStorageService.Keys.TokenInfo, tokenInfo);
   },

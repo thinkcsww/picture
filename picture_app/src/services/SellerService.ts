@@ -14,7 +14,11 @@ export const SellerService = {
     let url = `${USER_API_URL}/seller`;
     url += `?specialty=${selectedFilter}`
     console.log(url);
-    const {data} = await instance.get<PageResult<Seller.Seller>>(url);
+    const {data} = await instance.get<PageResult<Seller.Seller>>(url, {
+      headers: {
+        PermitAll: true
+      }
+    });
 
     return data;
   },

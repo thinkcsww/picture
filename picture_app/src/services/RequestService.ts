@@ -8,6 +8,7 @@ const REQUEST_API_URL = '/v1/requests';
 export const RequestService = {
   QueryKey: {
     getRequests: 'getRequests',
+    getRequest: 'getRequest',
     createRequest: 'createRequest'
   },
 
@@ -28,11 +29,20 @@ export const RequestService = {
   createRequest: async (dto: Request.CreateDto) => {
     let url = `${REQUEST_API_URL}`;
 
-    const {data} = await instance.post<Request.Request>(url, dto, {
+    const { data } = await instance.post<Request.Request>(url, dto, {
       headers: {
         "PermitAll": false
       }
     });
+
+    return data;
+
+  },
+
+  getRequest: async (id: string) => {
+    let url = `${REQUEST_API_URL}/${id}`;
+
+    const {data} = await instance.get<Request.Request>(url);
 
     return data;
 

@@ -7,7 +7,7 @@ import { Divider } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import DatePicker from "react-native-date-picker";
 import DateUtils from "../../utils/DateUtils";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { RequestService } from "../../services/RequestService";
 import { Request } from "../../types/Request";
 import { AxiosError } from "axios";
@@ -23,6 +23,7 @@ const AddRequestScreen = () => {
   const [desc, setDesc] = useState('');
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false)
   const navigation = useNavigation();
+  const queryClient = useQueryClient();
 
   const createRequestMutation = useMutation(RequestService.QueryKey.createRequest, (dto: Request.CreateDto) => {
     return RequestService.createRequest(dto);
@@ -30,6 +31,8 @@ const AddRequestScreen = () => {
     onSuccess: (result) => {
       console.log('==== 공개의뢰 생성 성공 ====');
       console.log(result);
+
+      queryClient.invalidateQueries(RequestService.QueryKey.getRequests).then();
       navigation.goBack();
     },
     onError: (e: AxiosError) => {

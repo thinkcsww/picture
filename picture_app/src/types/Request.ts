@@ -6,7 +6,7 @@ export namespace Request {
     userId: string,
     userNickname: string,
     userAcceptRate: number,
-    requestType: Specialty,
+    specialty: Specialty,
     title: string,
     desiredPrice: number,
     dueDate: string,

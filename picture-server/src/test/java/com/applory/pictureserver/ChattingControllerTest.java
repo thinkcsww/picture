@@ -80,6 +80,7 @@ public class ChattingControllerTest {
 
     @BeforeEach
     public void setup() throws ExecutionException, InterruptedException, TimeoutException {
+        clearInterceptors();
         blockingQueue = new LinkedBlockingDeque<>();
         stompClient = new WebSocketStompClient(new SockJsClient(
                 asList(new WebSocketTransport(new StandardWebSocketClient()))));
@@ -97,7 +98,6 @@ public class ChattingControllerTest {
         if (stompSession != null && stompSession.isConnected()) {
             stompSession.disconnect();
         }
-        clearInterceptors();
     }
 
     @Test

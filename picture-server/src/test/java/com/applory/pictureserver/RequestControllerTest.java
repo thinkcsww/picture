@@ -54,7 +54,7 @@ public class RequestControllerTest {
     public void cleanUp() {
         requestRepository.deleteAll();
         userRepository.deleteAll();
-        testRestTemplate.getRestTemplate().getInterceptors().clear();
+        logout();
     }
 
 
@@ -215,7 +215,7 @@ public class RequestControllerTest {
     }
 
     @Test
-    void getRequests_searchByRequestType_receiveResultByRequestType() {
+    void getRequests_searchBySpecialty_receiveResultBySpecialty() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
 
         ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
@@ -229,7 +229,7 @@ public class RequestControllerTest {
         ResponseEntity<TestPage<RequestDto.VM>> response = getRequests(null, new ParameterizedTypeReference<TestPage<RequestDto.VM>>() {
         });
 
-        assertThat(response.getBody().getContent().get(0).getRequestType()).isEqualTo(Constant.Specialty.BACKGROUND);
+        assertThat(response.getBody().getContent().get(0).getSpecialty()).isEqualTo(Constant.Specialty.BACKGROUND);
     }
 
     @Test
@@ -311,12 +311,26 @@ public class RequestControllerTest {
         assertThat(response.getBody().getDesiredPrice()).isEqualTo(2000);
         assertThat(response.getBody().getTitle()).isEqualTo("제목입니다");
         assertThat(response.getBody().getDescription()).isEqualTo("설명입니다");
-        assertThat(response.getBody().getRequestType()).isEqualTo(Constant.Specialty.BACKGROUND);
-        assertThat(response.getBody().getReadCount()).isEqualTo(0);
+        assertThat(response.getBody().getSpecialty()).isEqualTo(Constant.Specialty.BACKGROUND);
+        assertThat(response.getBody().getReadCount()).isEqualTo(1);
         assertThat(response.getBody().getDueDate()).isEqualTo(LocalDateTime.of(2022, 12, 25, 23, 59));
 
     }
 
+    @Test
+    void getRequest_created1SecondsAgo_receiveVmWithChatCountIsZero() {
+        signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
+
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        authenticate(tokenResponse.getBody().getAccess_token());
+
+        ResponseEntity<RequestDto.VM> requestResponse = postRequest(createValidRequestDto(), RequestDto.VM.class);
+
+        ResponseEntity<RequestDto.VM> response = getRequest(requestResponse.getBody().getId(), new ParameterizedTypeReference<RequestDto.VM>() {});
+
+        assertThat(response.getBody().getChatCount()).isEqualTo(0);
+    }
+    
     @Test
     void getRequest_withValid_receiveVmWithChatCount() {
         signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
@@ -324,9 +338,9 @@ public class RequestControllerTest {
         ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
-        postRequest(createValidRequestDto(), RequestDto.VM.class);
+        ResponseEntity<RequestDto.VM> requestResponse = postRequest(createValidRequestDto(), RequestDto.VM.class);
 
-        ResponseEntity<RequestDto.VM> response = getRequest(UUID.randomUUID(), new ParameterizedTypeReference<RequestDto.VM>() {});
+        ResponseEntity<RequestDto.VM> response = getRequest(requestResponse.getBody().getId(), new ParameterizedTypeReference<RequestDto.VM>() {});
 
         assertThat(response.getBody().getChatCount()).isNotNull();
     }
@@ -348,6 +362,33 @@ public class RequestControllerTest {
         ResponseEntity<RequestDto.VM> response = getRequest(requestResponse.getBody().getId(), new ParameterizedTypeReference<RequestDto.VM>() {});
 
         assertThat(response.getBody().getAnotherRequests()).isNotNull();
+    }
+
+    @Test
+    void getRequest_withValid_receiveVmWithAnotherRequestsWhenUsersRequestIsEmpty() {
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        signUp(user1, Object.class);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        user2.setNickname("test-nickname-2");
+        signUp(user2, Object.class);
+
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        authenticate(tokenResponse.getBody().getAccess_token());
+        RequestDto.Create dto1 = createValidRequestDto();
+        dto1.setTitle("1");
+        postRequest(dto1, RequestDto.VM.class);
+        logout();
+
+        ResponseEntity<MyOAuth2Token> tokenResponse2 = login(TestUtil.createValidLoginDto(TEST_USERNAME + "2"), MyOAuth2Token.class);
+        authenticate(tokenResponse2.getBody().getAccess_token());
+        RequestDto.Create dto2 = createValidRequestDto();
+        dto2.setTitle("2");
+        postRequest(dto2, RequestDto.VM.class);
+        ResponseEntity<RequestDto.VM> requestResponse = postRequest(createValidRequestDto(), RequestDto.VM.class);
+
+        ResponseEntity<RequestDto.VM> response = getRequest(requestResponse.getBody().getId(), new ParameterizedTypeReference<RequestDto.VM>() {});
+
+        assertThat(response.getBody().getAnotherRequests().get(0).getUserNickname()).isNotEqualTo(user1.getNickname());
     }
 
     @Test
@@ -485,5 +526,8 @@ public class RequestControllerTest {
         testRestTemplate.getRestTemplate().getInterceptors().add(new RestTemplateInterceptor(token));
     }
 
+    private void logout() {
+        testRestTemplate.getRestTemplate().getInterceptors().clear();
+    }
 
 }

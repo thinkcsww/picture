@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
@@ -25,6 +26,7 @@ public class RequestService {
     private final RequestRepository requestRepository;
 
     private final UserRepository userRepository;
+
 
     public Request createRequest(RequestDto.Create dto) {
         Request request = new Request();
@@ -48,18 +50,19 @@ public class RequestService {
         return requestRepository.findRequestBySearchQ(search, pageable);
     }
 
+    @Transactional
     public RequestDto.VM getRequest(UUID id) {
         Optional<Request> optionalRequest = requestRepository.findById(id);
 
         if (optionalRequest.isPresent()) {
-            RequestDto.VM requestVM = new RequestDto.VM(optionalRequest.get());
+            Request request = optionalRequest.get();
+            request.setReadCount(request.getReadCount() + 1);
 
-            RequestDto.Search search = new RequestDto.Search();
-            search.setUserId(requestVM.getUserId());
-            search.setExceptThisId(id);
+            RequestDto.VM requestVM = new RequestDto.VM(request);
 
-            Page<Request> anotherRequests = requestRepository.findRequestBySearchQ(search, PageRequest.of(0, 4, Sort.Direction.ASC, "dueDate"));
-            requestVM.setAnotherRequests(anotherRequests.getContent().stream().map(RequestDto.VM::new).collect(Collectors.toList()));
+            setAnotherRequest(id, requestVM);
+
+            requestVM.setChatCount(0);
 
             int completeCount = 0;
             int closedCount = 0;
@@ -87,6 +90,24 @@ public class RequestService {
 
         } else {
             throw new NotFoundException("Request not exists: " + id);
+        }
+    }
+
+    private void setAnotherRequest(UUID id, RequestDto.VM requestVM) {
+        RequestDto.Search search = new RequestDto.Search();
+        search.setUserId(requestVM.getUserId());
+        search.setExceptThisId(id);
+
+        Page<Request> anotherRequests = requestRepository.findRequestBySearchQ(search, PageRequest.of(0, 4, Sort.Direction.ASC, "dueDate"));
+        requestVM.setAnotherRequests(anotherRequests.getContent().stream().map(RequestDto.VM::new).collect(Collectors.toList()));
+
+        // Request의 주인에게 다른 Request가 없으면 랜덤한 다른 Reqeust를 가져온다.
+        if (anotherRequests.isEmpty()) {
+            RequestDto.Search secondSearch = new RequestDto.Search();
+            secondSearch.setExceptThisId(id);
+
+            Page<Request> secondAnotherRequests = requestRepository.findRequestBySearchQ(search, PageRequest.of(0, 4, Sort.Direction.ASC, "dueDate"));
+            requestVM.setAnotherRequests(secondAnotherRequests.getContent().stream().map(RequestDto.VM::new).collect(Collectors.toList()));
         }
     }
 }

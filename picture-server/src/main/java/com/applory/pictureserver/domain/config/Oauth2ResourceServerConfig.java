@@ -19,18 +19,19 @@ public class Oauth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.headers().frameOptions().disable();
+        http.csrf().disable();
 //        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http.authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/users/check-nickname").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/users/seller").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/requests").permitAll()
                 .antMatchers(
+                        "/api/v1/requests",
+                        "/api/v1/users/seller",
                         "/api/v1/auth/login",
                         "/api/v1/auth/token/refresh",
                         "/ws/**",
                         "/h2-console/**").permitAll()
                 .anyRequest().authenticated();
+
 
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

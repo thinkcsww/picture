@@ -44,7 +44,7 @@ public class RequestDto {
         private UUID userId;
         private String userNickname;
         private Double userAcceptRate;
-        private Constant.Specialty requestType;
+        private Constant.Specialty specialty;
         private String title;
         private Integer desiredPrice;
         private LocalDateTime dueDate;
@@ -58,7 +58,7 @@ public class RequestDto {
             this.id = request.getId();
             this.userId = request.getUser().getId();
             this.userNickname = request.getUser().getNickname();
-            this.requestType = request.getSpecialty();
+            this.specialty = request.getSpecialty();
             this.title = request.getTitle();
             this.desiredPrice = request.getDesiredPrice();
             this.dueDate = request.getDueDate();

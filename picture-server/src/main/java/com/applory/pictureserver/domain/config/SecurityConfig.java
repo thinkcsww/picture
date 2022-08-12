@@ -1,9 +1,6 @@
 package com.applory.pictureserver.domain.config;
 
-import com.applory.pictureserver.domain.user.CustomUserDetail;
 import com.applory.pictureserver.domain.user.CustomUserDetailService;
-import com.applory.pictureserver.domain.user.UserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,9 +8,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
@@ -26,24 +23,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     CustomUserDetailService userService;
 
 
-//        @Override
-//    public void configure(HttpSecurity http) throws Exception {
-//        http.headers().frameOptions().disable();
-//        http.cors().disable();
-////        http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
-//        http.authorizeRequests()
-//                .antMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
-//                .antMatchers(HttpMethod.GET, "/api/v1/users/seller").permitAll()
-//                .antMatchers(
-//                        "/api/v1/auth/login",
-//                        "/api/v1/auth/token/refresh",
-//                        "/h2-console/**").permitAll()
-//                .anyRequest().authenticated();
-//        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-//    }
+    @Override
+    public void configure(final WebSecurity web) {
+        web.ignoring()
+                .antMatchers(HttpMethod.GET, "/api/v1/requests")
+                .antMatchers(HttpMethod.GET, "/api/v1/users/seller")
+                .antMatchers(HttpMethod.POST, "/api/v1/auth/token/refresh")
+                .antMatchers(HttpMethod.POST, "/api/v1/users");
+    }
 
     /**
      * Oauth2 grant_type password 사용하려면 있어야 한다
+     *
      * @return
      * @throws Exception
      */

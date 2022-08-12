@@ -5,6 +5,7 @@ import com.applory.pictureserver.domain.oauth.AuthDto;
 import com.applory.pictureserver.domain.oauth.MyOAuth2Token;
 import com.applory.pictureserver.domain.user.UserDto;
 import com.applory.pictureserver.domain.user.UserRepository;
+import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -110,7 +111,7 @@ public class AuthControllerTest {
         AuthDto.Login loginDto = TestUtil.createValidLoginDto(username);
 
         ResponseEntity<MyOAuth2Token> response = login(loginDto, MyOAuth2Token.class);
-        assertThat(response.getBody().getExpires_in()).isEqualTo(86399);
+        assertThat(response.getBody().getExpires_in()).isCloseTo(86400L, Offset.offset(5L));
     }
 
     @Test
@@ -145,7 +146,7 @@ public class AuthControllerTest {
         refreshTokenDto.setRefreshToken(tokenResponse.getBody().getRefresh_token());
         ResponseEntity<MyOAuth2Token> refreshTokenResponse = getRefreshToken(refreshTokenDto, MyOAuth2Token.class);
 
-        assertThat(refreshTokenResponse.getBody().getExpires_in()).isEqualTo(86399);
+        assertThat(refreshTokenResponse.getBody().getExpires_in()).isCloseTo(86400L, Offset.offset(5L));
     }
 
     @Test

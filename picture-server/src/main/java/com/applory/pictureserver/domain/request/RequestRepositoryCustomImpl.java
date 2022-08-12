@@ -41,7 +41,7 @@ public class RequestRepositoryCustomImpl extends QuerydslRepositorySupport imple
         booleanBuilder.and(qRequest.matchYN.eq("N"));
 
         if (search.getSpecialty() != null) {
-            booleanBuilder.and(qRequest.requestType.eq(search.getSpecialty()));
+            booleanBuilder.and(qRequest.specialty.eq(search.getSpecialty()));
         }
 
         if (search.getFromForDueDt() != null && search.getToForDueDt() != null) {

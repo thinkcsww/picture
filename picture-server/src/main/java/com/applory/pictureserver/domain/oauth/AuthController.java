@@ -1,6 +1,5 @@
 package com.applory.pictureserver.domain.oauth;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +22,7 @@ public class AuthController {
     }
 
     @PostMapping(value = "/token/refresh")
-    public MyOAuth2Token refreshToken(@Valid @RequestBody AuthDto.RefreshToken dto, HttpServletRequest request) throws JsonProcessingException {
+    public MyOAuth2Token refreshToken(@Valid @RequestBody AuthDto.RefreshToken dto, HttpServletRequest request) {
         return authService.refreshToken(dto, request.getScheme() + "://" + request.getLocalName() + ":" + request.getLocalPort());
     }
 }

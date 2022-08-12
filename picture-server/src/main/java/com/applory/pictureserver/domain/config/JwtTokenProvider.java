@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Date;
@@ -37,7 +36,7 @@ public class JwtTokenProvider {
     }
 
     // Jwt Token에서 username 추출
-    private String getUserName(String token) {
+    public String getUserName(String token) {
         return (String) Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
@@ -54,6 +53,21 @@ public class JwtTokenProvider {
                     .getBody()
                     .getExpiration()
                     .before(new Date());
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean refreshTokenIsNotExpireIn7Days(String jwtToken) {
+        long DAY_IN_MS = 1000 * 60 * 60 * 24;
+        try {
+            Jws<Claims> claims = Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(jwtToken);
+            return !claims
+                    .getBody()
+                    .getExpiration()
+                    .before(new Date(System.currentTimeMillis() + (23 * DAY_IN_MS)));
         } catch (Exception e) {
             return false;
         }

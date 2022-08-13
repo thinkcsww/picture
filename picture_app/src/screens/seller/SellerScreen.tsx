@@ -1,16 +1,21 @@
 import React, { FC, useState } from "react";
-import { SafeAreaView, StyleSheet } from "react-native";
+import { FlatList, SafeAreaView, StyleSheet, View } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import TabListSpecialtySelectModal from "./components/TabListSpecialtySelectModal";
 import { Seller } from "../../types/Seller";
 import { SelectValue } from "../../types/SelectValue";
 import SellerList from "./components/SellerList";
-import { useQuery } from "react-query";
+import { useInfiniteQuery, useQuery } from "react-query";
 import { SellerService } from "../../services/SellerService";
 import { AxiosError } from "axios";
 import TabListHeader from "../../components/tab-list/TabListHeader";
 import TabListFilter from "../../components/tab-list/TabListFilter";
 import { Specialty } from "../../types/Common";
+import { PageResult } from "../../types/Page";
+import { Divider } from "react-native-paper";
+import RequestListItem from "../request/components/RequestListItem";
+import CommonNodata from "../../components/CommonNodata";
+import SellerListItem from "./components/SellerListItem";
 
 type SellerScreenProps = {
   navigation: NavigationProp<any>
@@ -35,14 +40,18 @@ const SellerScreen: FC<SellerScreenProps> = ({ navigation }) => {
   const [selectedSpecialty, setSelectedSpecialty] = useState(new SelectValue<Specialty>('인물 사진', Specialty.PEOPLE));
   const [selectedFilter, setSelectedFilter] = useState(new SelectValue<Seller.Filter>('기본순', Seller.Filter.DEFAULT));
   const [searchText, setSearchText] = useState('');
+  const [isFetching, setIsFetching] = useState(false);
 
   /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   | Hooks
   |-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
 
-  const getSellersQuery = useQuery([SellerService.QueryKey.getSellers, selectedSpecialty, selectedFilter], () => {
-    return SellerService.getSellers(selectedSpecialty.value, selectedFilter.value);
+  const getSellersQuery = useInfiniteQuery([SellerService.QueryKey.getSellers, selectedSpecialty, selectedFilter], ({ pageParam = 0 }) => {
+    return SellerService.getSellers(selectedSpecialty.value, selectedFilter.value, pageParam);
   }, {
+    getNextPageParam: (lastPageData: PageResult) => {
+      return lastPageData.last ? undefined : lastPageData.number + 1;
+    },
     onSuccess: (result: any) => {
       console.log('==== Seller 리스트 조회 성공 ====');
       console.log(result);
@@ -78,6 +87,15 @@ const SellerScreen: FC<SellerScreenProps> = ({ navigation }) => {
     setSelectedFilter(filter);
   }
 
+  const onRefresh = async () => {
+    setIsFetching(true);
+
+    getSellersQuery.remove()
+    getSellersQuery.refetch().then(() => {
+      setIsFetching(false);
+    });
+  };
+
   /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   | Mark Up
   |-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
@@ -91,7 +109,20 @@ const SellerScreen: FC<SellerScreenProps> = ({ navigation }) => {
 
     <TabListHeader onChangeSearchText={onChangeSearchText} searchText={searchText} selectedSpecialty={selectedSpecialty} onClickSelector={onClickSelector}/>
     <TabListFilter list={filterList} onPress={onSelectFilter} selectedFilter={selectedFilter}/>
-    <SellerList list={getSellersQuery.data.content}/>
+    <FlatList
+      data={getSellersQuery.data?.pages.map((page: PageResult) => page.content).flat()}
+      onRefresh={onRefresh}
+      refreshing={isFetching}
+      ItemSeparatorComponent={() => <Divider style={{ height: 1, marginVertical: 20 }} />}
+      keyExtractor={(item) => item.id}
+      onEndReached={() => getSellersQuery.fetchNextPage()}
+      onEndReachedThreshold={1}
+      renderItem={({ item }) => {
+        return <SellerListItem item={item} />;
+      }}
+      ListEmptyComponent={() => <CommonNodata />}
+      ListFooterComponent={() => <View style={{ height: 30}}/>}
+    />
 
   </SafeAreaView>
 }

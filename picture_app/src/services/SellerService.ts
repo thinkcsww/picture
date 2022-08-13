@@ -10,8 +10,8 @@ export const SellerService = {
     getSellers: 'getSellers'
   },
 
-  getSellers: async (selectedFilter: Specialty, value: Seller.Filter) => {
-    let url = `${USER_API_URL}/seller`;
+  getSellers: async (selectedFilter: Specialty, filter: Seller.Filter, pageNum: any) => {
+    let url = `${USER_API_URL}/seller?page=${pageNum}&size=10`;
     url += `?specialty=${selectedFilter}`
     console.log(url);
     const {data} = await instance.get<PageResult<Seller.Seller>>(url, {

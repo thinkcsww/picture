@@ -1,19 +1,21 @@
 import React, { FC, useState } from "react";
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import { SelectValue } from "../../types/SelectValue";
-import { useQuery } from "react-query";
-import { SellerService } from "../../services/SellerService";
+import { InfiniteData, useInfiniteQuery } from "react-query";
 import { AxiosError } from "axios";
 import TabListHeader from "../../components/tab-list/TabListHeader";
 import TabListFilter from "../../components/tab-list/TabListFilter";
 import TabListSpecialtySelectModal from "../seller/components/TabListSpecialtySelectModal";
-import RequestList from "./components/RequestList";
 import { RequestService } from "../../services/RequestService";
 import { Specialty } from "../../types/Common";
 import { Request } from "../../types/Request";
 import { Colors } from "../../colors";
 import { RouteNames } from "../../AppNav";
+import { Divider } from "react-native-paper";
+import RequestListItem from "./components/RequestListItem";
+import CommonNodata from "../../components/CommonNodata";
+import { PageResult } from "../../types/Page";
 
 type RequestScreenProps = {
   navigation: NavigationProp<any>
@@ -34,15 +36,19 @@ const RequestScreen: FC<RequestScreenProps> = ({ navigation }) => {
   const [showSelector, setShowSelector] = useState(false);
   const [selectedSpecialty, setSelectedSpecialty] = useState(new SelectValue<Specialty>('인물 사진', Specialty.PEOPLE));
   const [selectedFilter, setSelectedFilter] = useState(new SelectValue<Request.Filter>('기본순', Request.Filter.DEFAULT));
+  const [isFetching, setIsFetching] = useState(false);
 
   /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   | Hooks
   |-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
 
-  const getRequestsQuery = useQuery([RequestService.QueryKey.getRequests, selectedSpecialty, selectedFilter], () => {
-    return RequestService.getRequests(selectedSpecialty.value, selectedFilter.value);
+  const getRequestsQuery = useInfiniteQuery([RequestService.QueryKey.getRequests, selectedSpecialty, selectedFilter], ({ pageParam = 0 }) => {
+    return RequestService.getRequests(selectedSpecialty.value, selectedFilter.value, pageParam);
   }, {
-    onSuccess: (result: any) => {
+    getNextPageParam: (lastPageData: PageResult) => {
+      return lastPageData.last ? undefined : lastPageData.number + 1;
+    },
+    onSuccess: (result: InfiniteData<PageResult>) => {
       console.log('==== Request 리스트 조회 성공 ====');
       console.log(result);
     },
@@ -77,6 +83,15 @@ const RequestScreen: FC<RequestScreenProps> = ({ navigation }) => {
     navigation.navigate(RouteNames.AddRequest);
   }
 
+  const onRefresh = async () => {
+    setIsFetching(true);
+
+    getRequestsQuery.remove()
+    getRequestsQuery.refetch().then(() => {
+      setIsFetching(false);
+    });
+  };
+
   /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   | Mark Up
   |-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
@@ -86,12 +101,28 @@ const RequestScreen: FC<RequestScreenProps> = ({ navigation }) => {
   }
 
 
+
   return <SafeAreaView style={styles.container}>
     { showSelector && <TabListSpecialtySelectModal selectedSpecialty={selectedSpecialty.value} close={onCloseSelector} onSelect={onSelectSelectorItem}/> }
 
     <TabListHeader selectedSpecialty={selectedSpecialty} onClickSelector={onClickSelector}/>
     <TabListFilter list={filterList} onPress={onSelectFilter} selectedFilter={selectedFilter}/>
-    <RequestList list={getRequestsQuery.data.content}/>
+
+    <FlatList
+      data={getRequestsQuery.data?.pages.map((page: PageResult) => page.content).flat()}
+      onRefresh={onRefresh}
+      refreshing={isFetching}
+      ItemSeparatorComponent={() => <Divider style={{ height: 1, marginVertical: 20 }} />}
+      keyExtractor={(item) => item.id}
+      onEndReached={() => getRequestsQuery.fetchNextPage()}
+      onEndReachedThreshold={1}
+      renderItem={({ item }) => {
+        return <RequestListItem item={item} />;
+      }}
+      ListEmptyComponent={() => <CommonNodata />}
+      ListFooterComponent={() => <View style={{ height: 30}}/>}
+    />
+
 
     <TouchableOpacity onPress={onPressAddRequest} style={{
       position: 'absolute',
@@ -116,7 +147,7 @@ const RequestScreen: FC<RequestScreenProps> = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   }
 })
 

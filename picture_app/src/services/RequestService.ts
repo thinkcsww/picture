@@ -12,9 +12,9 @@ export const RequestService = {
     createRequest: 'createRequest'
   },
 
-  getRequests: async (specialty: Specialty, filter: Request.Filter) => {
+  getRequests: async (specialty: Specialty, filter: Request.Filter, pageNum: number) => {
     let url = `${REQUEST_API_URL}`;
-    url += `?specialty=${specialty}&sort=${filter}`
+    url += `?specialty=${specialty}&page=${pageNum}&sort=${filter}&size=10`
 
     console.log(url);
     const {data} = await instance.get<PageResult<Request.Request>>(url, {

@@ -25,7 +25,7 @@ const AnotherRequestList = ({ request }: AnotherRequestListProps) => {
   |-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
 
   const onPressItem = (id: string) => {
-    navigation.navigate(RouteNames.RequestDetail, { id: id });
+    navigation.push(RouteNames.RequestDetail, { id: id });
   }
 
   /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -47,7 +47,7 @@ const AnotherRequestList = ({ request }: AnotherRequestListProps) => {
                   <Text style={styles.itemPrice}>
                     희망금액: {anotherRequest.desiredPrice.toLocaleString()}원
                   </Text>
-                  <Text style={styles.itemDueDate}>마감까지 {DateUtils.getRemainTime(new Date().toISOString())}</Text>
+                  <Text style={styles.itemDueDate}>마감까지 {DateUtils.getRemainTime(new Date(anotherRequest.dueDate).toISOString())}</Text>
                 </TouchableOpacity>
               )
             })

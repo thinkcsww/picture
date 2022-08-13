@@ -52,14 +52,8 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Page<UserDto.SellerVM> getSellerUsers(UserDto.SearchSeller search, Pageable pageable) {
-        Page<User> sellersInDB = userRepository.findSellerUserBySearch(search, pageable);
-
-        return sellersInDB.map((seller) -> {
-            UserDto.SellerVM sellerVM = new UserDto.SellerVM(seller);
-
-            return sellerVM;
-        });
+    public Page<User> getSellerUsers(UserDto.SearchSeller search, Pageable pageable) {
+        return userRepository.findSellerUserBySearch(search, pageable);
     }
 
     public Page<User> getClientUsers(UserDto.SearchClient search, Pageable pageable) {

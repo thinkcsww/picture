@@ -22,10 +22,11 @@ const TabListFilter: FC<TabListFilterProps> = ({list, selectedFilter, onPress}) 
 
 const styles = StyleSheet.create({
   filter: {
-    maxHeight: 70,
+    height: 70,
     paddingVertical: 8,
     paddingLeft: 12,
-    marginBottom: 20,
+    marginBottom: 10,
+    flexGrow: 0
   }
 })
 

@@ -8,9 +8,10 @@ type AppHeaderProps = {
   iconName?: string,
   rightButton?: string,
   rightButtonCallback?: () => void
+  rightButtonStyle?: {},
 }
 
-const AppHeader: FC<AppHeaderProps> = ({ title, iconName, rightButton, rightButtonCallback }) => {
+const AppHeader: FC<AppHeaderProps> = ({ title, iconName, rightButton, rightButtonCallback, rightButtonStyle }) => {
   const navigation = useNavigation();
 
   return (
@@ -18,7 +19,7 @@ const AppHeader: FC<AppHeaderProps> = ({ title, iconName, rightButton, rightButt
       <MaterialCommunityIcons name={iconName ? iconName : "arrow-left"} color={"black"} size={24} onPress={() => navigation.goBack()} />
       <Text style={styles.title}>{ title ? title : '' }</Text>
       <TouchableOpacity onPress={rightButtonCallback} style={{ width: 28 }}>
-        <Text>{ rightButton ? rightButton : '' }</Text>
+        <Text style={ rightButtonStyle ? rightButtonStyle : undefined}>{ rightButton ? rightButton : '' }</Text>
       </TouchableOpacity>
     </View>
   )
@@ -29,7 +30,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   title: {
     fontWeight: '500',

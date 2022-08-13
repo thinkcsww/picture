@@ -13,6 +13,7 @@ import { Request } from "../../types/Request";
 import { AxiosError } from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { Regex } from "../../utils/Regex";
+import { Colors } from "../../colors";
 
 const AddRequestScreen = () => {
 
@@ -78,7 +79,7 @@ const AddRequestScreen = () => {
   return (
     <ScrollView>
       <SafeAreaView>
-        <AppHeader title={'공개 의뢰하기'} iconName={"close"} rightButton={'완료'} rightButtonCallback={onClickSave}/>
+        <AppHeader title={'공개 의뢰하기'} iconName={"close"} rightButton={'완료'} rightButtonStyle={{color: '#f1dd09', fontWeight: 'bold'}} rightButtonCallback={onClickSave}/>
 
         <View style={{
           paddingHorizontal: 12

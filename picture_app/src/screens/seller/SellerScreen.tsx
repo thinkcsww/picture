@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 import { SafeAreaView, StyleSheet } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import TabListSpecialtySelectModal from "./components/TabListSpecialtySelectModal";
@@ -11,7 +11,6 @@ import { AxiosError } from "axios";
 import TabListHeader from "../../components/tab-list/TabListHeader";
 import TabListFilter from "../../components/tab-list/TabListFilter";
 import { Specialty } from "../../types/Common";
-import AsyncStorageService from "../../services/AsyncStorageService";
 
 type SellerScreenProps = {
   navigation: NavigationProp<any>

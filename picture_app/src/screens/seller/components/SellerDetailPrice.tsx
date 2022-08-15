@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: "bold",
     color: "black",
+    marginBottom: 8
   },
   innerContainer: {
     flexDirection: "row",

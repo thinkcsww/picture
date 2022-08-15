@@ -6,18 +6,18 @@ import { Colors } from "../../../colors";
 const SellerDetailReview = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.infoTitle}>리뷰</Text>
+      <Text style={styles.infoTitle}>평점</Text>
       <View style={styles.rateContainer}>
         <View style={styles.rateLeftContainer}>
           <Text style={styles.rateTotalCountText}>4.3</Text>
           <View style={{
             flexDirection: "row",
           }}>
-            <Icon name={"ios-star"} size={14} color={Colors.PRIMARY} style={styles.rateStar}/>
-            <Icon name={"ios-star"} size={14} color={Colors.PRIMARY} style={styles.rateStar}/>
-            <Icon name={"ios-star"} size={14} color={Colors.PRIMARY} style={styles.rateStar}/>
-            <Icon name={"ios-star"} size={14} color={Colors.PRIMARY} style={styles.rateStar}/>
-            <Icon name={"ios-star"} size={14} color={Colors.PRIMARY} style={styles.rateStar}/>
+            <Icon name={"ios-star"} size={14} color={Colors.PRIMARY} style={styles.rateStar} />
+            <Icon name={"ios-star"} size={14} color={Colors.PRIMARY} style={styles.rateStar} />
+            <Icon name={"ios-star"} size={14} color={Colors.PRIMARY} style={styles.rateStar} />
+            <Icon name={"ios-star"} size={14} color={Colors.PRIMARY} style={styles.rateStar} />
+            <Icon name={"ios-star"} size={14} color={Colors.PRIMARY} style={styles.rateStar} />
           </View>
 
         </View>
@@ -62,14 +62,14 @@ const SellerDetailReview = () => {
 
       </View>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 12,
   },
-    infoTitle: {
+  infoTitle: {
     fontWeight: "bold",
     color: "black",
   },
@@ -117,8 +117,8 @@ const styles = StyleSheet.create({
     color: "black",
   },
   rateStar: {
-    paddingLeft: 2
-  }
+    paddingLeft: 2,
+  },
 });
 
 export default SellerDetailReview;

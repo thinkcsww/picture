@@ -13,6 +13,11 @@ export namespace Seller {
     sellerEnabledYn: string,
     createdDt: string,
     updatedDt: string,
+    reviewCount: number,
+    rating: number,
+    officialPrice: number,
+    peoplePrice: number,
+    backgroundPrice: number
   }
 
   export enum Filter {

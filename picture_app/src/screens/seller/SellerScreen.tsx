@@ -117,6 +117,7 @@ const SellerScreen: FC<SellerScreenProps> = ({ navigation }) => {
       renderItem={({ item }) => {
         return <SellerListItem item={item} />;
       }}
+      showsVerticalScrollIndicator={false}
       ListEmptyComponent={() => <CommonNodata />}
       ListFooterComponent={() => <View style={{ height: 30}}/>}
     />

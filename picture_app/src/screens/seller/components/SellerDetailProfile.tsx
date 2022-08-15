@@ -3,14 +3,18 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Images from "../../../../assets/images";
 import Icon from "react-native-vector-icons/Ionicons";
 import { Colors } from "../../../colors";
+import { Seller } from "../../../types/Seller";
 
-const SellerDetailProfile: FC = () => {
+type SellerDetailProfileProps = {
+  seller: Seller.Seller
+}
+const SellerDetailProfile: FC<SellerDetailProfileProps> = ({ seller }) => {
   return (
     <View>
       <View style={styles.container}>
         <Image source={{ uri: "" }} defaultSource={Images.profile.dummy} style={styles.profileImage} />
         <View style={styles.innerContainer}>
-          <Text style={styles.name}>이병묵 작가님</Text>
+          <Text style={styles.name}>{ seller.nickname } 작가님 </Text>
           <View style={styles.rateRow}>
             <Icon name={"ios-star"} size={18} color={Colors.PRIMARY} style={styles.star}/>
             <Icon name={"ios-star"} size={18} color={Colors.PRIMARY} style={styles.star}/>
@@ -21,7 +25,7 @@ const SellerDetailProfile: FC = () => {
           </View>
 
           <View style={styles.numberOfWorkContainer}>
-            <Text style={styles.numberOfWorkText}>리뷰: 90  I  총 작업 수: 88건</Text>
+            <Text style={styles.numberOfWorkText}>리뷰: { seller.reviewCount }  I  총 작업 수: 88건</Text>
           </View>
 
           <View style={styles.buttonContainer}>
@@ -42,11 +46,7 @@ const SellerDetailProfile: FC = () => {
         </View>
       </View>
       <View style={styles.profileDescContainer}>
-        <Text style={styles.profileDesc}>
-          대전에 종로구에서 사진관을 운영하고있는 사진작가 이병묵입니다. 다년간의 노하우a로 어쩌고저쪼고 예쁘게 뿅뿅 할게요~~뿌잉
-          인물작업 위주로 하고있구요 배경은 간단한 작업 선에서는 가능합니다!
-
-        </Text>
+        <Text style={styles.profileDesc}>{ seller.description }</Text>
       </View>
     </View>
 
@@ -92,9 +92,9 @@ const styles = StyleSheet.create({
   },
   name: {
     color: "black",
-    marginRight: 12,
-    fontSize: 25,
+    fontSize: 24,
     fontWeight: '500',
+    marginLeft: 12
   },
   rate: {
     color: "black",

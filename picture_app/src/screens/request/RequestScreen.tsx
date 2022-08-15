@@ -118,6 +118,7 @@ const RequestScreen: FC<RequestScreenProps> = ({ navigation }) => {
       renderItem={({ item }) => {
         return <RequestListItem item={item} />;
       }}
+      showsVerticalScrollIndicator={false}
       ListEmptyComponent={() => <CommonNodata />}
       ListFooterComponent={() => <View style={{ height: 30}}/>}
     />

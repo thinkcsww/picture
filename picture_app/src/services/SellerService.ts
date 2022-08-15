@@ -25,7 +25,7 @@ export const SellerService = {
   },
 
   getSeller: async (id: string) => {
-    let url = `${USER_API_URL}/seller/`;
+    let url = `${USER_API_URL}/seller/${id}`;
     console.log(url);
     const {data} = await instance.get<PageResult<Seller.Seller>>(url, {
       headers: {

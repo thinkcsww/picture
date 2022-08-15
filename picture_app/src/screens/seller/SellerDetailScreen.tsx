@@ -7,10 +7,10 @@ import SellerDetailProfile from "./components/SellerDetailProfile";
 import SellerDetailPrice from "./components/SellerDetailPrice";
 import SellerDetailNumberOfWork from "./components/SellerDetailNumberOfWork";
 import SellerDetailReview from "./components/SellerDetailReview";
-import DeviceInfo from 'react-native-device-info';
+import DeviceInfo from "react-native-device-info";
 import { useQuery } from "react-query";
-import { RequestService } from "../../services/RequestService";
 import { SellerService } from "../../services/SellerService";
+import { Seller } from "../../types/Seller";
 
 const SellerDetailScreen = ({ route, navigation }) => {
   const { id } = route.params;
@@ -29,15 +29,20 @@ const SellerDetailScreen = ({ route, navigation }) => {
     }
   };
 
-  // const getSellerDetailQuery = useQuery(SellerService.QueryKey.getSeller, () => {
-  //   return SellerService.getRequest(id);
-  // });
-  //
-  // if (getSellerDetailQuery.isLoading || !getSellerDetailQuery.data) {
-  //   return null;
-  // }
-  //
-  // const request = getSellerDetailQuery.data;
+  const getSellerDetailQuery = useQuery(SellerService.QueryKey.getSeller, () => {
+    return SellerService.getSeller(id);
+  }, {
+    onSuccess: (result: Seller.Seller) => {
+      console.log('==== Seller 상세 조회 성공 ====');
+      console.log(result);
+    }
+  });
+
+  if (getSellerDetailQuery.isLoading || !getSellerDetailQuery.data) {
+    return null;
+  }
+
+  const seller = getSellerDetailQuery.data;
 
   return (
     <View style={{ flex: 1 }}>
@@ -54,6 +59,7 @@ const SellerDetailScreen = ({ route, navigation }) => {
       </View>
       <ScrollView
         scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
         onScroll={onScroll}
         contentContainerStyle={{
           paddingBottom: 50,
@@ -62,11 +68,11 @@ const SellerDetailScreen = ({ route, navigation }) => {
           height: 300,
         }} />
 
-        <SellerDetailProfile />
+        <SellerDetailProfile seller={seller} />
 
         <Divider style={{ height: 1, marginVertical: 20, marginHorizontal: 12 }} />
 
-        <SellerDetailPrice />
+        <SellerDetailPrice seller={seller}/>
 
         <Divider style={{ height: 1, marginVertical: 20, marginHorizontal: 12 }} />
 

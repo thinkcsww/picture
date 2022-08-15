@@ -80,7 +80,7 @@ const App = () => {
 
 
   const queryClient = new QueryClient();
-  LogBox.ignoreLogs(['image'])
+  LogBox.ignoreLogs(['image', 'source.uri'])
 
   return (
     <Provider store={store}>

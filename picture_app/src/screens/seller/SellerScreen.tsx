@@ -4,8 +4,7 @@ import { NavigationProp } from "@react-navigation/native";
 import TabListSpecialtySelectModal from "./components/TabListSpecialtySelectModal";
 import { Seller } from "../../types/Seller";
 import { SelectValue } from "../../types/SelectValue";
-import SellerList from "./components/SellerList";
-import { useInfiniteQuery, useQuery } from "react-query";
+import { useInfiniteQuery } from "react-query";
 import { SellerService } from "../../services/SellerService";
 import { AxiosError } from "axios";
 import TabListHeader from "../../components/tab-list/TabListHeader";
@@ -13,7 +12,6 @@ import TabListFilter from "../../components/tab-list/TabListFilter";
 import { Specialty } from "../../types/Common";
 import { PageResult } from "../../types/Page";
 import { Divider } from "react-native-paper";
-import RequestListItem from "../request/components/RequestListItem";
 import CommonNodata from "../../components/CommonNodata";
 import SellerListItem from "./components/SellerListItem";
 
@@ -89,7 +87,6 @@ const SellerScreen: FC<SellerScreenProps> = ({ navigation }) => {
 
   const onRefresh = async () => {
     setIsFetching(true);
-
     getSellersQuery.remove()
     getSellersQuery.refetch().then(() => {
       setIsFetching(false);
@@ -100,7 +97,7 @@ const SellerScreen: FC<SellerScreenProps> = ({ navigation }) => {
   | Mark Up
   |-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
 
-  if (getSellersQuery.isLoading || getSellersQuery.isError) {
+  if (getSellersQuery.isLoading) {
     return null;
   }
 

@@ -22,8 +22,7 @@ const RequestListItem: FC<RequestListItemProps> = ({ item }) => {
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
       <Text style={styles.title}>{item.title}</Text>
-      <Text
-        style={styles.desc}>{item.description.length > 100 ? item.description.substring(0, 100) + "..." : item.description} {item.description.length > 100 ?
+      <Text style={styles.desc}>{item.description.length > 100 ? item.description.substring(0, 100) + "..." : item.description} {item.description.length > 100 ?
         <Text>더보기</Text> : null}</Text>
       <View style={styles.infoRow}>
         <Text style={styles.priceText}>의뢰비: {item.desiredPrice ? item.desiredPrice.toLocaleString() : ""}원</Text>

@@ -85,7 +85,6 @@ const RequestScreen: FC<RequestScreenProps> = ({ navigation }) => {
 
   const onRefresh = async () => {
     setIsFetching(true);
-
     getRequestsQuery.remove()
     getRequestsQuery.refetch().then(() => {
       setIsFetching(false);

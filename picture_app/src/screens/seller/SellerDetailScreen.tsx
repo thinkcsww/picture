@@ -8,6 +8,9 @@ import SellerDetailPrice from "./components/SellerDetailPrice";
 import SellerDetailNumberOfWork from "./components/SellerDetailNumberOfWork";
 import SellerDetailReview from "./components/SellerDetailReview";
 import DeviceInfo from 'react-native-device-info';
+import { useQuery } from "react-query";
+import { RequestService } from "../../services/RequestService";
+import { SellerService } from "../../services/SellerService";
 
 const SellerDetailScreen = ({ route, navigation }) => {
   const { id } = route.params;
@@ -25,6 +28,16 @@ const SellerDetailScreen = ({ route, navigation }) => {
       }
     }
   };
+
+  // const getSellerDetailQuery = useQuery(SellerService.QueryKey.getSeller, () => {
+  //   return SellerService.getRequest(id);
+  // });
+  //
+  // if (getSellerDetailQuery.isLoading || !getSellerDetailQuery.data) {
+  //   return null;
+  // }
+  //
+  // const request = getSellerDetailQuery.data;
 
   return (
     <View style={{ flex: 1 }}>

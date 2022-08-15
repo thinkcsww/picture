@@ -62,7 +62,7 @@ const RequestDetailScreen = ({ route }) => {
           <Text style={{
             fontWeight: "bold",
             fontSize: 16,
-          }}>채택률 80%</Text>
+          }}>{ request.userAcceptRate === -1 ? '채택률 미정 ' : `채택률 ${request.userAcceptRate}%` } </Text>
         </View>
 
         <Divider style={{ height: 1, backgroundColor: "#aaaaaa", marginVertical: 20 }} />

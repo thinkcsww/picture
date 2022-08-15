@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import { Seller } from "../../../types/Seller";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Images from "../../../../assets/images";
 import Icon from "react-native-vector-icons/Ionicons";
 import { Colors } from "../../../colors";
@@ -11,7 +11,6 @@ type SellerListItemProps = {
   item: Seller.Seller
 }
 const SellerListItem: FC<SellerListItemProps> = ({ item }) => {
-  console.log(item);
   const navigation = useNavigation<any>();
 
   const onPress = () => {
@@ -24,15 +23,12 @@ const SellerListItem: FC<SellerListItemProps> = ({ item }) => {
         defaultSource={Images.profile.dummy}
         style={styles.profileImage}
       />
-
       <View>
         <View style={styles.infoContainer}>
           <Text style={styles.name}>{item.nickname} 작가님</Text>
         </View>
-        <View style={styles.infoContainer}>
-          <Text
-            numberOfLines={1}
-            style={styles.desc}>{item.description ? item.description : '반갑습니다.'}</Text>
+        <View style={{ width: '88%' }}>
+          <Text numberOfLines={2} style={styles.desc}>{item.description}</Text>
         </View>
 
         <View style={styles.additionalInfoContainer}>
@@ -100,7 +96,6 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
     flexDirection: "row",
-    height: 100,
   },
   profileImage: {
     width: 80,
@@ -116,7 +111,7 @@ const styles = StyleSheet.create({
   },
   desc: {
     fontSize: 12,
-    width: '80%'
+    flexShrink: 1
   },
   infoContainer: {
     marginTop: 2,

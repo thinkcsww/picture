@@ -28,6 +28,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring()
                 .antMatchers(HttpMethod.GET, "/api/v1/requests")
                 .antMatchers(HttpMethod.GET, "/api/v1/users/seller")
+                .antMatchers(HttpMethod.GET, "/api/v1/users/seller/{id}")
                 .antMatchers(HttpMethod.POST, "/api/v1/auth/token/refresh")
                 .antMatchers(HttpMethod.POST, "/api/v1/users");
     }

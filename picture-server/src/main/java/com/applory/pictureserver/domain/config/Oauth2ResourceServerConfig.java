@@ -23,6 +23,7 @@ public class Oauth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
 //        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http.authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/api/v1/users/check-nickname").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/users/seller/{id}").permitAll()
                 .antMatchers(
                         "/api/v1/requests",
                         "/api/v1/users/seller",

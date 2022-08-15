@@ -23,7 +23,7 @@ public class UserDto {
         private Integer workHourFromDt;
         private Integer workHourToDt;
         private String specialty;
-        private String sellerEnabledYn;
+        private String sellerEnabledYN;
         private LocalDateTime createdDt;
         private LocalDateTime updatedDt;
         private Integer peoplePrice;
@@ -39,7 +39,7 @@ public class UserDto {
             this.workHourFromDt = user.getWorkHourFromDt();
             this.workHourToDt = user.getWorkHourToDt();
             this.specialty = user.getSpecialty();
-            this.sellerEnabledYn = user.getSellerEnabledYn();
+            this.sellerEnabledYN = user.getSellerEnabledYn();
             this.createdDt = user.getCreatedDt();
             this.updatedDt = user.getUpdatedDt();
             this.peoplePrice = user.getPeoplePrice();
@@ -60,7 +60,7 @@ public class UserDto {
         private Integer workHourFromDt;
         private Integer workHourToDt;
         private String specialty;
-        private String sellerEnabledYn;
+        private String sellerEnabledYN;
         private LocalDateTime createdDt;
         private LocalDateTime updatedDt;
         private Integer peoplePrice;
@@ -82,7 +82,7 @@ public class UserDto {
             this.workHourFromDt = user.getWorkHourFromDt();
             this.workHourToDt = user.getWorkHourToDt();
             this.specialty = user.getSpecialty();
-            this.sellerEnabledYn = user.getSellerEnabledYn();
+            this.sellerEnabledYN = user.getSellerEnabledYn();
             this.createdDt = user.getCreatedDt();
             this.updatedDt = user.getUpdatedDt();
             this.peoplePrice = user.getPeoplePrice();

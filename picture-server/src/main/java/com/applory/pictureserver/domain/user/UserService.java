@@ -2,6 +2,7 @@ package com.applory.pictureserver.domain.user;
 
 import com.applory.pictureserver.domain.config.AppConfiguration;
 import com.applory.pictureserver.domain.exception.BadRequestException;
+import com.applory.pictureserver.domain.exception.NotFoundException;
 import com.applory.pictureserver.domain.shared.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -9,6 +10,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -72,5 +76,19 @@ public class UserService {
         if (userInDB != null) {
             throw new BadRequestException(nickname + " is already in use");
         }
+    }
+
+    public UserDto.SellerVM getSellerUser(UUID id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            UserDto.SellerVM sellerVM = new UserDto.SellerVM(user);
+
+            return sellerVM;
+        } else {
+            throw new NotFoundException(id + " user is not found");
+        }
+
     }
 }

@@ -12,5 +12,7 @@ import java.util.UUID;
 public interface ChattingRoomMemberRepository extends JpaRepository<ChattingRoomMember, UUID> {
     List<ChattingRoomMember> findByChattingRoom_Id(UUID roomId);
 
+    List<ChattingRoomMember> findByChattingRoom_IdAndUseYN(UUID roomId, String useYN);
+
     List<ChattingRoomMember> findByChattingRoom_IdAndUser(UUID roomId, User user);
 }

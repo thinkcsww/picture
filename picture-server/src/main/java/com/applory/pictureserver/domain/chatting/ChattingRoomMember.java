@@ -19,6 +19,9 @@ public class ChattingRoomMember {
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
+    @Column(name = "USE_YN", length = 1, columnDefinition = "varchar(1) default 'Y'")
+    private String useYN;
+
     @ManyToOne
     @JoinColumn(name="CHATTING_ROOM_ID")
     private ChattingRoom chattingRoom;

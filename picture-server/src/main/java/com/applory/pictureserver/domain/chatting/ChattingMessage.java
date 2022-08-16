@@ -39,10 +39,6 @@ public class ChattingMessage extends BaseTimeEntity {
     @OneToOne
     private User sender;
 
-    @NotNull
-    @OneToOne
-    private User receiver;
-
     // ALL, NONE, UserId - UserId일 경우 저장된 userId의 소유자만 읽을 수 있다
     @Column(name = "VISIBLE_TO", columnDefinition = "varchar(50) default 'ALL'")
     private String visibleTo;

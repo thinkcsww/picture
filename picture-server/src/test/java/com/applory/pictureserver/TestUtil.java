@@ -13,7 +13,7 @@ public class TestUtil {
     public static UserDto.Create createValidClientUser(String username) {
         UserDto.Create user = new UserDto.Create();
         user.setUsername(username);
-        user.setNickname("test-nickname");
+        user.setNickname(getNickname());
         user.setSnsType(User.SnsType.KAKAO);
 
         return user;
@@ -22,7 +22,7 @@ public class TestUtil {
     public static UserDto.Create createValidSellerUser(String username) {
         UserDto.Create user = new UserDto.Create();
         user.setUsername(username);
-        user.setNickname("test-nickname");
+        user.setNickname(getNickname());
         user.setDescription("test-description");
         user.setSellerEnabledYN("Y");
         user.setWorkHourFromDt(1700);
@@ -34,6 +34,10 @@ public class TestUtil {
         user.setOfficialPrice(2000);
 
         return user;
+    }
+
+    private static String getNickname() {
+        return "test-nickname" + ((int)Math.floor(Math.random() * (1000000)));
     }
 
     public static AuthDto.Login createValidLoginDto(String username) {

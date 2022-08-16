@@ -31,6 +31,7 @@ import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.*;
@@ -130,7 +131,7 @@ public class ChattingControllerTest {
 
         ChattingDto.Message message = new ChattingDto.Message();
         message.setMessage("HI");
-        message.setReceiverId(receiver.getId());
+        message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setRoomId(UUID.randomUUID());
         message.setIsFirst(true);
@@ -155,7 +156,7 @@ public class ChattingControllerTest {
 
         ChattingDto.Message message = new ChattingDto.Message();
         message.setMessage("HI");
-        message.setReceiverId(receiver.getId());
+        message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setRoomId(UUID.randomUUID());
         message.setIsFirst(true);
@@ -180,7 +181,7 @@ public class ChattingControllerTest {
 
         ChattingDto.Message message = new ChattingDto.Message();
         message.setMessage("HI");
-        message.setReceiverId(receiver.getId());
+        message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setRoomId(UUID.randomUUID());
         message.setIsFirst(true);
@@ -207,7 +208,7 @@ public class ChattingControllerTest {
 
         ChattingDto.Message message = new ChattingDto.Message();
         message.setMessage("HI");
-        message.setReceiverId(receiver.getId());
+        message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setRoomId(UUID.randomUUID());
         message.setIsFirst(true);
@@ -232,7 +233,7 @@ public class ChattingControllerTest {
 
         ChattingDto.Message message = new ChattingDto.Message();
         message.setMessage("HI");
-        message.setReceiverId(receiver.getId());
+        message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setRoomId(UUID.randomUUID());
         message.setIsFirst(true);
@@ -247,7 +248,7 @@ public class ChattingControllerTest {
     }
 
     @Test
-    public void startChatting_whenRoomIsNotExistCreateRoom_chatMessageIsConnectedWithRightSenderAndReceiver() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+    public void startChatting_whenRoomIsNotExistCreateRoom_chatMessageIsConnectedWithRightSender() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
         UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
         UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
@@ -259,7 +260,7 @@ public class ChattingControllerTest {
 
         ChattingDto.Message message = new ChattingDto.Message();
         message.setMessage("HI");
-        message.setReceiverId(receiver.getId());
+        message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setRoomId(UUID.randomUUID());
         message.setIsFirst(true);
@@ -269,7 +270,6 @@ public class ChattingControllerTest {
         blockingQueue.poll(100, TimeUnit.MILLISECONDS);
 
         assertThat(chattingMessageRepository.findAll().get(0).getSender().getId()).isEqualTo(sender.getId());
-        assertThat(chattingMessageRepository.findAll().get(0).getReceiver().getId()).isEqualTo(receiver.getId());
     }
 
     @Test
@@ -282,7 +282,7 @@ public class ChattingControllerTest {
 
         ChattingDto.Message message = new ChattingDto.Message();
         message.setRoomId(UUID.randomUUID());
-        message.setReceiverId(receiver.getId());
+        message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setMessage("HI");
         message.setIsFirst(true);
@@ -333,27 +333,27 @@ public class ChattingControllerTest {
 
     @Test
     public void getRooms_withValidToken_receivePagedRoomVmList() {
-
+        assertThat(true).isFalse();
     }
 
     @Test
     public void getRooms_withValidToken_receiveRoomsOrderByLatestTime() {
-
+        assertThat(true).isFalse();
     }
 
     @Test
     public void getRooms_withValidToken_receiveRoomWithLastMessageAndSentTime() {
-
+        assertThat(true).isFalse();
     }
 
     @Test
     public void getRooms_withValidToken_receiveRoomWithUnreadCount() {
-
+        assertThat(true).isFalse();
     }
 
     @Test
     public void getRooms_withValidToken_receiveRoomWithOpponentNickname() {
-
+        assertThat(true).isFalse();
     }
 
     @Test
@@ -367,17 +367,17 @@ public class ChattingControllerTest {
 
     @Test
     public void enterRoom_withValidToken_receive200() {
-
+        assertThat(true).isFalse();
     }
 
     @Test
     public void enterRoom_withValidToken_receiveRoomVM() {
-
+        assertThat(true).isFalse();
     }
 
     @Test
     public void enterRoom_withValidToken_receiveRoomVMWithMessages() {
-
+        assertThat(true).isFalse();
     }
 
     @Test
@@ -389,7 +389,7 @@ public class ChattingControllerTest {
 
         ChattingDto.Message message = new ChattingDto.Message();
         message.setRoomId(UUID.randomUUID());
-        message.setReceiverId(receiver.getId());
+        message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setMessage("HI");
         message.setIsFirst(true);
@@ -421,7 +421,7 @@ public class ChattingControllerTest {
 
         ChattingDto.Message message = new ChattingDto.Message();
         message.setRoomId(UUID.randomUUID());
-        message.setReceiverId(receiver.getId());
+        message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setMessage("HI");
         message.setIsFirst(true);
@@ -440,7 +440,7 @@ public class ChattingControllerTest {
     }
 
     @Test
-    public void leaveRoom_whenBothUserInRoom_deleteRoomJoin() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+    public void leaveRoom_whenBothUserInRoom_setRoomMemberUseYnToN() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
         UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
         UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
@@ -448,7 +448,7 @@ public class ChattingControllerTest {
 
         ChattingDto.Message message = new ChattingDto.Message();
         message.setRoomId(UUID.randomUUID());
-        message.setReceiverId(receiver.getId());
+        message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setMessage("HI");
         message.setIsFirst(true);
@@ -462,7 +462,7 @@ public class ChattingControllerTest {
         blockingQueue.poll(1000, TimeUnit.MILLISECONDS);
         leaveRoom(message.getRoomId(), Object.class);
 
-        List<ChattingRoomMember> roomMembers = chattingRoomMemberRepository.findByChattingRoom_Id(message.getRoomId());
+        List<ChattingRoomMember> roomMembers = chattingRoomMemberRepository.findByChattingRoom_IdAndUseYN(message.getRoomId(), "Y");
 
         assertThat(roomMembers.size()).isEqualTo(1);
 
@@ -477,7 +477,7 @@ public class ChattingControllerTest {
 
         ChattingDto.Message message = new ChattingDto.Message();
         message.setRoomId(UUID.randomUUID());
-        message.setReceiverId(receiver.getId());
+        message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setMessage("HI");
         message.setIsFirst(true);
@@ -519,7 +519,7 @@ public class ChattingControllerTest {
 
         ChattingDto.Message message = new ChattingDto.Message();
         message.setRoomId(UUID.randomUUID());
-        message.setReceiverId(receiver.getId());
+        message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setMessage("HI");
         message.setIsFirst(true);
@@ -539,7 +539,7 @@ public class ChattingControllerTest {
         authenticate(token2);
         leaveRoom(message.getRoomId(), Object.class);
 
-        List<ChattingRoomMember> roomMembers = chattingRoomMemberRepository.findByChattingRoom_Id(message.getRoomId());
+        List<ChattingRoomMember> roomMembers = chattingRoomMemberRepository.findByChattingRoom_IdAndUseYN(message.getRoomId(), "Y");
 
         assertThat(roomMembers.size()).isEqualTo(0);
     }
@@ -560,7 +560,7 @@ public class ChattingControllerTest {
 
         ChattingDto.Message message = new ChattingDto.Message();
         message.setRoomId(UUID.randomUUID());
-        message.setReceiverId(receiver.getId());
+        message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setMessage("HI");
         message.setIsFirst(true);
@@ -580,16 +580,9 @@ public class ChattingControllerTest {
         authenticate(token2);
         leaveRoom(message.getRoomId(), Object.class);
 
-        boolean flag = true;
         List<ChattingMessage> messages = chattingMessageRepository.findByChattingRoom_Id(message.getRoomId());
 
-        for (ChattingMessage m : messages) {
-            if (!m.getVisibleTo().equals(ChattingMessage.VisibleToType.NONE.toString())) {
-                flag = false;
-            }
-        }
-
-        assertThat(flag).isTrue();
+        assertThat(messages.get(0).getVisibleTo()).isEqualTo(ChattingMessage.VisibleToType.NONE.toString());
     }
 
     @Test
@@ -608,7 +601,7 @@ public class ChattingControllerTest {
 
         ChattingDto.Message message = new ChattingDto.Message();
         message.setRoomId(UUID.randomUUID());
-        message.setReceiverId(receiver.getId());
+        message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setMessage("HI");
         message.setIsFirst(true);

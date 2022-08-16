@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public class ChattingDto {
@@ -18,7 +19,7 @@ public class ChattingDto {
         private UUID roomId;
 
         @NotNull
-        private UUID receiverId;
+        private List<UUID> userIdList;
 
         @NotNull
         private UUID senderId;

@@ -71,3 +71,6 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 picture:
   upload-path: uploads-dev
+logging:
+  level:
+    root: debug

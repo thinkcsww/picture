@@ -3,7 +3,6 @@ package com.applory.pictureserver;
 import com.applory.pictureserver.domain.chatting.*;
 import com.applory.pictureserver.domain.oauth.AuthDto;
 import com.applory.pictureserver.domain.oauth.MyOAuth2Token;
-import com.applory.pictureserver.domain.request.RequestDto;
 import com.applory.pictureserver.domain.request.RequestRepository;
 import com.applory.pictureserver.domain.user.UserDto;
 import com.applory.pictureserver.domain.user.UserRepository;
@@ -24,24 +23,19 @@ import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.springframework.web.socket.sockjs.client.SockJsClient;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.*;
 
 import static com.applory.pictureserver.TestConstants.*;
-import static com.applory.pictureserver.TestConstants.TEST_USERNAME;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -311,7 +305,7 @@ public class ChattingControllerTest {
         });
 
 
-        stompSession.send("/api/v1/chat/send", message);
+        sendMessage(message);
 
 
         assertThat(blockingQueue.poll(100, TimeUnit.MILLISECONDS).getMessage()).isEqualTo(message.getMessage());
@@ -405,7 +399,7 @@ public class ChattingControllerTest {
         authenticate(token);
         connectStomp(token);
 
-        stompSession.send("/api/v1/chat/send", message);
+        sendMessage(message);
         blockingQueue.poll(1000, TimeUnit.MILLISECONDS);
 
         clearInterceptors();
@@ -437,7 +431,7 @@ public class ChattingControllerTest {
         authenticate(token);
         connectStomp(token);
 
-        stompSession.send("/api/v1/chat/send", message);
+        sendMessage(message);
         blockingQueue.poll(1000, TimeUnit.MILLISECONDS);
         ResponseEntity<Object> response = leaveRoom(message.getRoomId(), Object.class);
 
@@ -464,7 +458,7 @@ public class ChattingControllerTest {
         authenticate(token);
         connectStomp(token);
 
-        stompSession.send("/api/v1/chat/send", message);
+        sendMessage(message);
         blockingQueue.poll(1000, TimeUnit.MILLISECONDS);
         leaveRoom(message.getRoomId(), Object.class);
 
@@ -493,7 +487,7 @@ public class ChattingControllerTest {
         authenticate(token);
         connectStomp(token);
 
-        stompSession.send("/api/v1/chat/send", message);
+        sendMessage(message);
         blockingQueue.poll(1000, TimeUnit.MILLISECONDS);
         leaveRoom(message.getRoomId(), Object.class);
 
@@ -533,7 +527,7 @@ public class ChattingControllerTest {
         authenticate(token);
         connectStomp(token);
 
-        stompSession.send("/api/v1/chat/send", message);
+        sendMessage(message);
 
         blockingQueue.poll(1000, TimeUnit.MILLISECONDS);
 
@@ -574,7 +568,7 @@ public class ChattingControllerTest {
         authenticate(token);
         connectStomp(token);
 
-        stompSession.send("/api/v1/chat/send", message);
+        sendMessage(message);
 
         blockingQueue.poll(1000, TimeUnit.MILLISECONDS);
 
@@ -622,7 +616,7 @@ public class ChattingControllerTest {
         authenticate(token);
         connectStomp(token);
 
-        stompSession.send("/api/v1/chat/send", message);
+        sendMessage(message);
 
         blockingQueue.poll(1000, TimeUnit.MILLISECONDS);
 
@@ -634,7 +628,7 @@ public class ChattingControllerTest {
         authenticate(token2);
         leaveRoom(message.getRoomId(), Object.class);
 
-        stompSession.send("/api/v1/chat/send", message);
+        sendMessage(message);
 
 
     }
@@ -646,7 +640,7 @@ public class ChattingControllerTest {
     }
 
     private void sendMessage(ChattingDto.Message message) {
-        stompSession.send("/api/v1/chat/send", message);
+        stompSession.send(API_V_1_CHATTINGS_SEND, message);
     }
 
     private <T> ResponseEntity<T> enterRoom (UUID roomId, Class<T> responseType) {

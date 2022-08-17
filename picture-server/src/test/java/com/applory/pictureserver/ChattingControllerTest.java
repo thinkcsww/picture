@@ -9,6 +9,7 @@ import com.applory.pictureserver.domain.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.*;
 
@@ -169,6 +171,31 @@ public class ChattingControllerTest {
     }
 
     @Test
+    public void startChatting_whenRoomIsNotExistCreateRoom_chatroomMemberIsCreatedAndUseYnIsSetToY() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
+        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
+
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+
+        connectStomp(tokenResponse.getBody().getAccess_token());
+
+        ChattingDto.Message message = new ChattingDto.Message();
+        message.setMessage("HI");
+        message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
+        message.setSenderId(sender.getId());
+        message.setRoomId(UUID.randomUUID());
+        message.setIsFirst(true);
+
+        sendMessage(message);
+
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
+
+        assertThat(chattingRoomMemberRepository.findAll().get(0).getUseYN()).isEqualTo("Y");
+    }
+
+    @Test
     public void startChatting_whenRoomIsNotExistCreateRoom_chatroomMemberIsConnectedWithRightChattingRoom() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
         UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
         UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
@@ -273,6 +300,146 @@ public class ChattingControllerTest {
     }
 
     @Test
+    public void startChatting_whenILeftThisRoomBefore_recycleTheRoomAlreadyExist() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+
+        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
+        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
+
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(user1.getUsername()), MyOAuth2Token.class);
+        String token = tokenResponse.getBody().getAccess_token();
+
+        ResponseEntity<MyOAuth2Token> tokenResponse2 = login(TestUtil.createValidLoginDto(user2.getUsername()), MyOAuth2Token.class);
+        String token2 = tokenResponse2.getBody().getAccess_token();
+
+        ChattingDto.Message message = new ChattingDto.Message();
+        message.setRoomId(UUID.randomUUID());
+        message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
+        message.setSenderId(sender.getId());
+        message.setMessage("HI");
+        message.setIsFirst(true);
+
+        authenticate(token);
+        connectStomp(token);
+
+        sendMessage(message);
+
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
+
+        leaveRoom(message.getRoomId(), Object.class);
+
+        ChattingDto.Message message2 = new ChattingDto.Message();
+        message2.setRoomId(UUID.randomUUID());
+        message2.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
+        message2.setSenderId(sender.getId());
+        message2.setMessage("HI");
+        message2.setIsFirst(true);
+
+        sendMessage(message2);
+
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
+
+        Optional<ChattingRoom> chattingRoomOptional = chattingRoomRepository.findById(message.getRoomId());
+        assertThat(chattingRoomOptional.isPresent()).isTrue();
+    }
+
+    @Test
+    public void startChatting_whenILeftThisRoomBefore_everyRoomMemberUseYnIsY() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+
+        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
+        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
+
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(user1.getUsername()), MyOAuth2Token.class);
+        String token = tokenResponse.getBody().getAccess_token();
+
+        ChattingDto.Message message = new ChattingDto.Message();
+        message.setRoomId(UUID.randomUUID());
+        message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
+        message.setSenderId(sender.getId());
+        message.setMessage("HI");
+        message.setIsFirst(true);
+
+        authenticate(token);
+        connectStomp(token);
+
+        sendMessage(message);
+
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
+
+        leaveRoom(message.getRoomId(), Object.class);
+
+        ChattingDto.Message message2 = new ChattingDto.Message();
+        message2.setRoomId(UUID.randomUUID());
+        message2.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
+        message2.setSenderId(sender.getId());
+        message2.setMessage("HI");
+        message2.setIsFirst(true);
+
+        sendMessage(message2);
+
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
+
+        List<ChattingRoomMember> all = chattingRoomMemberRepository.findByChattingRoom_IdAndUseYN(message.getRoomId(), "Y");
+
+        assertThat(all.size()).isEqualTo(2);
+    }
+
+    @Test
+    public void sendMessage_whenOpponentLeftRoom_everyRoomMemberUseYnIsY() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+
+        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
+        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
+
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(user1.getUsername()), MyOAuth2Token.class);
+        String token = tokenResponse.getBody().getAccess_token();
+
+        ResponseEntity<MyOAuth2Token> tokenResponse2 = login(TestUtil.createValidLoginDto(user2.getUsername()), MyOAuth2Token.class);
+        String token2 = tokenResponse2.getBody().getAccess_token();
+
+        ChattingDto.Message message = new ChattingDto.Message();
+        message.setRoomId(UUID.randomUUID());
+        message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
+        message.setSenderId(sender.getId());
+        message.setMessage("HI");
+        message.setIsFirst(true);
+
+        authenticate(token);
+        connectStomp(token);
+
+        sendMessage(message);
+
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
+
+        clearInterceptors();
+
+        // 2번쨰 leaveRoom 시작
+        authenticate(token2);
+        leaveRoom(message.getRoomId(), Object.class);
+
+        // 나로 다시 로그인
+        clearInterceptors();
+        authenticate(token);
+
+        ChattingDto.Message message2 = new ChattingDto.Message();
+        message2.setRoomId(message.getRoomId());
+        message2.setSenderId(sender.getId());
+        message2.setMessage("HI");
+
+        sendMessage(message2);
+
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
+
+        List<ChattingRoomMember> all = chattingRoomMemberRepository.findByChattingRoom_IdAndUseYN(message.getRoomId(), "Y");
+
+        assertThat(all.size()).isEqualTo(2);
+    }
+
+    @Test
     public void sendMessage_withValidDto_sentMessageIsCorrect() throws ExecutionException, InterruptedException, TimeoutException, URISyntaxException {
 
         UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
@@ -332,26 +499,31 @@ public class ChattingControllerTest {
     }
 
     @Test
+    @Disabled
     public void getRooms_withValidToken_receivePagedRoomVmList() {
         assertThat(true).isFalse();
     }
 
     @Test
+    @Disabled
     public void getRooms_withValidToken_receiveRoomsOrderByLatestTime() {
         assertThat(true).isFalse();
     }
 
     @Test
+    @Disabled
     public void getRooms_withValidToken_receiveRoomWithLastMessageAndSentTime() {
         assertThat(true).isFalse();
     }
 
     @Test
+    @Disabled
     public void getRooms_withValidToken_receiveRoomWithUnreadCount() {
         assertThat(true).isFalse();
     }
 
     @Test
+    @Disabled
     public void getRooms_withValidToken_receiveRoomWithOpponentNickname() {
         assertThat(true).isFalse();
     }
@@ -366,16 +538,19 @@ public class ChattingControllerTest {
     }
 
     @Test
+    @Disabled
     public void enterRoom_withValidToken_receive200() {
         assertThat(true).isFalse();
     }
 
     @Test
+    @Disabled
     public void enterRoom_withValidToken_receiveRoomVM() {
         assertThat(true).isFalse();
     }
 
     @Test
+    @Disabled
     public void enterRoom_withValidToken_receiveRoomVMWithMessages() {
         assertThat(true).isFalse();
     }
@@ -400,7 +575,7 @@ public class ChattingControllerTest {
         connectStomp(token);
 
         sendMessage(message);
-        blockingQueue.poll(1000, TimeUnit.MILLISECONDS);
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
 
         clearInterceptors();
 
@@ -432,7 +607,7 @@ public class ChattingControllerTest {
         connectStomp(token);
 
         sendMessage(message);
-        blockingQueue.poll(1000, TimeUnit.MILLISECONDS);
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
         ResponseEntity<Object> response = leaveRoom(message.getRoomId(), Object.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
@@ -459,7 +634,7 @@ public class ChattingControllerTest {
         connectStomp(token);
 
         sendMessage(message);
-        blockingQueue.poll(1000, TimeUnit.MILLISECONDS);
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
         leaveRoom(message.getRoomId(), Object.class);
 
         List<ChattingRoomMember> roomMembers = chattingRoomMemberRepository.findByChattingRoom_IdAndUseYN(message.getRoomId(), "Y");
@@ -488,7 +663,7 @@ public class ChattingControllerTest {
         connectStomp(token);
 
         sendMessage(message);
-        blockingQueue.poll(1000, TimeUnit.MILLISECONDS);
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
         leaveRoom(message.getRoomId(), Object.class);
 
         boolean flag = true;
@@ -504,7 +679,7 @@ public class ChattingControllerTest {
     }
 
     @Test
-    public void leaveRoom_whenOnlyOneUserIsInRoom_deleteRoomJoin() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+    public void leaveRoom_whenOnlyOneUserIsInRoom_everyRoomMemberUseYnIsN() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
         UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
         UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
 
@@ -529,7 +704,7 @@ public class ChattingControllerTest {
 
         sendMessage(message);
 
-        blockingQueue.poll(1000, TimeUnit.MILLISECONDS);
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
 
         leaveRoom(message.getRoomId(), Object.class);
 
@@ -539,9 +714,9 @@ public class ChattingControllerTest {
         authenticate(token2);
         leaveRoom(message.getRoomId(), Object.class);
 
-        List<ChattingRoomMember> roomMembers = chattingRoomMemberRepository.findByChattingRoom_IdAndUseYN(message.getRoomId(), "Y");
+        List<ChattingRoomMember> roomMembers = chattingRoomMemberRepository.findByChattingRoom_IdAndUseYN(message.getRoomId(), "N");
 
-        assertThat(roomMembers.size()).isEqualTo(0);
+        assertThat(roomMembers.size()).isEqualTo(2);
     }
 
     @Test
@@ -570,7 +745,7 @@ public class ChattingControllerTest {
 
         sendMessage(message);
 
-        blockingQueue.poll(1000, TimeUnit.MILLISECONDS);
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
 
         leaveRoom(message.getRoomId(), Object.class);
 
@@ -611,7 +786,7 @@ public class ChattingControllerTest {
 
         sendMessage(message);
 
-        blockingQueue.poll(1000, TimeUnit.MILLISECONDS);
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
 
         leaveRoom(message.getRoomId(), Object.class);
 

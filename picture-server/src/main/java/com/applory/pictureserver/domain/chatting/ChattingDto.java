@@ -18,7 +18,6 @@ public class ChattingDto {
         @NotNull
         private UUID roomId;
 
-        @NotNull
         private List<UUID> userIdList;
 
         @NotNull

@@ -11,6 +11,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,8 +35,10 @@ public class ChattingService {
 
         ChattingRoom targetChattingRoom = null;
 
-        // 개인톡방일시
-        if (message.getUserIdList().size() == 2) {
+        // 개인톡방 생성시
+        if (message.getUserIdList() == null) {
+            targetChattingRoom = chattingRoomRepository.getById(message.getRoomId());
+        } else {
             // 재사용 가능한 방이 있는지 flag
             boolean recyclable = false;
 
@@ -56,26 +59,23 @@ public class ChattingService {
             if (!recyclable) {
                 targetChattingRoom = saveNewRoom(message);
 
-                saveNewRoomMember(message, targetChattingRoom);
-
-            // 재사용 가능한 방이 있으면 roomMember useYN을 모두 Y로
-            } else {
-                targetChattingRoom.getChattingRoomMembers().forEach(chattingRoomMember -> {
-                    chattingRoomMember.setUseYN("Y");
-                });
+                targetChattingRoom.setChattingRoomMembers(saveNewRoomMember(message, targetChattingRoom));
             }
-
-        } else {
-            targetChattingRoom = chattingRoomRepository.getById(message.getRoomId());
         }
 
+        for (ChattingRoomMember chattingRoomMember : targetChattingRoom.getChattingRoomMembers()) {
+            if (chattingRoomMember.getUseYN().equals("N")) {
+                chattingRoomMember.setUseYN("Y");
+            }
+        }
 
         saveMessage(message, targetChattingRoom);
 
         simpMessagingTemplate.convertAndSend("/room/" + message.getRoomId(), message);
     }
 
-    private ChattingRoom saveNewRoom(ChattingDto.Message message) {
+    @Transactional
+    ChattingRoom saveNewRoom(ChattingDto.Message message) {
         ChattingRoom chattingRoom;
         chattingRoom = new ChattingRoom();
         chattingRoom.setId(message.getRoomId());
@@ -83,7 +83,9 @@ public class ChattingService {
         return chattingRoomRepository.save(chattingRoom);
     }
 
-    private void saveNewRoomMember(ChattingDto.Message message, ChattingRoom chattingRoomInDB) {
+    @Transactional
+    List<ChattingRoomMember> saveNewRoomMember(ChattingDto.Message message, ChattingRoom chattingRoomInDB) {
+        List<ChattingRoomMember> chattingRoomMembers = new ArrayList<>();
         for (UUID userId : message.getUserIdList()) {
             Optional<User> userOptional = userRepository.findById(userId);
             if (!userOptional.isPresent()) {
@@ -94,11 +96,13 @@ public class ChattingService {
             chattingRoomMember.setChattingRoom(chattingRoomInDB);
             chattingRoomMember.setUser(userOptional.get());
             chattingRoomMember.setUseYN("Y");
-            chattingRoomMemberRepository.save(chattingRoomMember);
+            chattingRoomMembers.add(chattingRoomMember);
         }
+        return chattingRoomMemberRepository.saveAll(chattingRoomMembers);
     }
 
-    private void saveMessage(ChattingDto.Message message, ChattingRoom chattingRoomInDB) {
+    @Transactional
+    void saveMessage(ChattingDto.Message message, ChattingRoom chattingRoomInDB) {
         ChattingMessage chattingMessage = new ChattingMessage();
         chattingMessage.setChattingRoom(chattingRoomInDB);
         chattingMessage.setMessage(message.getMessage());

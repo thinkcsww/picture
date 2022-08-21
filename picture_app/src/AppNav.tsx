@@ -16,6 +16,7 @@ import SignUpClientScreen from "./screens/signup/SignUpClientScreen";
 import AddRequestScreen from "./screens/request/AddRequestScreen";
 import RequestDetailScreen from "./screens/request/RequestDetailScreen";
 import { setSignUpRedux } from "./store/slices/signUpSlice";
+import ChattingRoomScreen from "./screens/chatting/ChattingRoomScreen";
 
 export const RouteNames = {
   SignUpClient: "SignUpClient",
@@ -37,6 +38,7 @@ export const RouteNames = {
 
   ChattingTab: "ChattingTab",
   Chatting: "Chatting",
+  ChattingRoom: "ChattingRoom",
 
   MyPageTab: "MyPageTab",
   MyPage: "MyPage",
@@ -78,6 +80,7 @@ const AppNav = () => {
         cardStyle: { backgroundColor: '#fff' }
       }}>
         <Stack.Screen name={RouteNames.Chatting} component={ChattingScreen} options={{ headerShown: false }} />
+        <Stack.Screen name={RouteNames.ChattingRoom} component={ChattingRoomScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     )
   }
@@ -162,12 +165,12 @@ const AppNav = () => {
   const tabEventListenerShowLoginScreen = {
     tabPress: (e: any) => {
       // if (!isTokenExist) {
-        const navigationKey = e.target.split('-')[0];
-        console.log(navigationKey);
-        dispatch(setSignUpRedux({ destination: navigationKey }))
-        navigation.navigate(RouteNames.SignUpGuide)
-        e.preventDefault();
-        return;
+      //   const navigationKey = e.target.split('-')[0];
+      //   console.log(navigationKey);
+      //   dispatch(setSignUpRedux({ destination: navigationKey }))
+      //   navigation.navigate(RouteNames.SignUpGuide)
+      //   e.preventDefault();
+        return true;
       // }
     },
   }

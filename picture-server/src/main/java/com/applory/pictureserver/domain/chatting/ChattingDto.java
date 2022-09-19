@@ -1,5 +1,6 @@
 package com.applory.pictureserver.domain.chatting;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,12 +26,11 @@ public class ChattingDto {
 
         private String message;
 
-        private Boolean isFirst;
-
     }
 
     @Getter
     @Setter
+    @Builder
     public static class ChattingRoomVM {
         private UUID id;
 

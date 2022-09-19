@@ -19,12 +19,15 @@ spring:
             mode: none
     hibernate:
       ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
   profiles:
     active: dev
 logging:
   level:
-    root: error
+    root: debug
+    com.applory: debug
 #security:
 #  oauth2:
 #    client:

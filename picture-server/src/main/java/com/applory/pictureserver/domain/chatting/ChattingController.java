@@ -8,6 +8,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -28,7 +29,7 @@ public class ChattingController {
     }
 
     @GetMapping("")
-    public Page<ChattingDto.ChattingRoomVM> getRooms(Pageable pageable) {
+    public List<ChattingDto.ChattingRoomVM> getRooms(Pageable pageable) {
         return chattingService.getRooms(pageable);
     }
 

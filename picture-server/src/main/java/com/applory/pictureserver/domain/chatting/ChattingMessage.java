@@ -24,7 +24,7 @@ public class ChattingMessage extends BaseTimeEntity {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")
+    @Column(name = "ID", columnDefinition = "BINARY(16)")
     private UUID id;
 
     @ManyToOne
@@ -37,6 +37,7 @@ public class ChattingMessage extends BaseTimeEntity {
 
     @NotNull
     @OneToOne
+    @JoinColumn(name = "SENDER_ID")
     private User sender;
 
     // ALL, NONE, UserId - UserId일 경우 저장된 userId의 소유자만 읽을 수 있다

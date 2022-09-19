@@ -11,10 +11,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -141,36 +139,33 @@ public class ChattingService {
 
     }
 
-    public Page<ChattingDto.ChattingRoomVM> getRooms(Pageable pageable) {
-        String username = SecurityUtils.getPrincipal();
-        User user = userRepository.findByUsername(username);
+    public List<ChattingDto.ChattingRoomVM> getRooms(Pageable pageable) {
+        User user = userRepository.findByUsername(SecurityUtils.getPrincipal());
 
-        Page<ChattingRoom> chattingRoomsInDB = chattingRoomRepository.findAllByChattingRoomMembers_User(user, pageable);
+        return chattingRoomRepository.findAllByChattingRoomMembers_User(user, pageable)
+                .stream()
+                .map(room -> {
+                    ChattingMessage lastMessage = chattingMessageRepository.findTopByChattingRoom(room);
 
+                    int unreadCount = chattingMessageRepository.countUnreadMessageOfRoom(room.getId(), user.getId());
 
-        return chattingRoomsInDB.map(room -> {
-            ChattingDto.ChattingRoomVM chattingRoomVM = new ChattingDto.ChattingRoomVM();
+                    String opponentNickname = "";
 
-            ChattingMessage lastMessage = chattingMessageRepository.findTopByChattingRoom(room);
+                    for (ChattingRoomMember member : room.getChattingRoomMembers()) {
+                        if (!member.getUser().getId().equals(user.getId())) {
+                            opponentNickname = member.getUser().getNickname();
+                        }
+                    }
 
-            int unreadCount = chattingMessageRepository.countUnreadMessageOfRoom(room.getId(), user.getId());
+                    return ChattingDto.ChattingRoomVM.builder()
+                            .id(room.getId())
+                            .lastMessage(lastMessage.getMessage())
+                            .lastMessageDt(lastMessage.getCreatedDt())
+                            .unreadCount(unreadCount)
+                            .opponentNickname(opponentNickname)
+                            .build();
 
-            String opponentNickname = "";
-
-            for (ChattingRoomMember member : room.getChattingRoomMembers()) {
-                if (!member.getUser().getId().equals(user.getId())) {
-                    opponentNickname = member.getUser().getNickname();
-                }
-            }
-
-
-            chattingRoomVM.setId(room.getId());
-            chattingRoomVM.setLastMessage(lastMessage.getMessage());
-            chattingRoomVM.setLastMessageDt(lastMessage.getCreatedDt());
-            chattingRoomVM.setUnreadCount(unreadCount);
-            chattingRoomVM.setOpponentNickname(opponentNickname);
-
-            return chattingRoomVM;
-        });
+                }).sorted(Comparator.comparing(ChattingDto.ChattingRoomVM::getLastMessageDt).reversed())
+                .collect(Collectors.toList());
     }
 }

@@ -16,8 +16,6 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserRepository userRepository;
-
     private final UserService userService;
 
     @PostMapping("")

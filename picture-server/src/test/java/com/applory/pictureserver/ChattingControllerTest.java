@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
@@ -136,7 +137,6 @@ public class ChattingControllerTest {
         message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setRoomId(UUID.randomUUID());
-        message.setIsFirst(true);
 
         sendMessage(message);
 
@@ -161,7 +161,6 @@ public class ChattingControllerTest {
         message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setRoomId(UUID.randomUUID());
-        message.setIsFirst(true);
 
         sendMessage(message);
 
@@ -186,7 +185,6 @@ public class ChattingControllerTest {
         message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setRoomId(UUID.randomUUID());
-        message.setIsFirst(true);
 
         sendMessage(message);
 
@@ -211,7 +209,6 @@ public class ChattingControllerTest {
         message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setRoomId(UUID.randomUUID());
-        message.setIsFirst(true);
 
         sendMessage(message);
 
@@ -238,7 +235,6 @@ public class ChattingControllerTest {
         message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setRoomId(UUID.randomUUID());
-        message.setIsFirst(true);
 
         sendMessage(message);
 
@@ -263,7 +259,6 @@ public class ChattingControllerTest {
         message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setRoomId(UUID.randomUUID());
-        message.setIsFirst(true);
 
         sendMessage(message);
 
@@ -290,7 +285,6 @@ public class ChattingControllerTest {
         message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setRoomId(UUID.randomUUID());
-        message.setIsFirst(true);
 
         sendMessage(message);
 
@@ -318,7 +312,6 @@ public class ChattingControllerTest {
         message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setMessage("HI");
-        message.setIsFirst(true);
 
         authenticate(token);
         connectStomp(token);
@@ -334,7 +327,6 @@ public class ChattingControllerTest {
         message2.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message2.setSenderId(sender.getId());
         message2.setMessage("HI");
-        message2.setIsFirst(true);
 
         sendMessage(message2);
 
@@ -360,7 +352,6 @@ public class ChattingControllerTest {
         message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setMessage("HI");
-        message.setIsFirst(true);
 
         authenticate(token);
         connectStomp(token);
@@ -376,7 +367,6 @@ public class ChattingControllerTest {
         message2.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message2.setSenderId(sender.getId());
         message2.setMessage("HI");
-        message2.setIsFirst(true);
 
         sendMessage(message2);
 
@@ -406,7 +396,6 @@ public class ChattingControllerTest {
         message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setMessage("HI");
-        message.setIsFirst(true);
 
         authenticate(token);
         connectStomp(token);
@@ -452,7 +441,6 @@ public class ChattingControllerTest {
         message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setMessage("HI");
-        message.setIsFirst(true);
 
         ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
 
@@ -499,15 +487,72 @@ public class ChattingControllerTest {
     }
 
     @Test
-    @Disabled
-    public void getRooms_withValidToken_receivePagedRoomVmList() {
-        assertThat(true).isFalse();
+    public void getRooms_withValidToken_receivePagedRoomVmList() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
+        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
+
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+
+        connectStomp(tokenResponse.getBody().getAccess_token());
+
+        ChattingDto.Message message = new ChattingDto.Message();
+        message.setMessage("HI");
+        message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
+        message.setSenderId(sender.getId());
+        message.setRoomId(UUID.randomUUID());
+
+        sendMessage(message);
+
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
+
+        authenticate(tokenResponse.getBody().getAccess_token());
+
+        ResponseEntity<List<ChattingDto.ChattingRoomVM>> roomsResponse = getRooms(0, 10, new ParameterizedTypeReference<List<ChattingDto.ChattingRoomVM>>() {});
+
+        assertThat(roomsResponse.getBody().get(0).getId()).isEqualTo(message.getRoomId());
     }
 
     @Test
     @Disabled
-    public void getRooms_withValidToken_receiveRoomsOrderByLatestTime() {
-        assertThat(true).isFalse();
+    public void getRooms_withValidToken_receiveRoomsOrderByLatestTime() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.Create user3 = TestUtil.createValidClientUser(TEST_USERNAME + "3");
+        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
+        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
+        UserDto.VM receiver2 = signUp(user3, UserDto.VM.class).getBody();
+
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+
+        connectStomp(tokenResponse.getBody().getAccess_token());
+
+        ChattingDto.Message message = new ChattingDto.Message();
+        message.setMessage("HI");
+        message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
+        message.setSenderId(sender.getId());
+        message.setRoomId(UUID.randomUUID());
+
+        sendMessage(message);
+
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
+
+        ChattingDto.Message message2 = new ChattingDto.Message();
+        message2.setMessage("HI");
+        message2.setUserIdList(Arrays.asList(sender.getId(), receiver2.getId()));
+        message2.setSenderId(sender.getId());
+        message2.setRoomId(UUID.randomUUID());
+
+        sendMessage(message2);
+
+        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
+
+        authenticate(tokenResponse.getBody().getAccess_token());
+
+        ResponseEntity<List<ChattingDto.ChattingRoomVM>> roomsResponse = getRooms(0, 10, new ParameterizedTypeReference<List<ChattingDto.ChattingRoomVM>>() {});
+
+        assertThat(roomsResponse.getBody().get(0).getLastMessageDt()).isAfter(roomsResponse.getBody().get(1).getLastMessageDt());
     }
 
     @Test
@@ -567,7 +612,6 @@ public class ChattingControllerTest {
         message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setMessage("HI");
-        message.setIsFirst(true);
 
         ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         String token = tokenResponse.getBody().getAccess_token();
@@ -599,7 +643,6 @@ public class ChattingControllerTest {
         message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setMessage("HI");
-        message.setIsFirst(true);
 
         ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         String token = tokenResponse.getBody().getAccess_token();
@@ -626,7 +669,6 @@ public class ChattingControllerTest {
         message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setMessage("HI");
-        message.setIsFirst(true);
 
         ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         String token = tokenResponse.getBody().getAccess_token();
@@ -655,7 +697,6 @@ public class ChattingControllerTest {
         message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setMessage("HI");
-        message.setIsFirst(true);
 
         ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
         String token = tokenResponse.getBody().getAccess_token();
@@ -697,7 +738,6 @@ public class ChattingControllerTest {
         message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setMessage("HI");
-        message.setIsFirst(true);
 
         authenticate(token);
         connectStomp(token);
@@ -738,7 +778,6 @@ public class ChattingControllerTest {
         message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setMessage("HI");
-        message.setIsFirst(true);
 
         authenticate(token);
         connectStomp(token);
@@ -779,7 +818,6 @@ public class ChattingControllerTest {
         message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         message.setSenderId(sender.getId());
         message.setMessage("HI");
-        message.setIsFirst(true);
 
         authenticate(token);
         connectStomp(token);
@@ -820,6 +858,13 @@ public class ChattingControllerTest {
     }
 
     private <T> ResponseEntity<T> getRooms (int page, int size, Class<T> responseType) {
+        String url = API_V_1_CHATTINGS;
+        url += "?page=" + page + "&size=" + size;
+
+        return testRestTemplate.exchange(url, HttpMethod.GET, null, responseType);
+    }
+
+    private <T> ResponseEntity<T> getRooms (int page, int size, ParameterizedTypeReference<T> responseType) {
         String url = API_V_1_CHATTINGS;
         url += "?page=" + page + "&size=" + size;
 

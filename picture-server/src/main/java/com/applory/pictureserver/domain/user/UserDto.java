@@ -96,30 +96,19 @@ public class UserDto {
     public static class Create {
         @NotEmpty
         private String username;
-
         @NotEmpty
         @UniqueNickname
         private String nickname;
-
         @NotNull
         private User.SnsType snsType;
-
         private String description;
-
         private String sellerEnabledYN;
-
         private Integer workHourFromDt;
-
         private Integer workHourToDt;
-
         private String specialty;
-
         private Integer peoplePrice;
-
         private Integer backgroundPrice;
-
         private Integer officialPrice;
-
     }
 
     @Getter

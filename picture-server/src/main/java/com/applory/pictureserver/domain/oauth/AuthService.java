@@ -26,8 +26,8 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class AuthService {
     public static final String KAKAO_VALIDATE_TOKEN_URL = "https://kapi.kakao.com/v1/user/access_token_info";
 

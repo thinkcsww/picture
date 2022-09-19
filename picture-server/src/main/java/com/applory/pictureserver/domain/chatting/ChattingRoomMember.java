@@ -16,7 +16,7 @@ public class ChattingRoomMember {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")
+    @Column(name = "ID", columnDefinition = "BINARY(16)")
     private UUID id;
 
     @Column(name = "USE_YN", length = 1, columnDefinition = "varchar(1) default 'Y'")
@@ -27,5 +27,6 @@ public class ChattingRoomMember {
     private ChattingRoom chattingRoom;
 
     @OneToOne
+    @JoinColumn(name = "USER_ID")
     private User user;
 }

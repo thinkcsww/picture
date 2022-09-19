@@ -77,7 +77,9 @@ const AddRequestScreen = () => {
 
 
   return (
-    <ScrollView>
+    <ScrollView style={{
+      backgroundColor: '#fff'
+    }}>
       <SafeAreaView>
         <AppHeader title={'공개 의뢰하기'} iconName={"close"} rightButton={'완료'} rightButtonStyle={{color: '#f1dd09', fontWeight: 'bold'}} rightButtonCallback={onClickSave}/>
 

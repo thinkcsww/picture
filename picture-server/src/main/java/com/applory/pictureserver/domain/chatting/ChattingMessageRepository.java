@@ -10,6 +10,6 @@ import java.util.UUID;
 public interface ChattingMessageRepository extends JpaRepository<ChattingMessage, UUID>, ChattingMessageRepositoryCustom {
     List<ChattingMessage> findByChattingRoom_Id(UUID roomId);
 
-    ChattingMessage findTopByChattingRoom(ChattingRoom chattingRoom);
+    ChattingMessage findTopByChattingRoomOrderByCreatedDtDesc(ChattingRoom chattingRoom);
 
 }

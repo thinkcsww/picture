@@ -145,7 +145,7 @@ public class ChattingService {
         return chattingRoomRepository.findAllByChattingRoomMembers_User(user, pageable)
                 .stream()
                 .map(room -> {
-                    ChattingMessage lastMessage = chattingMessageRepository.findTopByChattingRoom(room);
+                    ChattingMessage lastMessage = chattingMessageRepository.findTopByChattingRoomOrderByCreatedDtDesc(room);
 
                     int unreadCount = chattingMessageRepository.countUnreadMessageOfRoom(room.getId(), user.getId());
 

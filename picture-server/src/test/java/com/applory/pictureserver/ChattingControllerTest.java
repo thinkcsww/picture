@@ -7,6 +7,9 @@ import com.applory.pictureserver.domain.request.RequestRepository;
 import com.applory.pictureserver.domain.user.UserDto;
 import com.applory.pictureserver.domain.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -33,10 +36,7 @@ import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.*;
 
 import static com.applory.pictureserver.TestConstants.*;
@@ -488,30 +488,11 @@ public class ChattingControllerTest {
 
     @Test
     public void getRooms_withValidToken_receivePagedRoomVmList() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
-        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
-        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
-
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
-
-        connectStomp(tokenResponse.getBody().getAccess_token());
-
-        ChattingDto.Message message = new ChattingDto.Message();
-        message.setMessage("HI");
-        message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
-        message.setSenderId(sender.getId());
-        message.setRoomId(UUID.randomUUID());
-
-        sendMessage(message);
-
-        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
-
-        authenticate(tokenResponse.getBody().getAccess_token());
+        RoomInfo roomInfo = sendToOnePersonHowManyMessagesAndAuthenticate(2);
 
         ResponseEntity<List<ChattingDto.ChattingRoomVM>> roomsResponse = getRooms(0, 10, new ParameterizedTypeReference<List<ChattingDto.ChattingRoomVM>>() {});
 
-        assertThat(roomsResponse.getBody().get(0).getId()).isEqualTo(message.getRoomId());
+        assertThat(roomsResponse.getBody().get(0).getId()).isEqualTo(roomInfo.getRoomId());
     }
 
     @Test
@@ -557,8 +538,12 @@ public class ChattingControllerTest {
 
     @Test
     @Disabled
-    public void getRooms_withValidToken_receiveRoomWithLastMessageAndSentTime() {
-        assertThat(true).isFalse();
+    public void getRooms_withValidToken_receiveRoomWithLastMessageAndSentTime() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        sendToOnePersonHowManyMessagesAndAuthenticate(2);
+
+        ResponseEntity<List<ChattingDto.ChattingRoomVM>> roomsResponse = getRooms(0, 10, new ParameterizedTypeReference<List<ChattingDto.ChattingRoomVM>>() {});
+
+        assertThat(roomsResponse.getBody().get(0).getLastMessage()).isEqualTo("HI2");
     }
 
     @Test
@@ -889,5 +874,40 @@ public class ChattingControllerTest {
 
     private void clearInterceptors() {
         testRestTemplate.getRestTemplate().getInterceptors().clear();
+    }
+
+    private RoomInfo sendToOnePersonHowManyMessagesAndAuthenticate(int howManyMessages) throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
+        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
+
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+
+        connectStomp(tokenResponse.getBody().getAccess_token());
+
+        UUID roomId = UUID.randomUUID();
+        for (int i = 1; i <= howManyMessages; i++) {
+            ChattingDto.Message message = new ChattingDto.Message();
+            message.setMessage("HI" + i);
+            message.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
+            message.setSenderId(sender.getId());
+            message.setRoomId(roomId);
+
+            sendMessage(message);
+
+            blockingQueue.poll(100, TimeUnit.MILLISECONDS);
+        }
+
+        authenticate(tokenResponse.getBody().getAccess_token());
+
+        return RoomInfo.builder().roomId(roomId).build();
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    private static class RoomInfo {
+        private UUID roomId;
     }
 }

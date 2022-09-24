@@ -21,6 +21,7 @@ public class ChattingMessageRepositoryCustomImpl extends QuerydslRepositorySuppo
         JPQLQuery<ChattingMessage> query = jpaQueryFactory.select(qChattingMessage)
                 .from(qChattingMessage)
                 .where(qChattingMessage.chattingRoom.id.eq(roomId)
+                        .and(qChattingMessage.sender.id.ne(userId))
                         .and(qChattingMessage.readBy.notLike("%" + userId + "%"))
                         .and(qChattingMessage.visibleTo.eq(ChattingMessage.VisibleToType.ALL.toString()).or(qChattingMessage.visibleTo.eq(userId.toString()))));
         return (int)query.fetchCount();

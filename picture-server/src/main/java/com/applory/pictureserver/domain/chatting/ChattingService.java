@@ -146,7 +146,6 @@ public class ChattingService {
                 .stream()
                 .map(room -> {
                     ChattingMessage lastMessage = chattingMessageRepository.findTopByChattingRoomOrderByCreatedDtDesc(room);
-
                     int unreadCount = chattingMessageRepository.countUnreadMessageOfRoom(room.getId(), user.getId());
 
                     String opponentNickname = "";

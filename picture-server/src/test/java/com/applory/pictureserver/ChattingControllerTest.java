@@ -496,7 +496,6 @@ public class ChattingControllerTest {
     }
 
     @Test
-    @Disabled
     public void getRooms_withValidToken_receiveRoomsOrderByLatestTime() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
         UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
         UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
@@ -537,7 +536,6 @@ public class ChattingControllerTest {
     }
 
     @Test
-    @Disabled
     public void getRooms_withValidToken_receiveRoomWithLastMessageAndSentTime() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
         sendToOnePersonHowManyMessagesAndAuthenticate(2);
 
@@ -547,9 +545,12 @@ public class ChattingControllerTest {
     }
 
     @Test
-    @Disabled
-    public void getRooms_withValidToken_receiveRoomWithUnreadCount() {
-        assertThat(true).isFalse();
+    public void getRooms_withValidToken_receiveRoomWithUnreadCount() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        sendToOnePersonHowManyMessagesAndAuthenticate(2);
+
+        ResponseEntity<List<ChattingDto.ChattingRoomVM>> roomsResponse = getRooms(0, 10, new ParameterizedTypeReference<List<ChattingDto.ChattingRoomVM>>() {});
+        assertThat(roomsResponse.getBody().get(0).getUnreadCount()).isEqualTo(1);
+
     }
 
     @Test
@@ -568,20 +569,30 @@ public class ChattingControllerTest {
     }
 
     @Test
-    @Disabled
-    public void enterRoom_withValidToken_receive200() {
-        assertThat(true).isFalse();
+    public void enterRoom_withValidToken_receive200() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        RoomInfo roomInfo = sendToOnePersonHowManyMessagesAndAuthenticate(1);
+
+        ResponseEntity<Object> response = enterRoom(roomInfo.getRoomId(), Object.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
-    @Disabled
-    public void enterRoom_withValidToken_receiveRoomVM() {
-        assertThat(true).isFalse();
+    public void enterRoom_withValidToken_receiveRoomVM() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        RoomInfo roomInfo = sendToOnePersonHowManyMessagesAndAuthenticate(1);
+
+        ResponseEntity<ChattingDto.ChattingRoomVM> response = enterRoom(roomInfo.getRoomId(), ChattingDto.ChattingRoomVM.class);
+
+        assertThat(response.getBody().getId()).isEqualTo(roomInfo.getRoomId());
     }
 
     @Test
-    @Disabled
     public void enterRoom_withValidToken_receiveRoomVMWithMessages() {
+        assertThat(true).isFalse();
+    }
+
+    @Test
+    public void enterRoom_withValidToken_updateReadBy() {
         assertThat(true).isFalse();
     }
 
@@ -903,11 +914,11 @@ public class ChattingControllerTest {
 
         return RoomInfo.builder().roomId(roomId).build();
     }
+}
 
-    @Getter
-    @Setter
-    @Builder
-    private static class RoomInfo {
-        private UUID roomId;
-    }
+@Getter
+@Setter
+@Builder
+class RoomInfo {
+    private UUID roomId;
 }

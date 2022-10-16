@@ -1,6 +1,6 @@
 package com.applory.pictureserver.domain.request;
 
-import com.applory.pictureserver.domain.exception.NotFoundException;
+import com.applory.pictureserver.exception.NotFoundException;
 import com.applory.pictureserver.domain.shared.SecurityUtils;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserRepository;

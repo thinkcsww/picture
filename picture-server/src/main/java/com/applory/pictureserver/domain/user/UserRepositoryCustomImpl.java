@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.util.StringUtils;
 
+import java.awt.*;
+
 public class UserRepositoryCustomImpl extends QuerydslRepositorySupport implements UserRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
     public UserRepositoryCustomImpl(JPAQueryFactory jpaQueryFactory) {

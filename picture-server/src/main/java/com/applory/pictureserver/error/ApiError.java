@@ -1,4 +1,4 @@
-package com.applory.pictureserver.domain.error;
+package com.applory.pictureserver.error;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;

@@ -15,7 +15,7 @@ public class ChattingDto {
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class Message {
+    public static class CreateMessage {
         @NotNull
         private UUID roomId;
 
@@ -25,7 +25,19 @@ public class ChattingDto {
         private UUID senderId;
 
         private String message;
+    }
 
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class MessageVM {
+        private UUID senderId;
+        private String message;
+
+        public MessageVM(ChattingMessage chattingMessage) {
+            this.senderId = chattingMessage.getSender().getId();
+            this.message = chattingMessage.getMessage();
+        }
     }
 
     @Getter
@@ -41,6 +53,9 @@ public class ChattingDto {
         private String lastMessage;
 
         private Integer unreadCount;
+
+        private List<MessageVM> messages;
+
 
     }
 }

@@ -1,6 +1,6 @@
-package com.applory.pictureserver.domain.config;
+package com.applory.pictureserver.config;
 
-import com.applory.pictureserver.domain.interceptor.StompChannelInterceptor;
+import com.applory.pictureserver.interceptor.StompChannelInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;

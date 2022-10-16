@@ -1,7 +1,6 @@
 package com.applory.pictureserver.domain.chatting;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -18,8 +17,8 @@ public class ChattingController {
     private final ChattingService chattingService;
 
     @MessageMapping("/send")
-    public void sendMessage(@Valid ChattingDto.Message message) throws Exception {
-        chattingService.send(message);
+    public void sendMessage(@Valid ChattingDto.CreateMessage createMessage) throws Exception {
+        chattingService.send(createMessage);
     }
 
     @DeleteMapping("/{roomId}")
@@ -34,8 +33,8 @@ public class ChattingController {
     }
 
     @GetMapping("/{roomId}")
-    public void getRoom(@PathVariable UUID roomId) {
-
+    public ChattingDto.ChattingRoomVM getRoom(@PathVariable UUID roomId) {
+        return chattingService.getRoom(roomId);
     }
 
 

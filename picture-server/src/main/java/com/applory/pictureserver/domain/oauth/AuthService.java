@@ -1,9 +1,9 @@
 package com.applory.pictureserver.domain.oauth;
 
-import com.applory.pictureserver.domain.config.AppConfiguration;
-import com.applory.pictureserver.domain.config.JwtTokenProvider;
-import com.applory.pictureserver.domain.exception.NotFoundException;
-import com.applory.pictureserver.domain.exception.UnauthorizedException;
+import com.applory.pictureserver.config.AppConfiguration;
+import com.applory.pictureserver.config.JwtTokenProvider;
+import com.applory.pictureserver.exception.NotFoundException;
+import com.applory.pictureserver.exception.UnauthorizedException;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,9 +20,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 
 @Service

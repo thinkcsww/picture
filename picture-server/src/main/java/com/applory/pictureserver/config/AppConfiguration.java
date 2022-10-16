@@ -1,4 +1,4 @@
-package com.applory.pictureserver.domain.config;
+package com.applory.pictureserver.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

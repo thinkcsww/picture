@@ -1,4 +1,4 @@
-package com.applory.pictureserver.domain.error;
+package com.applory.pictureserver.error;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;

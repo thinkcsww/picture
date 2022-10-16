@@ -22,7 +22,7 @@ public class ChattingMessageRepositoryCustomImpl extends QuerydslRepositorySuppo
                 .from(qChattingMessage)
                 .where(qChattingMessage.chattingRoom.id.eq(roomId)
                         .and(qChattingMessage.sender.id.ne(userId))
-                        .and(qChattingMessage.readBy.notLike("%" + userId + "%"))
+                        .and(qChattingMessage.readBy.notLike("%" + userId + "%").or(qChattingMessage.readBy.isNull()))
                         .and(qChattingMessage.visibleTo.eq(ChattingMessage.VisibleToType.ALL.toString()).or(qChattingMessage.visibleTo.eq(userId.toString()))));
         return (int)query.fetchCount();
     }

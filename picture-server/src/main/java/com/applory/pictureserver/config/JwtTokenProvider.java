@@ -1,4 +1,4 @@
-package com.applory.pictureserver.domain.config;
+package com.applory.pictureserver.config;
 
 import com.applory.pictureserver.domain.user.CustomUserDetailService;
 import io.jsonwebtoken.Claims;

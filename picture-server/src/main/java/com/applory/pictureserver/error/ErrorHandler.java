@@ -1,4 +1,4 @@
-package com.applory.pictureserver.domain.error;
+package com.applory.pictureserver.error;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.error.ErrorAttributeOptions;

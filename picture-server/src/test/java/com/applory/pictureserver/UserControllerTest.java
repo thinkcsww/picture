@@ -1,7 +1,7 @@
 package com.applory.pictureserver;
 
-import com.applory.pictureserver.domain.config.AppConfiguration;
-import com.applory.pictureserver.domain.error.ApiError;
+import com.applory.pictureserver.config.AppConfiguration;
+import com.applory.pictureserver.error.ApiError;
 import com.applory.pictureserver.domain.oauth.AuthDto;
 import com.applory.pictureserver.domain.oauth.MyOAuth2Token;
 import com.applory.pictureserver.domain.shared.Constant;

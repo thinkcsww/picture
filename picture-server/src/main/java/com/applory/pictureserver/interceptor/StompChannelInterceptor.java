@@ -1,7 +1,7 @@
-package com.applory.pictureserver.domain.interceptor;
+package com.applory.pictureserver.interceptor;
 
-import com.applory.pictureserver.domain.config.JwtTokenProvider;
-import com.applory.pictureserver.domain.exception.UnauthorizedException;
+import com.applory.pictureserver.config.JwtTokenProvider;
+import com.applory.pictureserver.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;

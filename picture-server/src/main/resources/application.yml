@@ -75,5 +75,16 @@ spring:
       ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  quartz:
+    auto-startup: false
+#      org:
+#        quartz:
+#          threadPool:
+#            threadCount: 5
+#    job-store-type: jdbc
+#    jdbc:
+#      initialize-schema: always
+#    overwrite-existing-jobs: true
+#    scheduler-name: MyScheduler
 picture:
   upload-path: uploads-dev

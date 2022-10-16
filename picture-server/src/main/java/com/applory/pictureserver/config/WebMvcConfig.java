@@ -1,4 +1,4 @@
-package com.applory.pictureserver.domain.config;
+package com.applory.pictureserver.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

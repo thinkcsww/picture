@@ -1,11 +1,10 @@
 package com.applory.pictureserver.domain.chatting;
 
-import com.applory.pictureserver.domain.exception.NotFoundException;
+import com.applory.pictureserver.exception.NotFoundException;
 import com.applory.pictureserver.domain.shared.SecurityUtils;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -29,24 +28,24 @@ public class ChattingService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void send(ChattingDto.Message message) {
+    public void send(ChattingDto.CreateMessage createMessage) {
 
         ChattingRoom targetChattingRoom = null;
 
         // 개인톡방 생성시
-        if (message.getUserIdList() == null) {
-            targetChattingRoom = chattingRoomRepository.getById(message.getRoomId());
+        if (createMessage.getUserIdList() == null) {
+            targetChattingRoom = chattingRoomRepository.getById(createMessage.getRoomId());
         } else {
             // 재사용 가능한 방이 있는지 flag
             boolean recyclable = false;
 
-            User user = userRepository.getById(message.getSenderId());
+            User user = userRepository.getById(createMessage.getSenderId());
             List<ChattingRoom> chattingRoomsInDB = chattingRoomRepository.findAllByChattingRoomMembers_UserAndChattingRoomMembers_UseYN(user, "N");
 
             for (ChattingRoom chattingRoom : chattingRoomsInDB) {
                 String idConcat = chattingRoom.getChattingRoomMembers().stream().map(chattingRoomMember -> chattingRoomMember.getUser().getId().toString()).reduce("", String::concat);
 
-                if (idConcat.contains(message.getUserIdList().get(0).toString()) && idConcat.contains(message.getUserIdList().get(1).toString())) {
+                if (idConcat.contains(createMessage.getUserIdList().get(0).toString()) && idConcat.contains(createMessage.getUserIdList().get(1).toString())) {
                     recyclable = true;
                     targetChattingRoom = chattingRoom;
                     break;
@@ -55,9 +54,9 @@ public class ChattingService {
 
             // 재사용 가능한 방이 없으면 생성
             if (!recyclable) {
-                targetChattingRoom = saveNewRoom(message);
+                targetChattingRoom = saveNewRoom(createMessage);
 
-                targetChattingRoom.setChattingRoomMembers(saveNewRoomMember(message, targetChattingRoom));
+                targetChattingRoom.setChattingRoomMembers(saveNewRoomMember(createMessage, targetChattingRoom));
             }
         }
 
@@ -67,24 +66,24 @@ public class ChattingService {
             }
         }
 
-        saveMessage(message, targetChattingRoom);
+        saveMessage(createMessage, targetChattingRoom);
 
-        simpMessagingTemplate.convertAndSend("/room/" + message.getRoomId(), message);
+        simpMessagingTemplate.convertAndSend("/room/" + createMessage.getRoomId(), createMessage);
     }
 
     @Transactional
-    ChattingRoom saveNewRoom(ChattingDto.Message message) {
+    ChattingRoom saveNewRoom(ChattingDto.CreateMessage createMessage) {
         ChattingRoom chattingRoom;
         chattingRoom = new ChattingRoom();
-        chattingRoom.setId(message.getRoomId());
+        chattingRoom.setId(createMessage.getRoomId());
 
         return chattingRoomRepository.save(chattingRoom);
     }
 
     @Transactional
-    List<ChattingRoomMember> saveNewRoomMember(ChattingDto.Message message, ChattingRoom chattingRoomInDB) {
+    List<ChattingRoomMember> saveNewRoomMember(ChattingDto.CreateMessage createMessage, ChattingRoom chattingRoomInDB) {
         List<ChattingRoomMember> chattingRoomMembers = new ArrayList<>();
-        for (UUID userId : message.getUserIdList()) {
+        for (UUID userId : createMessage.getUserIdList()) {
             Optional<User> userOptional = userRepository.findById(userId);
             if (!userOptional.isPresent()) {
                 throw new NotFoundException("Send Message: " + userId + " is not exist");
@@ -100,11 +99,11 @@ public class ChattingService {
     }
 
     @Transactional
-    void saveMessage(ChattingDto.Message message, ChattingRoom chattingRoomInDB) {
+    void saveMessage(ChattingDto.CreateMessage createMessage, ChattingRoom chattingRoomInDB) {
         ChattingMessage chattingMessage = new ChattingMessage();
         chattingMessage.setChattingRoom(chattingRoomInDB);
-        chattingMessage.setMessage(message.getMessage());
-        chattingMessage.setSender(userRepository.findById(message.getSenderId()).get());
+        chattingMessage.setMessage(createMessage.getMessage());
+        chattingMessage.setSender(userRepository.findById(createMessage.getSenderId()).get());
         chattingMessage.setVisibleTo("ALL");
         chattingMessageRepository.save(chattingMessage);
     }
@@ -166,5 +165,21 @@ public class ChattingService {
 
                 }).sorted(Comparator.comparing(ChattingDto.ChattingRoomVM::getLastMessageDt).reversed())
                 .collect(Collectors.toList());
+    }
+
+    public ChattingDto.ChattingRoomVM getRoom(UUID roomId) {
+        Optional<ChattingRoom> optionalChattingRoom = chattingRoomRepository.findById(roomId);
+
+        if (optionalChattingRoom.isPresent()) {
+
+            List<ChattingDto.MessageVM> messages = chattingMessageRepository.findByChattingRoom_Id(roomId).stream().map(ChattingDto.MessageVM::new).collect(Collectors.toList());
+
+            return ChattingDto.ChattingRoomVM.builder()
+                    .id(roomId)
+                    .messages(messages)
+                    .build();
+        }
+
+        throw new NotFoundException("Room " + roomId + "not exist");
     }
 }

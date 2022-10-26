@@ -609,10 +609,6 @@ public class ChattingControllerTest {
 
     }
 
-    @Test
-    public void enterRoom_withValidToken_updateReadBy() {
-        assertThat(true).isFalse();
-    }
 
     @Test
     public void leaveRoom_withInvalidToken_receive401() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {

@@ -1,10 +1,10 @@
 import React from "react";
-import { FlatList, SafeAreaView, Text, TextInput, View } from "react-native";
+import { FlatList, SafeAreaView, TextInput, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 import AppHeader from "../../components/AppHeader";
 import CommonNodata from "../../components/CommonNodata";
-import { Colors } from "../../colors";
+import ChattingRoomMessage from "./components/ChattingRoomMessage";
 
 const ChattingRoomScreen = () => {
   const navigation = useNavigation<any>();
@@ -16,9 +16,9 @@ const ChattingRoomScreen = () => {
       ListHeaderComponent={() => (
         <AppHeader title={'천왕님짱'} iconName={"arrow-left"} />
       )}
-      data={[1,2,3]}
-      keyExtractor={(item) => item.toString()}
-      renderItem={({ item }) => {
+      data={[{sender: ''}, {sender: ''}, {sender: '123'},]}
+      keyExtractor={(item, index) => index.toString()}
+      renderItem={({ item, index }) => {
         return <ChattingRoomMessage item={item} />;
       }}
       ItemSeparatorComponent={() => <View style={{ height: 10 }}/>}
@@ -39,37 +39,6 @@ const ChattingRoomScreen = () => {
   </SafeAreaView>
 }
 
-type ChattingRoomMessageListProps = {
-  item: any
-};
 
-const ChattingRoomMessage = ({item}: ChattingRoomMessageListProps) => {
-
-  if (item.sender === '') {
-    return (
-      <View style={{
-      }}>
-        <Text>hi</Text>
-      </View>
-    )
-  } else {
-    return (
-      <View style={{
-        alignSelf: 'flex-end',
-        backgroundColor: Colors.PRIMARY,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        borderRadius: 12,
-        marginRight: 12,
-        flexDirection: 'row'
-      }}>
-        <Text>오전 10:10</Text>
-        <Text style={{
-        }}>도착했습니다 도착하시면 연락주세요^^</Text>
-      </View>
-    )
-  }
-
-}
 
 export default ChattingRoomScreen;

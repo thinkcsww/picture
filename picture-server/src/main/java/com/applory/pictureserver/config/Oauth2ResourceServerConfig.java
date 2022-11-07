@@ -29,6 +29,11 @@ public class Oauth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
                         "/api/v1/auth/login",
                         "/api/v1/auth/token/refresh",
                         "/ws/**",
+                        "/swagger-resources/**",
+                        "/swagger-ui.html",
+                        "/swagger/**",
+                        "/v3/api-docs",
+                        "/webjars/**",
                         "/h2-console/**").permitAll()
                 .anyRequest().authenticated();
 

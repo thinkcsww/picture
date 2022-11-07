@@ -80,7 +80,6 @@ const AppNav = () => {
         cardStyle: { backgroundColor: '#fff' }
       }}>
         <Stack.Screen name={RouteNames.Chatting} component={ChattingScreen} options={{ headerShown: false }} />
-        <Stack.Screen name={RouteNames.ChattingRoom} component={ChattingRoomScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     )
   }
@@ -182,6 +181,7 @@ const AppNav = () => {
       <Stack.Screen name={RouteNames.SellerDetail} component={SellerDetailScreen} options={{ headerShown: false }} />
       <Stack.Screen name={RouteNames.RequestDetail} component={RequestDetailScreen} options={{ headerShown: false }} />
       <Stack.Screen name={RouteNames.AddRequest} component={AddRequestScreen} options={{ headerShown: false, ...TransitionPresets.ModalSlideFromBottomIOS}} />
+      <Stack.Screen name={RouteNames.ChattingRoom} component={ChattingRoomScreen} options={{ headerShown: false }} />
 
       <Stack.Group>
         <Stack.Screen name={RouteNames.SignUpGuide} component={SignUpGuideScreen} options={{ headerShown: false, ...TransitionPresets.ModalSlideFromBottomIOS}} />

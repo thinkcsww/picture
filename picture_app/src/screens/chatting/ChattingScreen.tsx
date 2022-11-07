@@ -5,8 +5,13 @@ import ChattingRoomListItem from "./components/ChattingRoomListItem";
 
 const ChattingScreen = () => {
 
-  return <SafeAreaView>
+  return <SafeAreaView style={{
+    flex: 1
+  }}>
     <FlatList
+      contentContainerStyle={{
+        flexGrow: 1
+      }}
       data={[1,2,3]}
       keyExtractor={(item) => item.toString()}
       renderItem={({ item }) => {

@@ -168,18 +168,21 @@ public class ChattingService {
     }
 
     public ChattingDto.ChattingRoomVM getRoom(UUID roomId) {
-        Optional<ChattingRoom> optionalChattingRoom = chattingRoomRepository.findById(roomId);
+        ChattingRoom chattingRoom = chattingRoomRepository.findById(roomId).orElseThrow(() -> new NotFoundException("Room " + roomId + " does not exist"));
 
-        if (optionalChattingRoom.isPresent()) {
+//        List<ChattingDto.MessageVM> messages = chattingMessageRepository.findByChattingRoom_Id(roomId).stream().map(ChattingDto.MessageVM::new).collect(Collectors.toList());
 
-            List<ChattingDto.MessageVM> messages = chattingMessageRepository.findByChattingRoom_Id(roomId).stream().map(ChattingDto.MessageVM::new).collect(Collectors.toList());
+        return ChattingDto.ChattingRoomVM.builder()
+                .id(roomId)
+//                .messages(messages)
+                .build();
+    }
 
-            return ChattingDto.ChattingRoomVM.builder()
-                    .id(roomId)
-                    .messages(messages)
-                    .build();
-        }
-
-        throw new NotFoundException("Room " + roomId + "not exist");
+    public ChattingDto.ChattingRoomVM getRoomByTargetUser(UUID userId) {
+        User targetUser = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User " + userId + "not exist"));
+        ChattingRoom chattingRoom = chattingRoomRepository.findByChattingRoomMembers_User(targetUser).orElseThrow(() -> new NotFoundException("Room with userId " + userId + " does not exist"));
+        return ChattingDto.ChattingRoomVM.builder()
+                .id(chattingRoom.getId())
+                .build();
     }
 }

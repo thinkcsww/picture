@@ -15,8 +15,9 @@ import AppButton from "../../components/AppButton";
 import { Avatar } from "@rneui/themed";
 import { Colors } from "../../colors";
 import Icon from "react-native-vector-icons/Ionicons";
+import { RouteNames } from "../../AppNav";
 
-const SellerDetailScreen = ({ route, navigation }) => {
+const SellerDetailScreen = ({ route, navigation }: any) => {
   const { id } = route.params;
   const [show, setShow] = useState(false);
 
@@ -33,8 +34,9 @@ const SellerDetailScreen = ({ route, navigation }) => {
     }
   };
 
-  const onClickChatting = () => {
 
+  const onClickChatting = () => {
+    navigation.navigate(RouteNames.ChattingRoom, { targetUserId: seller.id });
   }
 
   const getSellerDetailQuery = useQuery(SellerService.QueryKey.getSeller, () => {

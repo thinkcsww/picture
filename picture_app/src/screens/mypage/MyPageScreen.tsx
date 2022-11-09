@@ -8,6 +8,7 @@ const MyPageScreen = () => {
   useEffect(() => {
     UserService.getUserMe().then();
   }, [])
+
   const logout = async () => {
     await AsyncStorageService.removeData(AsyncStorageService.Keys.TokenInfo);
   }

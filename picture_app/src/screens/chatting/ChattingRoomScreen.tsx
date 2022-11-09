@@ -22,9 +22,12 @@ import { ChattingService } from "../../services/ChattingService";
 import uuid from 'react-native-uuid';
 import { Client, IMessage } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
+import { Chatting } from "../../types/Chatting";
 
 const ChattingRoomScreen = ({ route }: any) => {
-  const [roomInfo, setRoomInfo] = useState<{roomId: string}>();
+  const [roomInfo, setRoomInfo] = useState<{roomId?: string}>({roomId: undefined});
+  const [messages, setMessages] = useState<Chatting.ChattingMessage[]>([]);
+
   const { targetUserId } = route.params;
 
   const navigation = useNavigation<any>();
@@ -35,7 +38,9 @@ const ChattingRoomScreen = ({ route }: any) => {
     onSuccess: (result: Seller.Seller) => {
       console.log('==== ChattingRoom with targetUserId 조회 성공 ====');
       console.log(result);
-
+      setRoomInfo({
+        roomId: result.id
+      })
     },
     onError: (err: AxiosError) => {
       console.log('==== ChattingRoom with targetUserId 조회 실패 ====');
@@ -47,51 +52,63 @@ const ChattingRoomScreen = ({ route }: any) => {
 
   const stompClient = useRef<Client>();
 
-  // const [text, setText] = useState("");
+  const [text, setText] = useState("");
 
 
   useEffect(() => {
-    stompClient.current = new Client();
+    if (roomInfo.roomId) {
+      stompClient.current = new Client();
 
-    stompClient.current.configure({
-      brokerURL: "http://192.168.200.138:8080/ws",
-      connectHeaders: {
-        "Authorization": "Bearer eyJhbGciOiJII1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTY1MDAzMzMsInVzZXJfbmFtZSI6IjEyMzEyMyIsImF1dGhvcml0aWVzIjpbIlVTRVJfUk9MRSJdLCJqdGkiOiJkQmRPQTlQejZQZWY0eEV3NkNoQnJnUTQyR1kiLCJjbGllbnRfaWQiOiJhcHBsb3J5Iiwic2NvcGUiOlsicmVhZCIsIndyaXRlIl19.vyfW1EQLSKhbinp9Nbc9UD491cs75OIyOxvru3K7N_E",
-      },
-      debug: (str) => {
-        console.log(str);
-      },
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-      logRawCommunication: false,
-      webSocketFactory: () => {
-        return SockJS("http://192.168.200.148:8080/ws");
-      },
-      onConnect: (frame) => {
-        console.log("==== Connected ==== ");
-        const subscription = stompClient.current.subscribe("/room/1", (message: IMessage) => {
-          console.log("message: ", message.body);
-        });
-      },
-      onStompError: (err) => {
-        console.log("Stomp Error", err)
-        // Alert.alert("stomp error");
-      },
-      onDisconnect: (frame) => {
-        console.log("Stomp Disconnect", frame);
-      },
-      onWebSocketClose: (frame) => {
-        console.log("Stomp WebSocket Closed", frame);
-      },
-      onWebSocketError: (frame) => {
-        console.log("Stomp WebSocket Error", frame);
-      },
-    });
+      stompClient.current.configure({
+        brokerURL: "http://localhost:8080/ws",
+        connectHeaders: {
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NjgwODc3MjcsInVzZXJfbmFtZSI6IjIyNjYwMzU5MDUiLCJhdXRob3JpdGllcyI6WyJST0xFX1VTRVIiXSwianRpIjoiZ1gxaDJsMkJVOEw3b0REZnNLU1JIenhJb3dJIiwiY2xpZW50X2lkIjoiYXBwbG9yeSIsInNjb3BlIjpbInJlYWQiLCJ3cml0ZSJdfQ.ZiPN_wXbk4myFNdvuyvbBLSQBj7JXoKKdlRwRxZsXUA",
+        },
+        debug: (str) => {
+          console.log(str);
+        },
+        reconnectDelay: 5000,
+        heartbeatIncoming: 4000,
+        heartbeatOutgoing: 4000,
+        logRawCommunication: false,
+        webSocketFactory: () => {
+          return SockJS("http://localhost:8080/ws");
+        },
+        onConnect: (frame) => {
+          console.log("==== Connected ==== ");
+          const subscription = stompClient.current!.subscribe(`/room/${roomInfo.roomId}`, (message: IMessage) => {
+            console.log("message: ", message.body);
+            const newMessages = [...messages];
+            newMessages.push(JSON.parse(message.body));
+            console.log(newMessages.length);
+            setMessages(newMessages);
+          });
+        },
+        onStompError: (err) => {
+          console.log("Stomp Error", err)
+          // Alert.alert("stomp error");
+        },
+        onDisconnect: (frame) => {
+          console.log("Stomp Disconnect", frame);
+        },
+        onWebSocketClose: (frame) => {
+          console.log("Stomp WebSocket Closed", frame);
+        },
+        onWebSocketError: (frame) => {
+          console.log("Stomp WebSocket Error", frame);
+        },
+      });
 
-    stompClient.current.activate();
+      stompClient.current.activate();
+    }
+  }, [roomInfo]);
 
-  }, []);
+  const onClickSend = () => {
+    stompClient.current!.publish({
+      destination: '/api/v1/chat/send',
+      body: JSON.stringify({message: text, roomId: roomInfo.roomId, senderId: 'ad98b365-dc76-4fac-a034-66801b9deb65', userIdList: ['ad98b365-dc76-4fac-a034-66801b9deb65', targetUserId]})
+    })
+  }
 
   return <SafeAreaView style={{
     flex: 1
@@ -108,7 +125,7 @@ const ChattingRoomScreen = ({ route }: any) => {
         contentContainerStyle={{
           flexGrow: 1,
         }}
-        data={[{sender: ''}, {sender: ''}, {sender: '123'},]}
+        data={messages}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item, index }) => {
           return <ChattingRoomMessage item={item} />;
@@ -137,10 +154,13 @@ const ChattingRoomScreen = ({ route }: any) => {
         }}>
           <TextInput style={{
             minHeight: 30
-          }} multiline={true} placeholder={'메세지를 입력하세요.'}/>
+          }} multiline={true}
+             placeholder={'메세지를 입력하세요.'}
+                     onChangeText={setText}
+          />
         </View>
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={onClickSend}>
           <MaterialCommunityIcons name={'arrow-right'} size={20} color={'#808080'}/>
         </TouchableOpacity>
       </View>

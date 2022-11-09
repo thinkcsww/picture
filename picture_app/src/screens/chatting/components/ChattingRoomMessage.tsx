@@ -33,7 +33,7 @@ const ChattingRoomMessage = ({item}: ChattingRoomMessageListProps) => {
           marginLeft: 6,
           flexDirection: 'row'
         }}>
-          <Text>도착했습니다도착</Text>
+          <Text>{item.message}</Text>
         </View>
         <View style={{
           alignSelf: 'flex-end',
@@ -77,7 +77,7 @@ const ChattingRoomMessage = ({item}: ChattingRoomMessageListProps) => {
           maxWidth: '80%'
         }}>
           <Text style={{
-          }}>ㅁㄴㅇㅁ</Text>
+          }}>{item.message}</Text>
         </View>
       </View>
 

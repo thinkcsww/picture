@@ -19,8 +19,6 @@ const AbstractHoc: FC = ({children}) => {
 
   const getUserMe = () => {
     AsyncStorageService.getObjectData(AsyncStorageService.Keys.TokenInfo).then((token: Auth.MyOAuth2Token) => {
-      console.log(token);
-
       if (token) {
         let url = `http://localhost:8080/api/v1/users/me`;
         axios.get<User.VM>(url, {

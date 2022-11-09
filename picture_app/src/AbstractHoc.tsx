@@ -2,9 +2,11 @@ import React, { FC, useEffect } from "react";
 import { useAxiosLoader } from "./hooks/useAxiosLoader";
 import AsyncStorageService from "./services/AsyncStorageService";
 import { useAppDispatch } from "./store/config";
-import { setIsTokenExist } from "./store/slices/commonSlice";
+import { setIsTokenExist, setUser } from "./store/slices/commonSlice";
 import { Auth } from "./types/Auth";
-import { AuthService } from "./services/AuthService";
+import { User } from "./types/User";
+import axios, { AxiosError } from "axios";
+import { HttpStatus } from "./constants/HttpStatus";
 
 const AbstractHoc: FC = ({children}) => {
 
@@ -12,17 +14,46 @@ const AbstractHoc: FC = ({children}) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    AsyncStorageService.getObjectData(AsyncStorageService.Keys.TokenInfo).then((result: Auth.MyOAuth2Token) => {
-      console.log('AbstractHoc ==== Token')
-      console.log(result)
-      dispatch(setIsTokenExist(!!result));
-
-      // result.access_token = 'asdv';
-      // result.expires_in = 1660138601481;
-
-      // AuthService.setTokenInfo(result);
-    })
+    getUserMe();
   }, [])
+
+  const getUserMe = () => {
+    AsyncStorageService.getObjectData(AsyncStorageService.Keys.TokenInfo).then((token: Auth.MyOAuth2Token) => {
+      console.log(token);
+
+      if (token) {
+        let url = `http://localhost:8080/api/v1/users/me`;
+        axios.get<User.VM>(url, {
+          headers: {
+            Authorization: `Bearer ${token.access_token}`
+          }
+        })
+          .then((res) => {
+
+            if (res.status === HttpStatus.OK) {
+              console.log('=== AbstractHoc user me 성공 ===')
+              console.log(res.data);
+              dispatch(setIsTokenExist(true));
+            } else {
+              console.log('=== AbstractHoc user me 실패 ===')
+            }
+
+            console.log(res);
+            dispatch(setUser(res.data))
+          })
+          .catch((e: AxiosError) => {
+            console.log('=== AbstractHoc user me 에러 ===')
+            console.log(e);
+
+            if (e && e.response && e.response.status === HttpStatus.UNAUTHORIZED) {
+              dispatch(setIsTokenExist(false));
+              AsyncStorageService.removeData(AsyncStorageService.Keys.TokenInfo).then();
+            }
+          })
+      }
+    })
+  }
+
 
   if (!ready) {
     console.log('not ready');

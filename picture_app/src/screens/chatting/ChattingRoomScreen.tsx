@@ -23,47 +23,49 @@ import uuid from "react-native-uuid";
 import { Client, IMessage } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { Chatting } from "../../types/Chatting";
+import { useAppSelector } from "../../store/config";
+import AsyncStorageService from "../../services/AsyncStorageService";
+import { Auth } from "../../types/Auth";
 
 const ChattingRoomScreen = ({ route }: any) => {
-  const [roomInfo, setRoomInfo] = useState<{ roomId?: string }>({ roomId: undefined });
+  const [roomInfo, setRoomInfo] = useState<any>({ id: undefined });
   const [messages, setMessages] = useState<Chatting.ChattingMessage[]>([]);
-
-  const { targetUserId } = route.params;
+  const [lastMessage, setLastMessage] = useState<Chatting.ChattingMessage>();
+  const [text, setText] = useState("");
+  const { user } = useAppSelector(state => state.common);
+  const { targetUserId, targetUserName } = route.params;
 
   const navigation = useNavigation<any>();
 
   const getRoomWithTargetUserIdQuery = useQuery(ChattingService.QueryKey.getRoom, () => {
     return ChattingService.getRoom(targetUserId);
   }, {
-    onSuccess: (result: Seller.Seller) => {
+    onSuccess: (result: any) => {
       console.log("==== ChattingRoom with targetUserId 조회 성공 ====");
       console.log(result);
-      setRoomInfo({
-        roomId: result.id,
-      });
+      setRoomInfo(result);
+      setMessages(result.messages?.content)
     },
     onError: (err: AxiosError) => {
       console.log("==== ChattingRoom with targetUserId 조회 실패 ====");
       console.log(err);
-      setRoomInfo({ roomId: uuid.v4() as string });
+      setRoomInfo({ id: uuid.v4() as string });
     },
     retry: false,
   });
 
   const stompClient = useRef<Client>(new Client());
 
-  const [text, setText] = useState("");
-
-
   useEffect(() => {
-    const messageList: any[] = [];
+    initWebSocket().then();
+  }, [roomInfo]);
+
+  const initWebSocket = async () => {
+    const token: Auth.MyOAuth2Token = await AsyncStorageService.getObjectData(AsyncStorageService.Keys.TokenInfo);
     stompClient.current.configure({
       brokerURL: "http://localhost:8080/ws",
       connectHeaders: {
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NjgwODc3MjcsInVzZXJfbmFtZSI6IjIyNjYwMzU5MDUiLCJhdXRob3JpdGllcyI6WyJST0xFX1VTRVIiXSwianRpIjoiZ1gxaDJsMkJVOEw3b0REZnNLU1JIenhJb3dJIiwiY2xpZW50X2lkIjoiYXBwbG9yeSIsInNjb3BlIjpbInJlYWQiLCJ3cml0ZSJdfQ.ZiPN_wXbk4myFNdvuyvbBLSQBj7JXoKKdlRwRxZsXUA",
-      },
-      debug: (str) => {
-        console.log(str);
+        "Authorization": `Bearer ${token.access_token}`,
       },
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
@@ -72,16 +74,18 @@ const ChattingRoomScreen = ({ route }: any) => {
       webSocketFactory: () => {
         return SockJS("http://localhost:8080/ws");
       },
+      debug: (str) => {
+        console.log(str)
+      },
       onConnect: (frame) => {
         console.log("==== Connected ==== ");
-        stompClient.current!.subscribe(`/room/06ab1e0f-67a2-4a62-9267-e76f326cb4b4`, (message: IMessage) => {
+
+        stompClient.current!.subscribe(`/room/${roomInfo.id}`, (message: IMessage) => {
           console.log("message: ", message.body);
           const m = JSON.parse(message.body);
-          messageList.push(m);
-          setMessages(messageList);
+          setLastMessage(m);
         });
 
-        console.log(messages);
       },
       onStompError: (err) => {
         console.log("Stomp Error", err);
@@ -99,20 +103,28 @@ const ChattingRoomScreen = ({ route }: any) => {
     });
 
     stompClient.current.activate();
-  }, []);
+  };
+
+  useEffect(() => {
+    if (lastMessage) {
+      setMessages([...messages, lastMessage]);
+    }
+  }, [lastMessage])
 
 
-  const onClickSend = () => {
-    stompClient.current!.publish({
-      destination: "/api/v1/chat/send",
-      body: JSON.stringify({
-        message: text,
-        roomId: "06ab1e0f-67a2-4a62-9267-e76f326cb4b4",
-        senderId: "ad98b365-dc76-4fac-a034-66801b9deb65",
-        userIdList: ["ad98b365-dc76-4fac-a034-66801b9deb65", targetUserId],
-      }),
-    });
-    setText("");
+  const onPressSend = () => {
+    if (text.trim().length > 0) {
+      stompClient.current!.publish({
+        destination: "/api/v1/chat/send",
+        body: JSON.stringify({
+          message: text,
+          roomId: roomInfo.id,
+          senderId: user.id,
+          userIdList: roomInfo.new ? [user.id, targetUserId] : undefined,
+        }),
+      });
+      setText("");
+    }
   };
 
   return <SafeAreaView style={{
@@ -123,10 +135,8 @@ const ChattingRoomScreen = ({ route }: any) => {
       style={{
         flex: 1,
       }}>
+      <AppHeader title={roomInfo?.opponentNickname} iconName={"arrow-left"} />
       <FlatList
-        ListHeaderComponent={() => (
-          <AppHeader title={"천왕님짱"} iconName={"arrow-left"} />
-        )}
         contentContainerStyle={{
           flexGrow: 1,
         }}
@@ -166,7 +176,7 @@ const ChattingRoomScreen = ({ route }: any) => {
           />
         </View>
 
-        <TouchableOpacity onPress={onClickSend}>
+        <TouchableOpacity disabled={text.trim().length === 0} onPress={onPressSend}>
           <MaterialCommunityIcons name={"arrow-right"} size={20} color={"#808080"} />
         </TouchableOpacity>
       </View>

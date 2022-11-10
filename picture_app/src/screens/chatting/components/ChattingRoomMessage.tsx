@@ -3,18 +3,20 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { Avatar } from "@rneui/themed";
 import Images from "../../../../assets/images";
 import { Colors } from "../../../colors";
+import { useAppSelector } from "../../../store/config";
 
 type ChattingRoomMessageListProps = {
   item: any
 };
 
 const ChattingRoomMessage = ({item}: ChattingRoomMessageListProps) => {
+  const { user } = useAppSelector(state => state.common);
 
   const onClickProfile = () => {
 
   }
 
-  if (item.sender !== '') {
+  if (item.senderId !== user.id) {
     return (
       <View style={{
         flexDirection: 'row',

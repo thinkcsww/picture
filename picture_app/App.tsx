@@ -33,16 +33,3 @@ const App = () => {
 
 export default App;
 
-
-// <SafeAreaView>
-//   <TextInput value={text} onChangeText={(text) => setText(text)} />
-//   <Button
-//     title={"hi"}
-//     onPress={() => {
-//       stompClient.current.publish({
-//         destination: "/api/v1/chat/send",
-//         body: JSON.stringify({ roomId: "1", message: text }),
-//       });
-//     }}
-//   />
-// </SafeAreaView>

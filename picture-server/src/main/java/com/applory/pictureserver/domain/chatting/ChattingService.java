@@ -5,7 +5,10 @@ import com.applory.pictureserver.domain.shared.SecurityUtils;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +36,8 @@ public class ChattingService {
         ChattingRoom targetChattingRoom = null;
 
         // 개인톡방 생성시
+
+        // 이미 방이 있는 경우
         if (createMessage.getUserIdList() == null) {
             targetChattingRoom = chattingRoomRepository.getById(createMessage.getRoomId());
         } else {
@@ -180,9 +185,19 @@ public class ChattingService {
 
     public ChattingDto.ChattingRoomVM getRoomByTargetUser(UUID userId) {
         User targetUser = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User " + userId + "not exist"));
-        ChattingRoom chattingRoom = chattingRoomRepository.findByChattingRoomMembers_User(targetUser).orElseThrow(() -> new NotFoundException("Room with userId " + userId + " does not exist"));
+        Optional<ChattingRoom> chattingRoomOptional = chattingRoomRepository.findByChattingRoomMembers_User(targetUser);
+
+        Page<ChattingDto.MessageVM> messages = null;
+        if (chattingRoomOptional.isPresent()) {
+            messages = chattingMessageRepository.findByChattingRoomId(chattingRoomOptional.get().getId(), SecurityUtils.getPrincipal(), PageRequest.of(0, 20, Sort.Direction.DESC, "createdDt"))
+                    .map(ChattingDto.MessageVM::new);
+        }
+
         return ChattingDto.ChattingRoomVM.builder()
-                .id(chattingRoom.getId())
+                .id(chattingRoomOptional.isPresent() ? chattingRoomOptional.get().getId() : UUID.randomUUID())
+                .opponentNickname(targetUser.getNickname())
+                .messages(messages)
+                .isNew(!chattingRoomOptional.isPresent())
                 .build();
     }
 }

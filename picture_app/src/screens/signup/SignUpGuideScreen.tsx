@@ -12,6 +12,8 @@ import { RouteNames } from "../../AppNav";
 import { useAppDispatch, useAppSelector } from "../../store/config";
 import { setSignUpRedux } from "../../store/slices/signUpSlice";
 import AsyncStorageService from "../../services/AsyncStorageService";
+import UserService from "../../services/UserService";
+import { setUser } from "../../store/slices/commonSlice";
 
 const SignUpGuideScreen = () => {
 
@@ -23,12 +25,15 @@ const SignUpGuideScreen = () => {
     dispatch(setSignUpRedux({ username: dto.username, token: dto.token }))
     return AuthService.login(dto);
   }, {
-    onSuccess: (result: Auth.MyOAuth2Token) => {
+    onSuccess: async (result: Auth.MyOAuth2Token) => {
       console.log('==== 로그인 성공 ====');
       console.log(result);
 
       AuthService.setTokenInfo(result).then();
-      navigation.navigate(signUpRedux.destination)
+      const userMeResponse =  await UserService.getUserMe()
+      dispatch(setUser(userMeResponse));
+
+      navigation.navigate(signUpRedux.destination.key, {...signUpRedux.destination.params})
     },
     onError: (error: AxiosError<any>) => {
       if (error.response && error.response.data.message.includes('not found')) {

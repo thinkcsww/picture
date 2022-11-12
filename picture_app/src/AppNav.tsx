@@ -167,7 +167,7 @@ const AppNav = () => {
       if (!isTokenExist) {
         const navigationKey = e.target.split('-')[0];
         console.log(navigationKey);
-        dispatch(setSignUpRedux({ destination: navigationKey }))
+        dispatch(setSignUpRedux( { destination: { key: navigationKey, params: {} }}))
         navigation.navigate(RouteNames.SignUpGuide)
         e.preventDefault();
         return true;

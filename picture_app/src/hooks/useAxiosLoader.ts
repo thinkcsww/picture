@@ -7,10 +7,12 @@ import { useNavigation } from "@react-navigation/native";
 import { RouteNames } from "../AppNav";
 import { useAppDispatch } from "../store/config";
 import { setUser } from "../store/slices/commonSlice";
+import { Platform } from "react-native";
+import { Env } from "../constants/Env";
 
 export const instance = axios.create({
   // baseURL: 'http://192.168.200.117:8080/api',
-  baseURL: 'http://localhost:8080/api',
+  baseURL: `${Env.host}/api`,
   headers: {
     "Content-Type": "application/json",
     "PermitAll": false,

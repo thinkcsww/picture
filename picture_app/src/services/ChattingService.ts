@@ -7,12 +7,13 @@ const CHATTING_API_URL = '/v1/chattings';
 
 export const ChattingService = {
   QueryKey: {
-    getRoom: 'getRoom',
+    enterRoom: 'enterRoom',
   },
-  getRoom: async (targetUserId: string) => {
-    let url = `${CHATTING_API_URL}/room/user/${targetUserId}`;
+  enterRoom: async (params: { targetUserId: any; roomId: any }) => {
+    let url = `${CHATTING_API_URL}/room/enter`;
 
     const {data} = await instance.get<PageResult<Request.Request>>(url, {
+      params: params,
       headers: {
         PermitAll: false
       }

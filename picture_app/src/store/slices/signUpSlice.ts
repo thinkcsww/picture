@@ -4,7 +4,10 @@ export interface SignUpState {
   signUpRedux: {
     username: string,
     token: string,
-    destination: string,
+    destination: {
+      key: string,
+      params: any
+    },
   },
 }
 
@@ -12,7 +15,10 @@ const initialState: SignUpState = {
   signUpRedux: {
     username: '',
     token: '',
-    destination: '',
+    destination: {
+      key: '',
+      params: {}
+    },
   },
 };
 
@@ -20,7 +26,7 @@ export const signUpSlice = createSlice({
   name: "signUp",
   initialState,
   reducers: {
-    setSignUpRedux(state, action: PayloadAction<any>) {
+    setSignUpRedux(state, action: PayloadAction<{ username?: string, token?: string, destination?: { key: string, params: any }}>) {
       state.signUpRedux = { ...state.signUpRedux, ...action.payload };
     },
   },

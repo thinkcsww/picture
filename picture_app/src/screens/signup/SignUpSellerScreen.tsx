@@ -50,7 +50,8 @@ const SignUpSellerScreen = () => {
       console.log('==== 회원가입 -> 로그인 성공 ====');
       console.log(result);
       AuthService.setTokenInfo(result).then();
-      navigation.navigate(signUpRedux.destination)
+      console.log(signUpRedux);
+      navigation.navigate(signUpRedux.destination.key, { ...signUpRedux.destination.params })
     },
     onError: (e: AxiosError) => {
       console.log('==== 회원가입 -> 로그인 실패 ====');

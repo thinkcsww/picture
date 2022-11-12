@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { LegacyRef, useEffect, useRef, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -12,44 +12,49 @@ import {
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 import AppHeader from "../../components/AppHeader";
-import CommonNodata from "../../components/CommonNodata";
-import ChattingRoomMessage from "./components/ChattingRoomMessage";
 import { Colors } from "../../colors";
 import { useQuery } from "react-query";
-import { Seller } from "../../types/Seller";
 import { AxiosError } from "axios";
 import { ChattingService } from "../../services/ChattingService";
-import uuid from "react-native-uuid";
 import { Client, IMessage } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { Chatting } from "../../types/Chatting";
 import { useAppSelector } from "../../store/config";
 import AsyncStorageService from "../../services/AsyncStorageService";
 import { Auth } from "../../types/Auth";
+import ChattingRoomMessage from "./components/ChattingRoomMessage";
+import CommonNodata from "../../components/CommonNodata";
+import { Env } from "../../constants/Env";
 
 const ChattingRoomScreen = ({ route }: any) => {
-  const [roomInfo, setRoomInfo] = useState<any>({ id: undefined });
+  const [roomInfo, setRoomInfo] = useState<any>();
   const [messages, setMessages] = useState<Chatting.ChattingMessage[]>([]);
   const [lastMessage, setLastMessage] = useState<Chatting.ChattingMessage>();
   const [text, setText] = useState("");
   const { user } = useAppSelector(state => state.common);
-  const { targetUserId, targetUserName } = route.params;
+  const { targetUserId, roomType, sellerId, clientId, roomId } = route.params;
+  const listRef = useRef<FlatList>(null);
 
   const navigation = useNavigation<any>();
 
-  const getRoomWithTargetUserIdQuery = useQuery(ChattingService.QueryKey.getRoom, () => {
-    return ChattingService.getRoom(targetUserId);
+  const getRoomWithTargetUserIdQuery = useQuery(ChattingService.QueryKey.enterRoom, () => {
+    const params = {
+      targetUserId: targetUserId,
+      roomId: roomId ? roomId : undefined,
+      sellerId: sellerId ? sellerId : undefined,
+      clientId: clientId ? clientId: undefined,
+    }
+    return ChattingService.enterRoom(params);
   }, {
     onSuccess: (result: any) => {
-      console.log("==== ChattingRoom with targetUserId 조회 성공 ====");
+      console.log("==== EnterRoom 조회 성공 ====");
       console.log(result);
       setRoomInfo(result);
-      setMessages(result.messages?.content)
+      setMessages(result.messages)
     },
     onError: (err: AxiosError) => {
-      console.log("==== ChattingRoom with targetUserId 조회 실패 ====");
+      console.log("==== EnterRoom 조회 실패 ====");
       console.log(err);
-      setRoomInfo({ id: uuid.v4() as string });
     },
     retry: false,
   });
@@ -57,13 +62,23 @@ const ChattingRoomScreen = ({ route }: any) => {
   const stompClient = useRef<Client>(new Client());
 
   useEffect(() => {
-    initWebSocket().then();
+    if (roomInfo) {
+      initWebSocket().then();
+    }
   }, [roomInfo]);
+
+  useEffect(() => {
+    return () => {
+      // stompClient.current.unsubscribe(`/room/${roomInfo.id}`)
+      stompClient.current.forceDisconnect();
+      stompClient.current.deactivate().then();
+    };
+  }, [])
 
   const initWebSocket = async () => {
     const token: Auth.MyOAuth2Token = await AsyncStorageService.getObjectData(AsyncStorageService.Keys.TokenInfo);
     stompClient.current.configure({
-      brokerURL: "http://localhost:8080/ws",
+      brokerURL: `${Env.host}/ws`,
       connectHeaders: {
         "Authorization": `Bearer ${token.access_token}`,
       },
@@ -72,7 +87,7 @@ const ChattingRoomScreen = ({ route }: any) => {
       heartbeatOutgoing: 4000,
       logRawCommunication: false,
       webSocketFactory: () => {
-        return SockJS("http://localhost:8080/ws");
+        return SockJS(`${Env.host}/ws`);
       },
       debug: (str) => {
         console.log(str)
@@ -102,26 +117,36 @@ const ChattingRoomScreen = ({ route }: any) => {
       },
     });
 
+
     stompClient.current.activate();
   };
 
   useEffect(() => {
     if (lastMessage) {
-      setMessages([...messages, lastMessage]);
+      const newMessages = messages? [...messages] : [];
+      newMessages.push(lastMessage);
+      setMessages(newMessages);
     }
   }, [lastMessage])
 
-
   const onPressSend = () => {
     if (text.trim().length > 0) {
+      const body: any = {
+        message: text,
+        roomId: roomInfo.id,
+        senderId: user.id,
+        roomType: roomType
+      };
+
+      if (roomInfo.newRoom) {
+        body.userIdList = [user.id, targetUserId]
+        body.sellerId = sellerId;
+        body.clientId = clientId;
+      }
+
       stompClient.current!.publish({
         destination: "/api/v1/chat/send",
-        body: JSON.stringify({
-          message: text,
-          roomId: roomInfo.id,
-          senderId: user.id,
-          userIdList: roomInfo.new ? [user.id, targetUserId] : undefined,
-        }),
+        body: JSON.stringify(body),
       });
       setText("");
     }
@@ -137,8 +162,11 @@ const ChattingRoomScreen = ({ route }: any) => {
       }}>
       <AppHeader title={roomInfo?.opponentNickname} iconName={"arrow-left"} />
       <FlatList
+        ref={listRef}
+        onContentSizeChange={() => listRef.current!.scrollToOffset({animated: true, offset: 1000}) }
         contentContainerStyle={{
           flexGrow: 1,
+          paddingBottom: 12
         }}
         data={messages}
         keyExtractor={(item, index) => index.toString()}

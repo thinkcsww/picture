@@ -33,7 +33,11 @@ const DateUtils = {
     const d = new Date(date);
 
     return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 ${d.getHours()}시 ${d.getMinutes()}분`
+  },
+  getFormattedMessageDate: (date: string) => {
+    const d = new Date(date);
 
+    return `${d.getHours() >= 12 ? '오후' : '오전'} ${d.getHours() % 12}시 ${d.getMinutes()}분`
   }
 }
 

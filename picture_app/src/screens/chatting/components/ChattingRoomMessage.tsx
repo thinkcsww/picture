@@ -4,12 +4,15 @@ import { Avatar } from "@rneui/themed";
 import Images from "../../../../assets/images";
 import { Colors } from "../../../colors";
 import { useAppSelector } from "../../../store/config";
+import DateUtils from "../../../utils/DateUtils";
+import { Chatting } from "../../../types/Chatting";
 
 type ChattingRoomMessageListProps = {
-  item: any
+  item: Chatting.ChattingMessage
 };
 
 const ChattingRoomMessage = ({item}: ChattingRoomMessageListProps) => {
+  console.log(item);
   const { user } = useAppSelector(state => state.common);
 
   const onClickProfile = () => {
@@ -21,7 +24,7 @@ const ChattingRoomMessage = ({item}: ChattingRoomMessageListProps) => {
       <View style={{
         flexDirection: 'row',
         marginLeft: 12,
-        maxWidth: '70%'
+        maxWidth: '70%',
       }}>
         <TouchableOpacity onPress={onClickProfile}>
           <Avatar size={"small"} source={Images.profile.dummy} rounded />
@@ -44,7 +47,7 @@ const ChattingRoomMessage = ({item}: ChattingRoomMessageListProps) => {
           <Text style={{
             fontSize: 10,
             color: Colors.GRAY_TEXT,
-          }}>오전 10:10</Text>
+          }}>{DateUtils.getFormattedMessageDate(item.createdDt)}</Text>
         </View>
       </View>
     )
@@ -66,7 +69,7 @@ const ChattingRoomMessage = ({item}: ChattingRoomMessageListProps) => {
           <Text style={{
             fontSize: 10,
             color: Colors.GRAY_TEXT,
-          }}>오전 10:10</Text>
+          }}>{DateUtils.getFormattedMessageDate(item.createdDt)}</Text>
         </View>
 
         <View style={{

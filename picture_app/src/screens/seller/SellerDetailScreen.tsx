@@ -16,10 +16,16 @@ import { Avatar } from "@rneui/themed";
 import { Colors } from "../../colors";
 import Icon from "react-native-vector-icons/Ionicons";
 import { RouteNames } from "../../AppNav";
+import { useAppDispatch, useAppSelector } from "../../store/config";
+import { setSignUpRedux } from "../../store/slices/signUpSlice";
+import { Chatting } from "../../types/Chatting";
 
 const SellerDetailScreen = ({ route, navigation }: any) => {
+  const dispatch = useAppDispatch();
+
   const { id } = route.params;
   const [show, setShow] = useState(false);
+  const { user } = useAppSelector(state => state.common);
 
   const onScroll = (event: any) => {
     const scrollY = event.nativeEvent.contentOffset.y;
@@ -36,7 +42,13 @@ const SellerDetailScreen = ({ route, navigation }: any) => {
 
 
   const onClickChatting = () => {
-    navigation.navigate(RouteNames.ChattingRoom, { targetUserId: seller.id });
+    if (!user) {
+      dispatch(setSignUpRedux( { destination : { key: RouteNames.SellerDetail, params: { id: id } }}))
+      navigation.navigate(RouteNames.SignUpGuide)
+    } else {
+      navigation.navigate(RouteNames.ChattingRoom, { targetUserId: seller.id, sellerId: seller.id, clientId: user.id, roomType: Chatting.RoomType.PRIVATE });
+    }
+
   }
 
   const getSellerDetailQuery = useQuery(SellerService.QueryKey.getSeller, () => {

@@ -39,9 +39,9 @@ public class ChattingController {
         return chattingService.getRoom(roomId);
     }
 
-    @GetMapping("/room/user/{userId}")
-    public ChattingDto.ChattingRoomVM getRoomByTargetUser(@PathVariable UUID userId) {
-        return chattingService.getRoomByTargetUser(userId);
+    @GetMapping("/room/enter")
+    public ChattingDto.ChattingRoomVM enterRoom(ChattingDto.EnterRoom enterRoom) {
+        return chattingService.enterRoom(enterRoom);
     }
 
 

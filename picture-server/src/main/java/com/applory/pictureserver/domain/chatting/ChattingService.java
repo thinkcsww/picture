@@ -1,10 +1,9 @@
 package com.applory.pictureserver.domain.chatting;
 
-import com.applory.pictureserver.exception.NotFoundException;
 import com.applory.pictureserver.domain.shared.SecurityUtils;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserRepository;
-import lombok.RequiredArgsConstructor;
+import com.applory.pictureserver.exception.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,11 +12,11 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class ChattingService {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
@@ -30,46 +29,61 @@ public class ChattingService {
 
     private final UserRepository userRepository;
 
+    public ChattingService(SimpMessagingTemplate simpMessagingTemplate, ChattingRoomRepository chattingRoomRepository, ChattingRoomMemberRepository chattingRoomMemberRepository, ChattingMessageRepository chattingMessageRepository, UserRepository userRepository) {
+        this.simpMessagingTemplate = simpMessagingTemplate;
+        this.chattingRoomRepository = chattingRoomRepository;
+        this.chattingRoomMemberRepository = chattingRoomMemberRepository;
+        this.chattingMessageRepository = chattingMessageRepository;
+        this.userRepository = userRepository;
+    }
+
+    @Transactional
+    public ChattingDto.ChattingRoomVM enterRoom(ChattingDto.EnterRoom enterRoom) {
+        ChattingRoom chattingRoom = null;
+        List<ChattingDto.MessageVM> messages = null;
+
+        User targetUser = userRepository.findById(enterRoom.getTargetUserId()).orElseThrow(() -> new NotFoundException("User does not exist: " + enterRoom.getTargetUserId()));
+
+        if (enterRoom.getRoomId() != null) {
+            chattingRoom = chattingRoomRepository.findById(enterRoom.getRoomId()).orElseThrow(() -> new NotFoundException("Room does not exist: " + enterRoom.getRoomId()));
+        } else {
+            chattingRoom = chattingRoomRepository.findBySellerIdAndClientId(enterRoom.getSellerId(), enterRoom.getClientId()).orElse(null);
+        }
+
+        if (chattingRoom != null) {
+            messages = chattingMessageRepository.findTop20ByChattingRoomAndCreatedDtBeforeOrderByCreatedDtDesc(chattingRoom, LocalDateTime.now())
+                    .stream().sorted(Comparator.comparing(ChattingMessage::getCreatedDt))
+                    .map(ChattingDto.MessageVM::new)
+                    .collect(Collectors.toList());
+        }
+
+        return ChattingDto.ChattingRoomVM.builder()
+                .id(chattingRoom == null ? UUID.randomUUID() : chattingRoom.getId())
+                .opponentNickname(targetUser.getNickname())
+                .messages(messages)
+                .newRoom(chattingRoom == null)
+                .build();
+    }
+
     @Transactional
     public void send(ChattingDto.CreateMessage createMessage) {
+        ChattingRoom targetChattingRoom = chattingRoomRepository.findById(createMessage.getRoomId())
+                .orElseGet(() -> {
 
-        ChattingRoom targetChattingRoom = null;
+                    // 개인 채팅일 경우 재사용 가능한 방이 있는지 확인
+                    if (ChattingRoom.Type.PRIVATE.equals(createMessage.getRoomType())) {
+                        Optional<ChattingRoom> optionalChattingRoom = chattingRoomRepository.findBySellerIdAndClientId(createMessage.getSellerId(), createMessage.getClientId());
+                        if (optionalChattingRoom.isPresent()) {
+                            return optionalChattingRoom.get();
+                        }
+                    }
 
-        // 개인톡방 생성시
+                    return saveNewRoom(createMessage);
+                });
 
-        // 이미 방이 있는 경우
-        if (createMessage.getUserIdList() == null) {
-            targetChattingRoom = chattingRoomRepository.getById(createMessage.getRoomId());
-        } else {
-            // 재사용 가능한 방이 있는지 flag
-            boolean recyclable = false;
 
-            User user = userRepository.getById(createMessage.getSenderId());
-            List<ChattingRoom> chattingRoomsInDB = chattingRoomRepository.findAllByChattingRoomMembers_UserAndChattingRoomMembers_UseYN(user, "N");
-
-            for (ChattingRoom chattingRoom : chattingRoomsInDB) {
-                String idConcat = chattingRoom.getChattingRoomMembers().stream().map(chattingRoomMember -> chattingRoomMember.getUser().getId().toString()).reduce("", String::concat);
-
-                if (idConcat.contains(createMessage.getUserIdList().get(0).toString()) && idConcat.contains(createMessage.getUserIdList().get(1).toString())) {
-                    recyclable = true;
-                    targetChattingRoom = chattingRoom;
-                    break;
-                }
-            }
-
-            // 재사용 가능한 방이 없으면 생성
-            if (!recyclable) {
-                targetChattingRoom = saveNewRoom(createMessage);
-
-                targetChattingRoom.setChattingRoomMembers(saveNewRoomMember(createMessage, targetChattingRoom));
-            }
-        }
-
-        for (ChattingRoomMember chattingRoomMember : targetChattingRoom.getChattingRoomMembers()) {
-            if (chattingRoomMember.getUseYN().equals("N")) {
-                chattingRoomMember.setUseYN("Y");
-            }
-        }
+        targetChattingRoom.getChattingRoomMembers()
+                .forEach(chattingRoomMember -> chattingRoomMember.setUseYN("Y"));
 
         saveMessage(createMessage, targetChattingRoom);
 
@@ -81,8 +95,16 @@ public class ChattingService {
         ChattingRoom chattingRoom;
         chattingRoom = new ChattingRoom();
         chattingRoom.setId(createMessage.getRoomId());
+        chattingRoom.setType(createMessage.getRoomType());
 
-        return chattingRoomRepository.save(chattingRoom);
+        if (ChattingRoom.Type.PRIVATE.equals(createMessage.getRoomType())) {
+            chattingRoom.setClientId(createMessage.getClientId());
+            chattingRoom.setSellerId(createMessage.getSellerId());
+        }
+
+        ChattingRoom newChattingRoom = chattingRoomRepository.save(chattingRoom);
+        newChattingRoom.setChattingRoomMembers(saveNewRoomMember(createMessage, newChattingRoom));
+        return newChattingRoom;
     }
 
     @Transactional
@@ -183,21 +205,4 @@ public class ChattingService {
                 .build();
     }
 
-    public ChattingDto.ChattingRoomVM getRoomByTargetUser(UUID userId) {
-        User targetUser = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User " + userId + "not exist"));
-        Optional<ChattingRoom> chattingRoomOptional = chattingRoomRepository.findByChattingRoomMembers_User(targetUser);
-
-        Page<ChattingDto.MessageVM> messages = null;
-        if (chattingRoomOptional.isPresent()) {
-            messages = chattingMessageRepository.findByChattingRoomId(chattingRoomOptional.get().getId(), SecurityUtils.getPrincipal(), PageRequest.of(0, 20, Sort.Direction.DESC, "createdDt"))
-                    .map(ChattingDto.MessageVM::new);
-        }
-
-        return ChattingDto.ChattingRoomVM.builder()
-                .id(chattingRoomOptional.isPresent() ? chattingRoomOptional.get().getId() : UUID.randomUUID())
-                .opponentNickname(targetUser.getNickname())
-                .messages(messages)
-                .isNew(!chattingRoomOptional.isPresent())
-                .build();
-    }
 }

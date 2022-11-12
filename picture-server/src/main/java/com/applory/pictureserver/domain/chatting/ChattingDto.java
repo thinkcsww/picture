@@ -20,12 +20,30 @@ public class ChattingDto {
         @NotNull
         private UUID roomId;
 
-        private List<UUID> userIdList;
-
         @NotNull
         private UUID senderId;
 
+        private List<UUID> userIdList;
+
+        private UUID sellerId;
+
+        private UUID clientId;
+
         private String message;
+
+        private ChattingRoom.Type roomType;
+    }
+
+    @Getter
+    @Setter
+    public static class EnterRoom {
+        private UUID roomId;
+
+        private UUID targetUserId;
+
+        private UUID sellerId;
+
+        private UUID clientId;
     }
 
     @Getter
@@ -34,10 +52,12 @@ public class ChattingDto {
     public static class MessageVM {
         private UUID senderId;
         private String message;
+        private String createdDt;
 
-        public MessageVM(ChattingMessage chattingMessage) {
-            this.senderId = chattingMessage.getSender().getId();
-            this.message = chattingMessage.getMessage();
+        public MessageVM(ChattingMessage message) {
+            this.senderId = message.getSender().getId();
+            this.message = message.getMessage();
+            this.createdDt = message.getCreatedDt().toString();
         }
     }
 
@@ -55,10 +75,8 @@ public class ChattingDto {
 
         private Integer unreadCount;
 
-        private Page<MessageVM> messages;
+        private List<MessageVM> messages;
 
-        private boolean isNew;
-
-
+        private boolean newRoom;
     }
 }

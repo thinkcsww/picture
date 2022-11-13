@@ -163,10 +163,8 @@ const AppNav = () => {
 
   const tabEventListenerShowLoginScreen = {
     tabPress: (e: any) => {
-      console.log(isTokenExist)
       if (!isTokenExist) {
         const navigationKey = e.target.split('-')[0];
-        console.log(navigationKey);
         dispatch(setSignUpRedux( { destination: { key: navigationKey, params: {} }}))
         navigation.navigate(RouteNames.SignUpGuide)
         e.preventDefault();
@@ -174,6 +172,7 @@ const AppNav = () => {
       }
     },
   }
+
 
   return (
     <Stack.Navigator initialRouteName={"Tabs"} screenOptions={{ headerShown: false, cardStyle: { backgroundColor: '#fff' } }}>

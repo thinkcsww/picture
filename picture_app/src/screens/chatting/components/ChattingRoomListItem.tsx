@@ -5,16 +5,17 @@ import Images from "../../../../assets/images";
 import { Badge } from "@rneui/base";
 import React from "react";
 import { RouteNames } from "../../../AppNav";
+import { Chatting } from "../../../types/Chatting";
 
 type ChattingRoomListItemProps = {
-  item: any
+  item: Chatting.ChattingRoom
 }
 
 const ChattingRoomListItem = ({ item }: ChattingRoomListItemProps) => {
   const navigation = useNavigation<any>();
 
   const onPress = () => {
-    navigation.navigate(RouteNames.ChattingRoom);
+    navigation.navigate(RouteNames.ChattingRoom, { roomId: item.id });
   }
 
   return (
@@ -40,13 +41,13 @@ const ChattingRoomListItem = ({ item }: ChattingRoomListItemProps) => {
           <Text style={{
             fontWeight: 'bold',
             fontSize: 17
-          }}>이병묵 작가님</Text>
+          }}>{ item.opponent.nickname }</Text>
           <Text numberOfLines={2}
                 style={{
                   color: '#575757',
                   fontSize: 13,
                   marginTop: 4
-                }}>네~ ASAP 부탁해요~ 네~네~ ASAP 부탁해요~ 네~네~ ASAP 부탁해요~ 네~네~ ASAP 부탁해요~ 네~네~ ASAP 부탁해요~ 네~</Text>
+                }}>{ item.lastMessage }</Text>
         </View>
       </View>
       <View style={{

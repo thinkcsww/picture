@@ -34,10 +34,9 @@ const ChattingRoomScreen = ({ route }: any) => {
   const { user } = useAppSelector(state => state.common);
   const { targetUserId, roomType, sellerId, clientId, roomId } = route.params;
   const listRef = useRef<FlatList>(null);
+  const stompClient = useRef<Client>(new Client());
 
-  const navigation = useNavigation<any>();
-
-  const getRoomWithTargetUserIdQuery = useQuery(ChattingService.QueryKey.enterRoom, () => {
+  useQuery(ChattingService.QueryKey.enterRoom, () => {
     const params = {
       targetUserId: targetUserId,
       roomId: roomId ? roomId : undefined,
@@ -59,7 +58,6 @@ const ChattingRoomScreen = ({ route }: any) => {
     retry: false,
   });
 
-  const stompClient = useRef<Client>(new Client());
 
   useEffect(() => {
     if (roomInfo) {
@@ -69,7 +67,6 @@ const ChattingRoomScreen = ({ route }: any) => {
 
   useEffect(() => {
     return () => {
-      // stompClient.current.unsubscribe(`/room/${roomInfo.id}`)
       stompClient.current.forceDisconnect();
       stompClient.current.deactivate().then();
     };
@@ -98,6 +95,7 @@ const ChattingRoomScreen = ({ route }: any) => {
         stompClient.current!.subscribe(`/room/${roomInfo.id}`, (message: IMessage) => {
           console.log("message: ", message.body);
           const m = JSON.parse(message.body);
+          m.createdDt = new Date();
           setLastMessage(m);
         });
 
@@ -123,9 +121,30 @@ const ChattingRoomScreen = ({ route }: any) => {
 
   useEffect(() => {
     if (lastMessage) {
-      const newMessages = messages? [...messages] : [];
-      newMessages.push(lastMessage);
-      setMessages(newMessages);
+      console.log(lastMessage);
+      if (lastMessage.messageType === Chatting.MessageType.MESSAGE) {
+        const newMessages = messages? [...messages] : [];
+        newMessages.push(lastMessage);
+        setMessages(newMessages);
+
+        if (lastMessage.senderId !== user.id) {
+          stompClient.current!.publish({
+            destination: "/api/v1/chat/message-received",
+            body: JSON.stringify({
+              roomId: roomInfo.id,
+              senderId: user.id,
+              messageId: lastMessage.id,
+              messageType: Chatting.MessageType.RECEIVE
+            }),
+          });
+        }
+
+      } else if (lastMessage.messageType === Chatting.MessageType.ENTER || lastMessage.messageType === Chatting.MessageType.RECEIVE) {
+        const newMessages = messages? [...messages] : [];
+        newMessages.forEach(message => message.readBy = 'read');
+        setMessages(newMessages);
+      }
+
     }
   }, [lastMessage])
 
@@ -135,7 +154,8 @@ const ChattingRoomScreen = ({ route }: any) => {
         message: text,
         roomId: roomInfo.id,
         senderId: user.id,
-        roomType: roomType
+        roomType: roomType,
+        messageType: Chatting.MessageType.MESSAGE
       };
 
       if (roomInfo.newRoom) {
@@ -160,7 +180,7 @@ const ChattingRoomScreen = ({ route }: any) => {
       style={{
         flex: 1,
       }}>
-      <AppHeader title={roomInfo?.opponentNickname} iconName={"arrow-left"} />
+      <AppHeader title={roomInfo?.opponent.nickname} iconName={"arrow-left"} />
       <FlatList
         ref={listRef}
         onContentSizeChange={() => listRef.current!.scrollToOffset({animated: true, offset: 1000}) }
@@ -183,6 +203,7 @@ const ChattingRoomScreen = ({ route }: any) => {
         backgroundColor: "#e9e9e9",
         height: 50,
         alignItems: "center",
+        marginBottom: Platform.OS === 'android' ? 23 : 0
       }}>
         <TouchableOpacity>
           <MaterialCommunityIcons name={"plus"} size={20} color={Colors.GRAY_TEXT} />

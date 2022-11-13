@@ -7,7 +7,6 @@ import { useNavigation } from "@react-navigation/native";
 import { RouteNames } from "../AppNav";
 import { useAppDispatch } from "../store/config";
 import { setUser } from "../store/slices/commonSlice";
-import { Platform } from "react-native";
 import { Env } from "../constants/Env";
 
 export const instance = axios.create({
@@ -42,14 +41,10 @@ export const useAxiosLoader = () => {
 
         inc();
 
-        console.log('=== useAxiosLodaer ===');
-
         const tokenInfo: Auth.MyOAuth2Token = await AsyncStorageService.getObjectData(AsyncStorageService.Keys.TokenInfo);
-        console.log(tokenInfo);
 
         if (!config.headers.PermitAll && !!tokenInfo ) {
           let accessToken = tokenInfo.access_token;
-          console.log(config.headers.PermitAll);
           if (tokenInfo.expires_in < new Date().getTime() && !config.url.includes('/token/refresh') && !config.url.includes('/auth/login')) {
             try {
               const refreshTokenResponse = await AuthService.refreshToken(tokenInfo.refresh_token);
@@ -68,12 +63,9 @@ export const useAxiosLoader = () => {
           config.headers.Authorization = `Bearer ${accessToken}`;
         }
 
-        console.log(config);
-
         return config;
       },
       response: (response: any) => {
-        console.log(response);
         if (response.config.headers.Loading === undefined) {
           dec();
         }

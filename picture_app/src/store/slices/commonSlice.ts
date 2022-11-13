@@ -15,7 +15,7 @@ export const commonSlice = createSlice({
   initialState,
   reducers: {
     setUser(state, action: PayloadAction<any>) {
-      state.user = action.payload;
+      state.user = { ...state.user, ...action.payload };
     },
     setIsTokenExist(state, action: PayloadAction<boolean>) {
       state.isTokenExist = action.payload;

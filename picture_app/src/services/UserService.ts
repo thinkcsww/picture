@@ -28,7 +28,11 @@ const UserService = {
   },
   getUserMe: async () => {
     let url = `${USER_API_URL}/me`;
-    const {data} = await instance.get<User.VM>(url);
+    const {data} = await instance.get<User.VM>(url, {
+      headers: {
+        PermitAll: false
+      }
+    });
 
     return data;
   }

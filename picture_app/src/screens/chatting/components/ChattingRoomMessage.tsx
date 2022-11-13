@@ -12,7 +12,7 @@ type ChattingRoomMessageListProps = {
 };
 
 const ChattingRoomMessage = ({item}: ChattingRoomMessageListProps) => {
-  console.log(item);
+  // console.log(item);
   const { user } = useAppSelector(state => state.common);
 
   const onClickProfile = () => {
@@ -65,7 +65,7 @@ const ChattingRoomMessage = ({item}: ChattingRoomMessageListProps) => {
             fontSize: 10,
             color: Colors.GRAY_TEXT,
             textAlign: 'right'
-          }}>읽음</Text>
+          }}>{ !item.readBy ? '1' : '읽음' }</Text>
           <Text style={{
             fontSize: 10,
             color: Colors.GRAY_TEXT,

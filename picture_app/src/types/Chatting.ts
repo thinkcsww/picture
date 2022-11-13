@@ -1,15 +1,34 @@
+import { User } from "./User";
+
 export namespace Chatting {
   export enum RoomType {
-    GROUP = 'GROUP',
-    PRIVATE = 'PRIVATE'
+    GROUP = "GROUP",
+    PRIVATE = "PRIVATE"
   }
-  export interface ChattingRoom {
 
+  export enum MessageType {
+    MESSAGE = "MESSAGE",
+    IMAGE = "IMAGE",
+    ENTER = "ENTER",
+    RECEIVE = "RECEIVE",
+  }
+
+  export interface ChattingRoom {
+    id: string;
+    opponent: User.VM;
+    lastMessageDt: string;
+    lastMessage: string;
+    unreadCount: number;
+    messages: ChattingMessage[];
+    newRoom: boolean;
   }
 
   export interface ChattingMessage {
+    id: string;
     senderId: string;
     message: string;
     createdDt: string;
+    readBy: string;
+    messageType: MessageType;
   }
 }

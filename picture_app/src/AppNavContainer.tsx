@@ -4,7 +4,6 @@ import AbstractHoc from "./AbstractHoc";
 import AppNav from "./AppNav";
 
 const AppNavContainer = () => {
-
   return (
     <NavigationContainer>
       <AbstractHoc>

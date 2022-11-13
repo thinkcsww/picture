@@ -4,10 +4,7 @@ import com.applory.pictureserver.domain.shared.SecurityUtils;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserRepository;
 import com.applory.pictureserver.exception.NotFoundException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -40,9 +37,8 @@ public class ChattingService {
     @Transactional
     public ChattingDto.ChattingRoomVM enterRoom(ChattingDto.EnterRoom enterRoom) {
         ChattingRoom chattingRoom = null;
+        User opponent = null;
         List<ChattingDto.MessageVM> messages = null;
-
-        User targetUser = userRepository.findById(enterRoom.getTargetUserId()).orElseThrow(() -> new NotFoundException("User does not exist: " + enterRoom.getTargetUserId()));
 
         if (enterRoom.getRoomId() != null) {
             chattingRoom = chattingRoomRepository.findById(enterRoom.getRoomId()).orElseThrow(() -> new NotFoundException("Room does not exist: " + enterRoom.getRoomId()));
@@ -51,22 +47,47 @@ public class ChattingService {
         }
 
         if (chattingRoom != null) {
+            // 가장 최근 20개의 메세지만 조회
             messages = chattingMessageRepository.findTop20ByChattingRoomAndCreatedDtBeforeOrderByCreatedDtDesc(chattingRoom, LocalDateTime.now())
                     .stream().sorted(Comparator.comparing(ChattingMessage::getCreatedDt))
                     .map(ChattingDto.MessageVM::new)
                     .collect(Collectors.toList());
+
+            // 방 입장시 상대방 메세지 읽음 처리
+            User currentUser = userRepository.findByUsername(SecurityUtils.getPrincipal());
+            chattingMessageRepository.findAllByChattingRoomAndReadByIsNullAndSenderNot(chattingRoom, currentUser)
+                    .forEach(m -> m.setReadBy(currentUser.getId().toString()));
+
+
+            // 상대방 정보 조회
+            opponent = chattingRoom.getChattingRoomMembers().stream()
+                    .map(ChattingRoomMember::getUser)
+                    .filter(user -> !user.getUsername().equals(SecurityUtils.getPrincipal()))
+                    .collect(Collectors.toList()).get(0);
+
+            // 입장 소켓 전송
+            ChattingDto.EnterRoomMessageVM enterRoomMessageVM = new ChattingDto.EnterRoomMessageVM(ChattingMessage.Type.ENTER, currentUser.getId());
+            simpMessagingTemplate.convertAndSend("/room/" + chattingRoom.getId(), enterRoomMessageVM);
         }
 
         return ChattingDto.ChattingRoomVM.builder()
                 .id(chattingRoom == null ? UUID.randomUUID() : chattingRoom.getId())
-                .opponentNickname(targetUser.getNickname())
+                .opponent(opponent)
                 .messages(messages)
                 .newRoom(chattingRoom == null)
                 .build();
     }
 
     @Transactional
-    public void send(ChattingDto.CreateMessage createMessage) {
+    public void receivedMessage(ChattingDto.ReceiveMessage receiveMessage) {
+        ChattingMessage chattingMessage = chattingMessageRepository.findById(receiveMessage.getMessageId()).orElseThrow(() -> new NotFoundException("Message does not exist: " + receiveMessage.getMessageId()));
+        chattingMessage.setReadBy(receiveMessage.getSenderId().toString());
+
+        simpMessagingTemplate.convertAndSend("/room/" + receiveMessage.getRoomId(), receiveMessage);
+    }
+
+    @Transactional
+    public void send(ChattingDto.SendMessage createMessage) {
         ChattingRoom targetChattingRoom = chattingRoomRepository.findById(createMessage.getRoomId())
                 .orElseGet(() -> {
 
@@ -85,13 +106,14 @@ public class ChattingService {
         targetChattingRoom.getChattingRoomMembers()
                 .forEach(chattingRoomMember -> chattingRoomMember.setUseYN("Y"));
 
-        saveMessage(createMessage, targetChattingRoom);
+        ChattingMessage chattingMessage = saveMessage(createMessage, targetChattingRoom);
+        createMessage.setId(chattingMessage.getId());
 
         simpMessagingTemplate.convertAndSend("/room/" + createMessage.getRoomId(), createMessage);
     }
 
     @Transactional
-    ChattingRoom saveNewRoom(ChattingDto.CreateMessage createMessage) {
+    ChattingRoom saveNewRoom(ChattingDto.SendMessage createMessage) {
         ChattingRoom chattingRoom;
         chattingRoom = new ChattingRoom();
         chattingRoom.setId(createMessage.getRoomId());
@@ -108,7 +130,7 @@ public class ChattingService {
     }
 
     @Transactional
-    List<ChattingRoomMember> saveNewRoomMember(ChattingDto.CreateMessage createMessage, ChattingRoom chattingRoomInDB) {
+    List<ChattingRoomMember> saveNewRoomMember(ChattingDto.SendMessage createMessage, ChattingRoom chattingRoomInDB) {
         List<ChattingRoomMember> chattingRoomMembers = new ArrayList<>();
         for (UUID userId : createMessage.getUserIdList()) {
             Optional<User> userOptional = userRepository.findById(userId);
@@ -126,13 +148,14 @@ public class ChattingService {
     }
 
     @Transactional
-    void saveMessage(ChattingDto.CreateMessage createMessage, ChattingRoom chattingRoomInDB) {
+    ChattingMessage saveMessage(ChattingDto.SendMessage sendMessage, ChattingRoom chattingRoomInDB) {
         ChattingMessage chattingMessage = new ChattingMessage();
         chattingMessage.setChattingRoom(chattingRoomInDB);
-        chattingMessage.setMessage(createMessage.getMessage());
-        chattingMessage.setSender(userRepository.findById(createMessage.getSenderId()).get());
+        chattingMessage.setMessage(sendMessage.getMessage());
+        chattingMessage.setType(sendMessage.getMessageType());
+        chattingMessage.setSender(userRepository.findById(sendMessage.getSenderId()).get());
         chattingMessage.setVisibleTo("ALL");
-        chattingMessageRepository.save(chattingMessage);
+        return chattingMessageRepository.save(chattingMessage);
     }
 
     @Transactional
@@ -174,20 +197,17 @@ public class ChattingService {
                     ChattingMessage lastMessage = chattingMessageRepository.findTopByChattingRoomOrderByCreatedDtDesc(room);
                     int unreadCount = chattingMessageRepository.countUnreadMessageOfRoom(room.getId(), user.getId());
 
-                    String opponentNickname = "";
-
-                    for (ChattingRoomMember member : room.getChattingRoomMembers()) {
-                        if (!member.getUser().getId().equals(user.getId())) {
-                            opponentNickname = member.getUser().getNickname();
-                        }
-                    }
+                    User opponent = room.getChattingRoomMembers().stream()
+                            .map(ChattingRoomMember::getUser)
+                            .filter(u -> !u.getUsername().equals(SecurityUtils.getPrincipal()))
+                            .collect(Collectors.toList()).get(0);
 
                     return ChattingDto.ChattingRoomVM.builder()
                             .id(room.getId())
                             .lastMessage(lastMessage.getMessage())
                             .lastMessageDt(lastMessage.getCreatedDt())
                             .unreadCount(unreadCount)
-                            .opponentNickname(opponentNickname)
+                            .opponent(opponent)
                             .build();
 
                 }).sorted(Comparator.comparing(ChattingDto.ChattingRoomVM::getLastMessageDt).reversed())
@@ -204,5 +224,4 @@ public class ChattingService {
 //                .messages(messages)
                 .build();
     }
-
 }

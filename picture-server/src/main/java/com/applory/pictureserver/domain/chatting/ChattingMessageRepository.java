@@ -1,5 +1,6 @@
 package com.applory.pictureserver.domain.chatting;
 
+import com.applory.pictureserver.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,5 +16,6 @@ public interface ChattingMessageRepository extends JpaRepository<ChattingMessage
 
     ChattingMessage findTopByChattingRoomOrderByCreatedDtDesc(ChattingRoom chattingRoom);
 
+    List<ChattingMessage> findAllByChattingRoomAndReadByIsNullAndSenderNot(ChattingRoom chattingRoom, User sender);
 
 }

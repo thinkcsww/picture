@@ -19,8 +19,13 @@ public class ChattingController {
     }
 
     @MessageMapping("/send")
-    public void sendMessage(@Valid ChattingDto.CreateMessage createMessage) throws Exception {
+    public void sendMessage(@Valid ChattingDto.SendMessage createMessage) throws Exception {
         chattingService.send(createMessage);
+    }
+
+    @MessageMapping("/message-received")
+    public void receivedMessage(@Valid ChattingDto.ReceiveMessage receiveMessage) {
+        chattingService.receivedMessage(receiveMessage);
     }
 
     @DeleteMapping("/{roomId}")

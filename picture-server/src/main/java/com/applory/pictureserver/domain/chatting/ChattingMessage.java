@@ -21,6 +21,14 @@ public class ChattingMessage extends BaseTimeEntity {
         NONE,
         ALL
     }
+
+    public enum Type {
+        ENTER,
+        MESSAGE,
+        IMAGE,
+        RECEIVE
+    }
+
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
@@ -46,5 +54,10 @@ public class ChattingMessage extends BaseTimeEntity {
 
     @Column(name ="READ_BY")
     private String readBy;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "TYPE", columnDefinition = "default 'MESSAGE'")
+    private ChattingMessage.Type type;
 
 }

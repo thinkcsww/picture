@@ -50,7 +50,7 @@ public class ChattingControllerTest {
     @LocalServerPort
     private Integer port;
 
-    BlockingQueue<ChattingDto.SendMessage> blockingQueue;
+    BlockingQueue<ChattingDto.SendMessageParams> blockingQueue;
     WebSocketStompClient stompClient;
     StompSession stompSession;
 
@@ -131,7 +131,7 @@ public class ChattingControllerTest {
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
-        ChattingDto.SendMessage createMessage = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
         createMessage.setMessage("HI");
         createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage.setSenderId(sender.getId());
@@ -155,7 +155,7 @@ public class ChattingControllerTest {
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
-        ChattingDto.SendMessage createMessage = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
         createMessage.setMessage("HI");
         createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage.setSenderId(sender.getId());
@@ -179,7 +179,7 @@ public class ChattingControllerTest {
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
-        ChattingDto.SendMessage createMessage = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
         createMessage.setMessage("HI");
         createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage.setSenderId(sender.getId());
@@ -203,7 +203,7 @@ public class ChattingControllerTest {
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
-        ChattingDto.SendMessage createMessage = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
         createMessage.setMessage("HI");
         createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage.setSenderId(sender.getId());
@@ -229,7 +229,7 @@ public class ChattingControllerTest {
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
-        ChattingDto.SendMessage createMessage = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
         createMessage.setMessage("HI");
         createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage.setSenderId(sender.getId());
@@ -253,7 +253,7 @@ public class ChattingControllerTest {
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
-        ChattingDto.SendMessage createMessage = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
         createMessage.setMessage("HI");
         createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage.setSenderId(sender.getId());
@@ -279,7 +279,7 @@ public class ChattingControllerTest {
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
-        ChattingDto.SendMessage createMessage = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
         createMessage.setMessage("HI");
         createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage.setSenderId(sender.getId());
@@ -306,7 +306,7 @@ public class ChattingControllerTest {
         ResponseEntity<MyOAuth2Token> tokenResponse2 = login(TestUtil.createValidLoginDto(user2.getUsername()), MyOAuth2Token.class);
         String token2 = tokenResponse2.getBody().getAccess_token();
 
-        ChattingDto.SendMessage createMessage = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
         createMessage.setRoomId(UUID.randomUUID());
         createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage.setSenderId(sender.getId());
@@ -321,7 +321,7 @@ public class ChattingControllerTest {
 
         leaveRoom(createMessage.getRoomId(), Object.class);
 
-        ChattingDto.SendMessage createMessage2 = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage2 = new ChattingDto.SendMessageParams();
         createMessage2.setRoomId(UUID.randomUUID());
         createMessage2.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage2.setSenderId(sender.getId());
@@ -346,7 +346,7 @@ public class ChattingControllerTest {
         ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(user1.getUsername()), MyOAuth2Token.class);
         String token = tokenResponse.getBody().getAccess_token();
 
-        ChattingDto.SendMessage createMessage = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
         createMessage.setRoomId(UUID.randomUUID());
         createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage.setSenderId(sender.getId());
@@ -361,7 +361,7 @@ public class ChattingControllerTest {
 
         leaveRoom(createMessage.getRoomId(), Object.class);
 
-        ChattingDto.SendMessage createMessage2 = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage2 = new ChattingDto.SendMessageParams();
         createMessage2.setRoomId(UUID.randomUUID());
         createMessage2.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage2.setSenderId(sender.getId());
@@ -390,7 +390,7 @@ public class ChattingControllerTest {
         ResponseEntity<MyOAuth2Token> tokenResponse2 = login(TestUtil.createValidLoginDto(user2.getUsername()), MyOAuth2Token.class);
         String token2 = tokenResponse2.getBody().getAccess_token();
 
-        ChattingDto.SendMessage createMessage = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
         createMessage.setRoomId(UUID.randomUUID());
         createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage.setSenderId(sender.getId());
@@ -413,7 +413,7 @@ public class ChattingControllerTest {
         clearInterceptors();
         authenticate(token);
 
-        ChattingDto.SendMessage createMessage2 = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage2 = new ChattingDto.SendMessageParams();
         createMessage2.setRoomId(createMessage.getRoomId());
         createMessage2.setSenderId(sender.getId());
         createMessage2.setMessage("HI");
@@ -435,7 +435,7 @@ public class ChattingControllerTest {
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
-        ChattingDto.SendMessage createMessage = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
         createMessage.setRoomId(UUID.randomUUID());
         createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage.setSenderId(sender.getId());
@@ -448,13 +448,13 @@ public class ChattingControllerTest {
         stompSession.subscribe("/room/" + createMessage.getRoomId(), new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
-                return ChattingDto.SendMessage.class;
+                return ChattingDto.SendMessageParams.class;
             }
 
             @Override
             public void handleFrame(StompHeaders headers, Object payload) {
                 System.out.println("Received message: " + payload);
-                blockingQueue.add((ChattingDto.SendMessage) payload);
+                blockingQueue.add((ChattingDto.SendMessageParams) payload);
             }
         });
 
@@ -507,7 +507,7 @@ public class ChattingControllerTest {
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
-        ChattingDto.SendMessage createMessage = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
         createMessage.setMessage("HI");
         createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage.setSenderId(sender.getId());
@@ -517,7 +517,7 @@ public class ChattingControllerTest {
 
         blockingQueue.poll(100, TimeUnit.MILLISECONDS);
 
-        ChattingDto.SendMessage createMessage2 = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage2 = new ChattingDto.SendMessageParams();
         createMessage2.setMessage("HI");
         createMessage2.setUserIdList(Arrays.asList(sender.getId(), receiver2.getId()));
         createMessage2.setSenderId(sender.getId());
@@ -617,7 +617,7 @@ public class ChattingControllerTest {
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
-        ChattingDto.SendMessage createMessage = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
         createMessage.setRoomId(UUID.randomUUID());
         createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage.setSenderId(sender.getId());
@@ -648,7 +648,7 @@ public class ChattingControllerTest {
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
-        ChattingDto.SendMessage createMessage = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
         createMessage.setRoomId(UUID.randomUUID());
         createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage.setSenderId(sender.getId());
@@ -674,7 +674,7 @@ public class ChattingControllerTest {
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
-        ChattingDto.SendMessage createMessage = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
         createMessage.setRoomId(UUID.randomUUID());
         createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage.setSenderId(sender.getId());
@@ -702,7 +702,7 @@ public class ChattingControllerTest {
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
-        ChattingDto.SendMessage createMessage = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
         createMessage.setRoomId(UUID.randomUUID());
         createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage.setSenderId(sender.getId());
@@ -743,7 +743,7 @@ public class ChattingControllerTest {
         ResponseEntity<MyOAuth2Token> tokenResponse2 = login(TestUtil.createValidLoginDto(user2.getUsername()), MyOAuth2Token.class);
         String token2 = tokenResponse2.getBody().getAccess_token();
 
-        ChattingDto.SendMessage createMessage = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
         createMessage.setRoomId(UUID.randomUUID());
         createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage.setSenderId(sender.getId());
@@ -783,7 +783,7 @@ public class ChattingControllerTest {
         ResponseEntity<MyOAuth2Token> tokenResponse2 = login(TestUtil.createValidLoginDto(user2.getUsername()), MyOAuth2Token.class);
         String token2 = tokenResponse2.getBody().getAccess_token();
 
-        ChattingDto.SendMessage createMessage = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
         createMessage.setRoomId(UUID.randomUUID());
         createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage.setSenderId(sender.getId());
@@ -823,7 +823,7 @@ public class ChattingControllerTest {
         ResponseEntity<MyOAuth2Token> tokenResponse2 = login(TestUtil.createValidLoginDto(user2.getUsername()), MyOAuth2Token.class);
         String token2 = tokenResponse2.getBody().getAccess_token();
 
-        ChattingDto.SendMessage createMessage = new ChattingDto.SendMessage();
+        ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
         createMessage.setRoomId(UUID.randomUUID());
         createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage.setSenderId(sender.getId());
@@ -855,7 +855,7 @@ public class ChattingControllerTest {
         stompSession = stompClient.connect(new URI(String.format("http://localhost:%d/ws", port)), null, stompHeaders, new StompSessionHandlerAdapter() {}).get(5, TimeUnit.SECONDS);
     }
 
-    private void sendMessage(ChattingDto.SendMessage createMessage) {
+    private void sendMessage(ChattingDto.SendMessageParams createMessage) {
         stompSession.send(API_V_1_CHATTINGS_SEND, createMessage);
     }
 
@@ -913,7 +913,7 @@ public class ChattingControllerTest {
 
         UUID roomId = UUID.randomUUID();
         for (int i = 1; i <= howManyMessages; i++) {
-            ChattingDto.SendMessage createMessage = new ChattingDto.SendMessage();
+            ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
             createMessage.setMessage("HI" + i);
             createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
             createMessage.setSenderId(sender.getId());

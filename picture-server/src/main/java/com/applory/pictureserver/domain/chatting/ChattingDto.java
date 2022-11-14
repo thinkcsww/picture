@@ -1,5 +1,6 @@
 package com.applory.pictureserver.domain.chatting;
 
+import com.applory.pictureserver.domain.chatting.message_sender.MessageSender;
 import com.applory.pictureserver.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +17,7 @@ public class ChattingDto {
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class SendMessage {
+    public static class SendMessageParams {
         @NotNull
         private UUID roomId;
 
@@ -35,13 +36,14 @@ public class ChattingDto {
 
         private ChattingMessage.Type messageType;
 
-        private UUID id;
+        private UUID messageId;
+
     }
 
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class ReceiveMessage {
+    public static class ReceiveMessageParams {
         @NotNull
         private UUID roomId;
 
@@ -57,7 +59,7 @@ public class ChattingDto {
 
     @Getter
     @Setter
-    public static class EnterRoom {
+    public static class EnterRoomParams {
         private UUID roomId;
 
         private UUID targetUserId;
@@ -96,6 +98,44 @@ public class ChattingDto {
             this.createdDt = message.getCreatedDt().toString();
             this.readBy = message.getReadBy();
             this.type = message.getType();
+        }
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class StompMessageVM {
+        @NotNull
+        private UUID roomId;
+
+        @NotNull
+        private UUID senderId;
+
+        private UUID sellerId;
+
+        private UUID clientId;
+
+        private String message;
+
+        private ChattingRoom.Type roomType;
+
+        private ChattingMessage.Type messageType;
+
+        private UUID id;
+
+        private MessageSender messageSender;
+
+        @Builder
+        public StompMessageVM(UUID roomId, UUID senderId, UUID sellerId, UUID clientId, String message, ChattingRoom.Type roomType, ChattingMessage.Type messageType, UUID id, MessageSender messageSender) {
+            this.roomId = roomId;
+            this.senderId = senderId;
+            this.sellerId = sellerId;
+            this.clientId = clientId;
+            this.message = message;
+            this.roomType = roomType;
+            this.messageType = messageType;
+            this.id = id;
+            this.messageSender = messageSender;
         }
     }
 

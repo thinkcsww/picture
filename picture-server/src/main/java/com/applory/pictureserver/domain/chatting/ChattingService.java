@@ -1,5 +1,7 @@
 package com.applory.pictureserver.domain.chatting;
 
+import com.applory.pictureserver.domain.chatting.message_sender.MessageSender;
+import com.applory.pictureserver.domain.chatting.message_sender.MessageSenderFactory;
 import com.applory.pictureserver.domain.shared.SecurityUtils;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserRepository;
@@ -26,16 +28,19 @@ public class ChattingService {
 
     private final UserRepository userRepository;
 
-    public ChattingService(SimpMessagingTemplate simpMessagingTemplate, ChattingRoomRepository chattingRoomRepository, ChattingRoomMemberRepository chattingRoomMemberRepository, ChattingMessageRepository chattingMessageRepository, UserRepository userRepository) {
+    private final MessageSenderFactory messageSenderFactory;
+
+    public ChattingService(SimpMessagingTemplate simpMessagingTemplate, ChattingRoomRepository chattingRoomRepository, ChattingRoomMemberRepository chattingRoomMemberRepository, ChattingMessageRepository chattingMessageRepository, UserRepository userRepository, MessageSenderFactory messageSenderFactory) {
         this.simpMessagingTemplate = simpMessagingTemplate;
         this.chattingRoomRepository = chattingRoomRepository;
         this.chattingRoomMemberRepository = chattingRoomMemberRepository;
         this.chattingMessageRepository = chattingMessageRepository;
         this.userRepository = userRepository;
+        this.messageSenderFactory = messageSenderFactory;
     }
 
     @Transactional
-    public ChattingDto.ChattingRoomVM enterRoom(ChattingDto.EnterRoom enterRoom) {
+    public ChattingDto.ChattingRoomVM enterRoom(ChattingDto.EnterRoomParams enterRoom) {
         ChattingRoom chattingRoom = null;
         User opponent = null;
         List<ChattingDto.MessageVM> messages = null;
@@ -79,83 +84,10 @@ public class ChattingService {
     }
 
     @Transactional
-    public void receivedMessage(ChattingDto.ReceiveMessage receiveMessage) {
-        ChattingMessage chattingMessage = chattingMessageRepository.findById(receiveMessage.getMessageId()).orElseThrow(() -> new NotFoundException("Message does not exist: " + receiveMessage.getMessageId()));
-        chattingMessage.setReadBy(receiveMessage.getSenderId().toString());
+    public void send(ChattingDto.SendMessageParams createMessage) {
+        MessageSender messageSender = messageSenderFactory.build(createMessage.getMessageType());
+        messageSender.sendMessage(createMessage);
 
-        simpMessagingTemplate.convertAndSend("/room/" + receiveMessage.getRoomId(), receiveMessage);
-    }
-
-    @Transactional
-    public void send(ChattingDto.SendMessage createMessage) {
-        ChattingRoom targetChattingRoom = chattingRoomRepository.findById(createMessage.getRoomId())
-                .orElseGet(() -> {
-
-                    // 개인 채팅일 경우 재사용 가능한 방이 있는지 확인
-                    if (ChattingRoom.Type.PRIVATE.equals(createMessage.getRoomType())) {
-                        Optional<ChattingRoom> optionalChattingRoom = chattingRoomRepository.findBySellerIdAndClientId(createMessage.getSellerId(), createMessage.getClientId());
-                        if (optionalChattingRoom.isPresent()) {
-                            return optionalChattingRoom.get();
-                        }
-                    }
-
-                    return saveNewRoom(createMessage);
-                });
-
-
-        targetChattingRoom.getChattingRoomMembers()
-                .forEach(chattingRoomMember -> chattingRoomMember.setUseYN("Y"));
-
-        ChattingMessage chattingMessage = saveMessage(createMessage, targetChattingRoom);
-        createMessage.setId(chattingMessage.getId());
-
-        simpMessagingTemplate.convertAndSend("/room/" + createMessage.getRoomId(), createMessage);
-    }
-
-    @Transactional
-    ChattingRoom saveNewRoom(ChattingDto.SendMessage createMessage) {
-        ChattingRoom chattingRoom;
-        chattingRoom = new ChattingRoom();
-        chattingRoom.setId(createMessage.getRoomId());
-        chattingRoom.setType(createMessage.getRoomType());
-
-        if (ChattingRoom.Type.PRIVATE.equals(createMessage.getRoomType())) {
-            chattingRoom.setClientId(createMessage.getClientId());
-            chattingRoom.setSellerId(createMessage.getSellerId());
-        }
-
-        ChattingRoom newChattingRoom = chattingRoomRepository.save(chattingRoom);
-        newChattingRoom.setChattingRoomMembers(saveNewRoomMember(createMessage, newChattingRoom));
-        return newChattingRoom;
-    }
-
-    @Transactional
-    List<ChattingRoomMember> saveNewRoomMember(ChattingDto.SendMessage createMessage, ChattingRoom chattingRoomInDB) {
-        List<ChattingRoomMember> chattingRoomMembers = new ArrayList<>();
-        for (UUID userId : createMessage.getUserIdList()) {
-            Optional<User> userOptional = userRepository.findById(userId);
-            if (!userOptional.isPresent()) {
-                throw new NotFoundException("Send Message: " + userId + " is not exist");
-            }
-
-            ChattingRoomMember chattingRoomMember = new ChattingRoomMember();
-            chattingRoomMember.setChattingRoom(chattingRoomInDB);
-            chattingRoomMember.setUser(userOptional.get());
-            chattingRoomMember.setUseYN("Y");
-            chattingRoomMembers.add(chattingRoomMember);
-        }
-        return chattingRoomMemberRepository.saveAll(chattingRoomMembers);
-    }
-
-    @Transactional
-    ChattingMessage saveMessage(ChattingDto.SendMessage sendMessage, ChattingRoom chattingRoomInDB) {
-        ChattingMessage chattingMessage = new ChattingMessage();
-        chattingMessage.setChattingRoom(chattingRoomInDB);
-        chattingMessage.setMessage(sendMessage.getMessage());
-        chattingMessage.setType(sendMessage.getMessageType());
-        chattingMessage.setSender(userRepository.findById(sendMessage.getSenderId()).get());
-        chattingMessage.setVisibleTo("ALL");
-        return chattingMessageRepository.save(chattingMessage);
     }
 
     @Transactional

@@ -13,7 +13,7 @@ import { useAppDispatch, useAppSelector } from "../../store/config";
 import { setSignUpRedux } from "../../store/slices/signUpSlice";
 import AsyncStorageService from "../../services/AsyncStorageService";
 import UserService from "../../services/UserService";
-import { setUser } from "../../store/slices/commonSlice";
+import { setIsTokenExist, setUser } from "../../store/slices/commonSlice";
 
 const SignUpGuideScreen = () => {
 
@@ -32,6 +32,7 @@ const SignUpGuideScreen = () => {
       AuthService.setTokenInfo(result).then();
       const userMeResponse =  await UserService.getUserMe()
       dispatch(setUser(userMeResponse));
+      dispatch(setIsTokenExist(true));
 
       navigation.navigate(signUpRedux.destination.key, {...signUpRedux.destination.params})
     },

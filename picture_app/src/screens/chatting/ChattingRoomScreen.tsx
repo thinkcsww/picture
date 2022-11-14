@@ -1,6 +1,5 @@
-import React, { LegacyRef, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
-  Alert,
   FlatList,
   KeyboardAvoidingView,
   Platform,
@@ -10,7 +9,6 @@ import {
   View,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { useNavigation } from "@react-navigation/native";
 import AppHeader from "../../components/AppHeader";
 import { Colors } from "../../colors";
 import { useQuery } from "react-query";
@@ -128,15 +126,7 @@ const ChattingRoomScreen = ({ route }: any) => {
         setMessages(newMessages);
 
         if (lastMessage.senderId !== user.id) {
-          stompClient.current!.publish({
-            destination: "/api/v1/chat/message-received",
-            body: JSON.stringify({
-              roomId: roomInfo.id,
-              senderId: user.id,
-              messageId: lastMessage.id,
-              messageType: Chatting.MessageType.RECEIVE
-            }),
-          });
+          sendReceiveMessage(lastMessage);
         }
 
       } else if (lastMessage.messageType === Chatting.MessageType.ENTER || lastMessage.messageType === Chatting.MessageType.RECEIVE) {
@@ -147,6 +137,18 @@ const ChattingRoomScreen = ({ route }: any) => {
 
     }
   }, [lastMessage])
+
+  const sendReceiveMessage = (lastMessage: Chatting.ChattingMessage) => {
+    stompClient.current!.publish({
+      destination: "/api/v1/chat/send",
+      body: JSON.stringify({
+        roomId: roomInfo.id,
+        senderId: user.id,
+        messageId: lastMessage.id,
+        messageType: Chatting.MessageType.RECEIVE
+      }),
+    });
+  }
 
   const onPressSend = () => {
     if (text.trim().length > 0) {

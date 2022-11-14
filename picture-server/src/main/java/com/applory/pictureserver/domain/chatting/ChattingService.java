@@ -53,7 +53,7 @@ public class ChattingService {
 
         if (chattingRoom != null) {
             // 가장 최근 20개의 메세지만 조회
-            messages = chattingMessageRepository.findTop20ByChattingRoomAndCreatedDtBeforeOrderByCreatedDtDesc(chattingRoom, LocalDateTime.now())
+            messages = chattingMessageRepository.findTop20ByChattingRoomIdAndCreatedDtBeforeOrderByCreatedDtDesc(chattingRoom.getId(), LocalDateTime.now())
                     .stream().sorted(Comparator.comparing(ChattingMessage::getCreatedDt))
                     .map(ChattingDto.MessageVM::new)
                     .collect(Collectors.toList());
@@ -155,5 +155,12 @@ public class ChattingService {
                 .id(roomId)
 //                .messages(messages)
                 .build();
+    }
+
+    public List<ChattingDto.MessageVM> getMessages(UUID roomId, LocalDateTime localDateTime) {
+        return chattingMessageRepository.findTop20ByChattingRoomIdAndCreatedDtBeforeOrderByCreatedDtDesc(roomId, localDateTime)
+                .stream().sorted(Comparator.comparing(ChattingMessage::getCreatedDt))
+                .map(ChattingDto.MessageVM::new)
+                .collect(Collectors.toList());
     }
 }

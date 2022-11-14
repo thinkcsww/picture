@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface ChattingMessageRepository extends JpaRepository<ChattingMessage, UUID>, ChattingMessageRepositoryCustom {
     List<ChattingMessage> findByChattingRoom_Id(UUID roomId);
 
-    List<ChattingMessage> findTop20ByChattingRoomAndCreatedDtBeforeOrderByCreatedDtDesc(ChattingRoom chattingRoom, LocalDateTime localDateTime);
+    List<ChattingMessage> findTop20ByChattingRoomIdAndCreatedDtBeforeOrderByCreatedDtDesc(UUID id, LocalDateTime localDateTime);
 
     ChattingMessage findTopByChattingRoomOrderByCreatedDtDesc(ChattingRoom chattingRoom);
 

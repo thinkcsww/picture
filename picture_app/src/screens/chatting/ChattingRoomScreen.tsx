@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  FlatList,
+  FlatList, Keyboard,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -24,6 +24,7 @@ import ChattingRoomMessage from "./components/ChattingRoomMessage";
 import CommonNodata from "../../components/CommonNodata";
 import { Env } from "../../constants/Env";
 
+const SCROLL_OFFSET = 10000000;
 const ChattingRoomScreen = ({ route }: any) => {
   const [roomInfo, setRoomInfo] = useState<any>();
   const [messages, setMessages] = useState<Chatting.ChattingMessage[]>([]);
@@ -69,6 +70,16 @@ const ChattingRoomScreen = ({ route }: any) => {
       stompClient.current.deactivate().then();
     };
   }, [])
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      listRef.current!.scrollToOffset({animated: true, offset: SCROLL_OFFSET});
+    });
+
+    return () => {
+      showSubscription.remove();
+    };
+  }, []);
 
   const initWebSocket = async () => {
     const token: Auth.MyOAuth2Token = await AsyncStorageService.getObjectData(AsyncStorageService.Keys.TokenInfo);
@@ -185,7 +196,7 @@ const ChattingRoomScreen = ({ route }: any) => {
       <AppHeader title={roomInfo?.opponent.nickname} iconName={"arrow-left"} />
       <FlatList
         ref={listRef}
-        onContentSizeChange={() => listRef.current!.scrollToOffset({animated: true, offset: 1000}) }
+        onContentSizeChange={() => listRef.current!.scrollToOffset({animated: true, offset: SCROLL_OFFSET}) }
         contentContainerStyle={{
           flexGrow: 1,
           paddingBottom: 12

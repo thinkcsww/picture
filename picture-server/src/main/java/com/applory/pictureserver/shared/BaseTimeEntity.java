@@ -1,4 +1,4 @@
-package com.applory.pictureserver.domain.shared;
+package com.applory.pictureserver.shared;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;

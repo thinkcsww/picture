@@ -38,6 +38,10 @@ public class MessageSenderFactory {
             messageSender = new EnterMessageSender(simpMessagingTemplate);
         } else if (ChattingMessage.Type.RECEIVE.equals(type)) {
             messageSender = new ReceiveMessageSender(simpMessagingTemplate, chattingMessageRepository);
+        } else if (ChattingMessage.Type.REQUEST_MATCHING.equals(type)
+        || ChattingMessage.Type.ACCEPT_MATCHING.equals(type)
+        || ChattingMessage.Type.DECLINE_MATCHING.equals(type)){
+            messageSender = new MatchingMessageSender(simpMessagingTemplate, chattingRoomRepository, chattingMessageRepository, userRepository);
         }
 
         return messageSender;

@@ -1,6 +1,6 @@
 package com.applory.pictureserver.domain.user;
 
-import com.applory.pictureserver.domain.shared.BaseTimeEntity;
+import com.applory.pictureserver.shared.BaseTimeEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

@@ -1,7 +1,7 @@
 package com.applory.pictureserver.domain.request;
 
-import com.applory.pictureserver.domain.shared.BaseTimeEntity;
-import com.applory.pictureserver.domain.shared.Constant;
+import com.applory.pictureserver.shared.BaseTimeEntity;
+import com.applory.pictureserver.shared.Constant;
 import com.applory.pictureserver.domain.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +26,7 @@ public class Request extends BaseTimeEntity {
     @Column(name = "ID", columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "USER_ID")
     User user;
 

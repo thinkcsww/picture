@@ -4,7 +4,7 @@ import com.applory.pictureserver.config.AppConfiguration;
 import com.applory.pictureserver.error.ApiError;
 import com.applory.pictureserver.domain.oauth.AuthDto;
 import com.applory.pictureserver.domain.oauth.MyOAuth2Token;
-import com.applory.pictureserver.domain.shared.Constant;
+import com.applory.pictureserver.shared.Constant;
 import com.applory.pictureserver.domain.user.UserDto;
 import com.applory.pictureserver.domain.user.UserRepository;
 import com.applory.pictureserver.domain.user.UserService;

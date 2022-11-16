@@ -1,10 +1,8 @@
 package com.applory.pictureserver.domain.chatting;
 
-import com.applory.pictureserver.domain.shared.BaseTimeEntity;
-import com.applory.pictureserver.domain.user.User;
+import com.applory.pictureserver.shared.BaseTimeEntity;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

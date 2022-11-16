@@ -2,7 +2,7 @@ package com.applory.pictureserver.domain.chatting;
 
 import com.applory.pictureserver.domain.chatting.message_sender.MessageSender;
 import com.applory.pictureserver.domain.chatting.message_sender.MessageSenderFactory;
-import com.applory.pictureserver.domain.shared.SecurityUtils;
+import com.applory.pictureserver.shared.SecurityUtils;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserRepository;
 import com.applory.pictureserver.exception.NotFoundException;

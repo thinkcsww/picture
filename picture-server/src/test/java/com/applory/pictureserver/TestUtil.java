@@ -1,9 +1,8 @@
 package com.applory.pictureserver;
 
 import com.applory.pictureserver.domain.oauth.AuthDto;
-import com.applory.pictureserver.domain.request.Request;
 import com.applory.pictureserver.domain.request.RequestDto;
-import com.applory.pictureserver.domain.shared.Constant;
+import com.applory.pictureserver.shared.Constant;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserDto;
 

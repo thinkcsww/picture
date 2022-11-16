@@ -1,6 +1,6 @@
 package com.applory.pictureserver.domain.chatting;
 
-import com.applory.pictureserver.domain.shared.BaseTimeEntity;
+import com.applory.pictureserver.shared.BaseTimeEntity;
 import com.applory.pictureserver.domain.user.User;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,7 +26,10 @@ public class ChattingMessage extends BaseTimeEntity {
         ENTER,
         MESSAGE,
         IMAGE,
-        RECEIVE
+        RECEIVE,
+        REQUEST_MATCHING,
+        ACCEPT_MATCHING,
+        DECLINE_MATCHING
     }
 
     @Id

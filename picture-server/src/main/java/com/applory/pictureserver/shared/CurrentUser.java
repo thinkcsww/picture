@@ -1,4 +1,4 @@
-package com.applory.pictureserver.domain.shared;
+package com.applory.pictureserver.shared;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 

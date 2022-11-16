@@ -1,6 +1,6 @@
 package com.applory.pictureserver.domain.request;
 
-import com.applory.pictureserver.domain.shared.Constant;
+import com.applory.pictureserver.shared.Constant;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

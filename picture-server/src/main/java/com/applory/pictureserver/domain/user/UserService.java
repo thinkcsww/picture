@@ -3,7 +3,7 @@ package com.applory.pictureserver.domain.user;
 import com.applory.pictureserver.config.AppConfiguration;
 import com.applory.pictureserver.exception.BadRequestException;
 import com.applory.pictureserver.exception.NotFoundException;
-import com.applory.pictureserver.domain.shared.SecurityUtils;
+import com.applory.pictureserver.shared.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

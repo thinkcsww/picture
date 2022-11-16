@@ -1,7 +1,7 @@
 package com.applory.pictureserver.domain.request;
 
 import com.applory.pictureserver.exception.NotFoundException;
-import com.applory.pictureserver.domain.shared.SecurityUtils;
+import com.applory.pictureserver.shared.SecurityUtils;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,6 @@ public class RequestService {
     private final RequestRepository requestRepository;
 
     private final UserRepository userRepository;
-
 
     public Request createRequest(RequestDto.Create dto) {
         Request request = new Request();

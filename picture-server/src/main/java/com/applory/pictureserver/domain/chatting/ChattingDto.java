@@ -2,6 +2,7 @@ package com.applory.pictureserver.domain.chatting;
 
 import com.applory.pictureserver.domain.chatting.message_sender.MessageSender;
 import com.applory.pictureserver.domain.user.User;
+import com.applory.pictureserver.shared.Constant;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,6 +39,12 @@ public class ChattingDto {
         private ChattingMessage.Type messageType;
 
         private UUID messageId;
+
+        private Constant.Specialty specialty;
+
+        private Integer price;
+
+        private LocalDateTime dueDate;
 
     }
 

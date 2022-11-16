@@ -1,6 +1,6 @@
 package com.applory.pictureserver.domain.user;
 
-import com.applory.pictureserver.domain.shared.CurrentUser;
+import com.applory.pictureserver.shared.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.UUID;
-import java.util.function.Function;
 
 @RestController
 @RequestMapping("/api/v1/users")

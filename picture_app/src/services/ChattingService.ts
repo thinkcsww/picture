@@ -34,4 +34,21 @@ export const ChattingService = {
 
     return data;
   },
+  getMessages: async (roomId: string, pagedMessageList: PageResult<Chatting.ChattingMessage>) => {
+    let url = `${CHATTING_API_URL}/messages`;
+
+    const {data} = await instance.get<PageResult<Chatting.ChattingMessage>>(url, {
+      params: {
+        roomId: roomId,
+        page: pagedMessageList.number + 1,
+        size: pagedMessageList.size,
+        sort: 'createdDt,desc'
+      },
+      headers: {
+        PermitAll: false
+      }
+    });
+
+    return data;
+  }
 }

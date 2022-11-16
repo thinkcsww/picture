@@ -1,4 +1,5 @@
 import { User } from "./User";
+import { PageResult } from "./Page";
 
 export namespace Chatting {
   export enum RoomType {
@@ -19,7 +20,7 @@ export namespace Chatting {
     lastMessageDt: string;
     lastMessage: string;
     unreadCount: number;
-    messages: ChattingMessage[];
+    messages: PageResult<ChattingMessage>;
     newRoom: boolean;
   }
 

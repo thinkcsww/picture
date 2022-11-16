@@ -11,7 +11,7 @@ const MyPageScreen = () => {
   React.useEffect(() => {
     UserService.getUserMe().then((res: any) => {
       console.log(res);
-      dispatch(setUser(res))
+      // dispatch(setUser(res))
     });
   }, [])
 

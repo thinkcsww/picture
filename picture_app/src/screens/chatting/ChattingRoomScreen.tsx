@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  FlatList, Keyboard,
+  FlatList,
+  Keyboard,
   KeyboardAvoidingView,
+  NativeScrollEvent,
   Platform,
   SafeAreaView,
   TextInput,
@@ -23,11 +25,13 @@ import { Auth } from "../../types/Auth";
 import ChattingRoomMessage from "./components/ChattingRoomMessage";
 import CommonNodata from "../../components/CommonNodata";
 import { Env } from "../../constants/Env";
+import { emptyPageResult, PageResult } from "../../types/Page";
+import ChattingMessage = Chatting.ChattingMessage;
 
-const SCROLL_OFFSET = 10000000;
+const SCROLL_OFFSET = 0;
 const ChattingRoomScreen = ({ route }: any) => {
   const [roomInfo, setRoomInfo] = useState<any>();
-  const [messages, setMessages] = useState<Chatting.ChattingMessage[]>([]);
+  const [pagedMessageList, setPagedMessageList] = useState<PageResult<Chatting.ChattingMessage>>(emptyPageResult())
   const [lastMessage, setLastMessage] = useState<Chatting.ChattingMessage>();
   const [text, setText] = useState("");
   const { user } = useAppSelector(state => state.common);
@@ -48,7 +52,7 @@ const ChattingRoomScreen = ({ route }: any) => {
       console.log("==== EnterRoom 조회 성공 ====");
       console.log(result);
       setRoomInfo(result);
-      setMessages(result.messages)
+      setPagedMessageList(result.messages)
     },
     onError: (err: AxiosError) => {
       console.log("==== EnterRoom 조회 실패 ====");
@@ -132,18 +136,18 @@ const ChattingRoomScreen = ({ route }: any) => {
     if (lastMessage) {
       console.log(lastMessage);
       if (lastMessage.messageType === Chatting.MessageType.MESSAGE) {
-        const newMessages = messages? [...messages] : [];
-        newMessages.push(lastMessage);
-        setMessages(newMessages);
+        const newPagesMessageList = { ...pagedMessageList };
+        newPagesMessageList.content.unshift(lastMessage);
+        setPagedMessageList(newPagesMessageList);
 
         if (lastMessage.senderId !== user.id) {
           sendReceiveMessage(lastMessage);
         }
 
       } else if (lastMessage.messageType === Chatting.MessageType.ENTER || lastMessage.messageType === Chatting.MessageType.RECEIVE) {
-        const newMessages = messages? [...messages] : [];
-        newMessages.forEach(message => message.readBy = 'read');
-        setMessages(newMessages);
+        const newPagedMessageList = { ...pagedMessageList };
+        newPagedMessageList.content.forEach(message => message.readBy = 'read');
+        setPagedMessageList(newPagedMessageList);
       }
 
     }
@@ -185,6 +189,16 @@ const ChattingRoomScreen = ({ route }: any) => {
     }
   };
 
+  const getMessages = async () => {
+    if (!pagedMessageList.last) {
+      let result = await ChattingService.getMessages(roomInfo.id, pagedMessageList);
+
+      const newPagedMessageList: PageResult<ChattingMessage> = { ...result, content: [...pagedMessageList.content, ...result.content ] };
+      setPagedMessageList(newPagedMessageList);
+    }
+  }
+
+
   return <SafeAreaView style={{
     flex: 1,
   }}>
@@ -193,15 +207,19 @@ const ChattingRoomScreen = ({ route }: any) => {
       style={{
         flex: 1,
       }}>
-      <AppHeader title={roomInfo?.opponent.nickname} iconName={"arrow-left"} />
+      <AppHeader title={roomInfo?.opponent?.nickname!} iconName={"arrow-left"} />
       <FlatList
         ref={listRef}
-        onContentSizeChange={() => listRef.current!.scrollToOffset({animated: true, offset: SCROLL_OFFSET}) }
+        onContentSizeChange={() => listRef.current!.scrollToOffset({animated: true, offset: SCROLL_OFFSET})}
         contentContainerStyle={{
           flexGrow: 1,
-          paddingBottom: 12
+          paddingVertical: 12,
+          justifyContent: 'flex-end'
         }}
-        data={messages}
+        onEndReached={getMessages}
+        inverted
+        scrollEventThrottle={1000}
+        data={pagedMessageList.content}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item, index }) => {
           return <ChattingRoomMessage item={item} />;

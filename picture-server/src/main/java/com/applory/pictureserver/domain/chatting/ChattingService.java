@@ -6,12 +6,14 @@ import com.applory.pictureserver.domain.shared.SecurityUtils;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserRepository;
 import com.applory.pictureserver.exception.NotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,7 +45,7 @@ public class ChattingService {
     public ChattingDto.ChattingRoomVM enterRoom(ChattingDto.EnterRoomParams enterRoom) {
         ChattingRoom chattingRoom = null;
         User opponent = null;
-        List<ChattingDto.MessageVM> messages = null;
+        Page<ChattingDto.MessageVM> messages = null;
 
         if (enterRoom.getRoomId() != null) {
             chattingRoom = chattingRoomRepository.findById(enterRoom.getRoomId()).orElseThrow(() -> new NotFoundException("Room does not exist: " + enterRoom.getRoomId()));
@@ -53,10 +55,8 @@ public class ChattingService {
 
         if (chattingRoom != null) {
             // 가장 최근 20개의 메세지만 조회
-            messages = chattingMessageRepository.findTop20ByChattingRoomIdAndCreatedDtBeforeOrderByCreatedDtDesc(chattingRoom.getId(), LocalDateTime.now())
-                    .stream()
-                    .map(ChattingDto.MessageVM::new)
-                    .collect(Collectors.toList());
+            messages = chattingMessageRepository.findByChattingRoomIdOrderByCreatedDtDesc(chattingRoom.getId(), PageRequest.of(0, 20, Sort.Direction.DESC, "createdDt"))
+                    .map(ChattingDto.MessageVM::new);
 
             // 방 입장시 상대방 메세지 읽음 처리
             User currentUser = userRepository.findByUsername(SecurityUtils.getPrincipal());
@@ -146,22 +146,7 @@ public class ChattingService {
                 .collect(Collectors.toList());
     }
 
-    public ChattingDto.ChattingRoomVM getRoom(UUID roomId) {
-        ChattingRoom chattingRoom = chattingRoomRepository.findById(roomId).orElseThrow(() -> new NotFoundException("Room " + roomId + " does not exist"));
-
-//        List<ChattingDto.MessageVM> messages = chattingMessageRepository.findByChattingRoom_Id(roomId).stream().map(ChattingDto.MessageVM::new).collect(Collectors.toList());
-
-        return ChattingDto.ChattingRoomVM.builder()
-                .id(roomId)
-//                .messages(messages)
-                .build();
-    }
-
-    public List<ChattingDto.MessageVM> getMessages(UUID roomId, LocalDateTime localDateTime) {
-        List<ChattingDto.MessageVM> collect = chattingMessageRepository.findTop20ByChattingRoomIdAndCreatedDtBeforeOrderByCreatedDtDesc(roomId, localDateTime)
-                .stream()
-                .map(ChattingDto.MessageVM::new)
-                .collect(Collectors.toList());
-        return collect;
+    public Page<ChattingDto.MessageVM> getMessages(UUID roomId, Pageable pageable) {
+        return chattingMessageRepository.findByChattingRoomIdOrderByCreatedDtDesc(roomId, pageable).map(ChattingDto.MessageVM::new);
     }
 }

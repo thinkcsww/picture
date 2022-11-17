@@ -1,4 +1,4 @@
-package com.applory.pictureserver.domain;
+package com.applory.pictureserver.domain.matching;
 
 import com.applory.pictureserver.domain.request.Request;
 import com.applory.pictureserver.domain.user.User;
@@ -20,6 +20,12 @@ import java.util.UUID;
 @Entity
 @Table(name = "MATCHING")
 public class Matching {
+
+    public enum Status {
+        REQUEST,
+        ACCEPT,
+        DECLINE
+    }
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -53,8 +59,13 @@ public class Matching {
     @Column(name = "COMPLETE_YN", length = 1, columnDefinition = "varchar(1) default 'N'")
     private String completeYN;
 
+    @Column(name = "STATUS")
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+
     @Builder
-    public Matching(User seller, User client, Request request, Constant.Specialty specialty, Integer price, LocalDateTime dueDate, String completeYN) {
+    public Matching(User seller, User client, Request request, Constant.Specialty specialty, Integer price, LocalDateTime dueDate, String completeYN, Status status) {
         this.seller = seller;
         this.client = client;
         this.request = request;
@@ -62,5 +73,6 @@ public class Matching {
         this.price = price;
         this.dueDate = dueDate;
         this.completeYN = completeYN;
+        this.status = status;
     }
 }

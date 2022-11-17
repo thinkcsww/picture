@@ -108,7 +108,7 @@ public class TextMessageSender implements MessageSender {
         chattingMessage.setChattingRoom(chattingRoomInDB);
         chattingMessage.setMessage(sendMessage.getMessage());
         chattingMessage.setType(sendMessage.getMessageType());
-        chattingMessage.setSender(userRepository.findById(sendMessage.getSenderId()).get());
+        chattingMessage.setSender(userRepository.getById(sendMessage.getSenderId()));
         chattingMessage.setVisibleTo("ALL");
         return chattingMessageRepository.save(chattingMessage);
     }

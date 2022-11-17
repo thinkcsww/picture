@@ -131,10 +131,10 @@ public class ChattingDto {
 
         private UUID id;
 
-        private MessageSender messageSender;
 
         @Builder
-        public StompMessageVM(UUID roomId, UUID senderId, UUID sellerId, UUID clientId, String message, ChattingRoom.Type roomType, ChattingMessage.Type messageType, UUID id, MessageSender messageSender) {
+
+        public StompMessageVM(UUID roomId, UUID senderId, UUID sellerId, UUID clientId, String message, ChattingRoom.Type roomType, ChattingMessage.Type messageType, UUID id) {
             this.roomId = roomId;
             this.senderId = senderId;
             this.sellerId = sellerId;
@@ -143,7 +143,6 @@ public class ChattingDto {
             this.roomType = roomType;
             this.messageType = messageType;
             this.id = id;
-            this.messageSender = messageSender;
         }
     }
 

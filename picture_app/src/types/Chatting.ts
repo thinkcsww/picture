@@ -12,6 +12,9 @@ export namespace Chatting {
     IMAGE = "IMAGE",
     ENTER = "ENTER",
     RECEIVE = "RECEIVE",
+    REQUEST_MATCHING = "REQUEST_MATCHING",
+    ACCEPT_MATCHING = "ACCEPT_MATCHING",
+    DECLINE_MATCHING = "DECLINE_MATCHING"
   }
 
   export interface ChattingRoom {

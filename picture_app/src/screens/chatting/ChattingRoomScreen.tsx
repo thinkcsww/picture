@@ -27,6 +27,7 @@ import CommonNodata from "../../components/CommonNodata";
 import { Env } from "../../constants/Env";
 import { emptyPageResult, PageResult } from "../../types/Page";
 import ChattingMessage = Chatting.ChattingMessage;
+import { Specialty } from "../../types/Common";
 
 const SCROLL_OFFSET = 0;
 const ChattingRoomScreen = ({ route }: any) => {
@@ -198,6 +199,26 @@ const ChattingRoomScreen = ({ route }: any) => {
     }
   }
 
+  const onPressPlus = () => {
+    console.log(user.id);
+    const body: any = {
+      roomId: roomInfo.id,
+      senderId: user.id,
+      roomType: roomType,
+      messageType: Chatting.MessageType.REQUEST_MATCHING,
+      price: 1000,
+      specialty: Specialty.ETC,
+      dueDate: new Date(),
+      sellerId: roomInfo.opponent.id,
+      clientId: user.id
+    }
+
+    stompClient.current!.publish({
+      destination: "/api/v1/chat/send",
+      body: JSON.stringify(body),
+    });
+  }
+
 
   return <SafeAreaView style={{
     flex: 1,
@@ -236,7 +257,7 @@ const ChattingRoomScreen = ({ route }: any) => {
         alignItems: "center",
         marginBottom: Platform.OS === 'android' ? 23 : 0
       }}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={onPressPlus}>
           <MaterialCommunityIcons name={"plus"} size={20} color={Colors.GRAY_TEXT} />
         </TouchableOpacity>
         <View style={{

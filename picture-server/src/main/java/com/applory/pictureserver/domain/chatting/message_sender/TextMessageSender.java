@@ -5,6 +5,7 @@ import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserRepository;
 import com.applory.pictureserver.exception.NotFoundException;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Component
 public class TextMessageSender implements MessageSender {
 
     private final ChattingRoomRepository chattingRoomRepository;
@@ -58,7 +60,7 @@ public class TextMessageSender implements MessageSender {
         ChattingDto.StompMessageVM stompMessageVM = ChattingDto.StompMessageVM.builder()
                 .senderId(sendMessageParams.getSenderId())
                 .roomType(sendMessageParams.getRoomType())
-                .messageType(chattingMessage.getType())
+                .messageType(chattingMessage.getMessageType())
                 .message(chattingMessage.getMessage())
                 .id(chattingMessage.getId())
                 .build();
@@ -107,7 +109,7 @@ public class TextMessageSender implements MessageSender {
         ChattingMessage chattingMessage = new ChattingMessage();
         chattingMessage.setChattingRoom(chattingRoomInDB);
         chattingMessage.setMessage(sendMessage.getMessage());
-        chattingMessage.setType(sendMessage.getMessageType());
+        chattingMessage.setMessageType(sendMessage.getMessageType());
         chattingMessage.setSender(userRepository.getById(sendMessage.getSenderId()));
         chattingMessage.setVisibleTo("ALL");
         return chattingMessageRepository.save(chattingMessage);

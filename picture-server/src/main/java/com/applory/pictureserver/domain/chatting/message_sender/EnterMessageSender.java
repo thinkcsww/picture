@@ -2,7 +2,9 @@ package com.applory.pictureserver.domain.chatting.message_sender;
 
 import com.applory.pictureserver.domain.chatting.ChattingDto;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Component;
 
+@Component
 public class EnterMessageSender implements MessageSender {
     private final SimpMessagingTemplate simpMessagingTemplate;
 

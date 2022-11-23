@@ -1,6 +1,5 @@
 package com.applory.pictureserver.domain.chatting;
 
-import com.applory.pictureserver.domain.chatting.message_sender.MessageSender;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.shared.Constant;
 import lombok.Builder;
@@ -50,23 +49,6 @@ public class ChattingDto {
 
     @Getter
     @Setter
-    @NoArgsConstructor
-    public static class ReceiveMessageParams {
-        @NotNull
-        private UUID roomId;
-
-        @NotNull
-        private UUID senderId;
-
-        @NotNull
-        private UUID messageId;
-
-        @NotNull
-        private ChattingMessage.Type messageType;
-    }
-
-    @Getter
-    @Setter
     public static class EnterRoomParams {
         private UUID roomId;
 
@@ -80,32 +62,19 @@ public class ChattingDto {
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class EnterRoomMessageVM {
-        private ChattingMessage.Type messageType;
-        private UUID senderId;
-
-        public EnterRoomMessageVM(ChattingMessage.Type messageType, UUID senderId) {
-            this.messageType = messageType;
-            this.senderId = senderId;
-        }
-    }
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
     public static class MessageVM {
         private UUID senderId;
         private String message;
         private String createdDt;
         private String readBy;
-        private ChattingMessage.Type type;
+        private ChattingMessage.Type messageType;
 
         public MessageVM(ChattingMessage message) {
             this.senderId = message.getSender().getId();
             this.message = message.getMessage();
             this.createdDt = message.getCreatedDt().toString();
             this.readBy = message.getReadBy();
-            this.type = message.getType();
+            this.messageType = message.getMessageType();
         }
     }
 
@@ -133,7 +102,6 @@ public class ChattingDto {
 
 
         @Builder
-
         public StompMessageVM(UUID roomId, UUID senderId, UUID sellerId, UUID clientId, String message, ChattingRoom.Type roomType, ChattingMessage.Type messageType, UUID id) {
             this.roomId = roomId;
             this.senderId = senderId;

@@ -5,7 +5,9 @@ import com.applory.pictureserver.domain.chatting.ChattingMessage;
 import com.applory.pictureserver.domain.chatting.ChattingMessageRepository;
 import com.applory.pictureserver.exception.NotFoundException;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ReceiveMessageSender implements MessageSender{
 
     private final SimpMessagingTemplate simpMessagingTemplate;

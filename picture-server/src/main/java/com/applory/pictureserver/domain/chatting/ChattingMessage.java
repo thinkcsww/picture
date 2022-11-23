@@ -43,7 +43,7 @@ public class ChattingMessage extends BaseTimeEntity {
     private ChattingRoom chattingRoom;
 
     @NotEmpty
-    @Column(name = "MESSAGE", length = 20)
+    @Column(name = "MESSAGE", length = 255)
     private String message;
 
     @NotNull
@@ -61,6 +61,6 @@ public class ChattingMessage extends BaseTimeEntity {
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "TYPE", columnDefinition = "default 'MESSAGE'")
-    private ChattingMessage.Type type;
+    private ChattingMessage.Type messageType;
 
 }

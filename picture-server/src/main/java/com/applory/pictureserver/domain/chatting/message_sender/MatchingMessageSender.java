@@ -1,16 +1,17 @@
 package com.applory.pictureserver.domain.chatting.message_sender;
 
-import com.applory.pictureserver.domain.matching.Matching;
 import com.applory.pictureserver.domain.chatting.*;
+import com.applory.pictureserver.domain.matching.Matching;
 import com.applory.pictureserver.domain.matching.MatchingRepository;
+import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserRepository;
 import com.applory.pictureserver.exception.NotFoundException;
 import com.nimbusds.jose.shaded.json.JSONObject;
-import jdk.nashorn.api.scripting.JSObject;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-
+@Component
 public class MatchingMessageSender implements MessageSender {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
@@ -36,10 +37,19 @@ public class MatchingMessageSender implements MessageSender {
     public void sendMessage(ChattingDto.SendMessageParams sendMessageParams) {
         ChattingRoom targetChattingRoom = chattingRoomRepository.findById(sendMessageParams.getRoomId()).orElseThrow(() -> new NotFoundException("Rood does not exist: " + sendMessageParams.getRoomId()));
 
+        User client = userRepository.getById(sendMessageParams.getClientId());
+        User seller = userRepository.getById(sendMessageParams.getSellerId());
+
+        Matching matchingInDB = matchingRepository.findBySellerAndClientAndCompleteYN(seller, client, "N");
         if (sendMessageParams.getMessageType().equals(ChattingMessage.Type.REQUEST_MATCHING)) {
+
+            if (matchingInDB != null) {
+                throw new IllegalStateException("Seller: " + seller.getId() + " and Client: " + client.getId() + "Already have a Matching");
+            }
+
             Matching matching = Matching.builder()
-                    .client(userRepository.getById(sendMessageParams.getClientId()))
-                    .seller(userRepository.getById(sendMessageParams.getSellerId()))
+                    .client(client)
+                    .seller(seller)
                     .completeYN("N")
                     .dueDate(sendMessageParams.getDueDate())
                     .price(sendMessageParams.getPrice())
@@ -50,19 +60,17 @@ public class MatchingMessageSender implements MessageSender {
 
             JSONObject messageJson = new JSONObject();
             messageJson.put("completeYN", "N");
-            messageJson.put("dueDate", sendMessageParams.getDueDate());
+            messageJson.put("dueDate", sendMessageParams.getDueDate().toString());
             messageJson.put("price", sendMessageParams.getPrice());
             messageJson.put("specialty", sendMessageParams.getSpecialty());
 
             sendMessageParams.setMessage(messageJson.toJSONString());
         } else if (sendMessageParams.getMessageType().equals(ChattingMessage.Type.ACCEPT_MATCHING)) {
-            Matching matchingInDB = matchingRepository.findBySellerAndClientAndCompleteYN(userRepository.getById(sendMessageParams.getSellerId()), userRepository.getById(sendMessageParams.getClientId()), "N");
             matchingInDB.setCompleteYN("Y");
             matchingInDB.setStatus(Matching.Status.ACCEPT);
 
             matchingRepository.save(matchingInDB);
         } else if (sendMessageParams.getMessageType().equals(ChattingMessage.Type.DECLINE_MATCHING)) {
-            Matching matchingInDB = matchingRepository.findBySellerAndClientAndCompleteYN(userRepository.getById(sendMessageParams.getSellerId()), userRepository.getById(sendMessageParams.getClientId()), "N");
             matchingInDB.setCompleteYN("Y");
             matchingInDB.setStatus(Matching.Status.DECLINE);
 
@@ -77,7 +85,7 @@ public class MatchingMessageSender implements MessageSender {
         ChattingDto.StompMessageVM stompMessageVM = ChattingDto.StompMessageVM.builder()
                 .senderId(sendMessageParams.getSenderId())
                 .roomType(sendMessageParams.getRoomType())
-                .messageType(chattingMessage.getType())
+                .messageType(chattingMessage.getMessageType())
                 .message(chattingMessage.getMessage())
                 .id(chattingMessage.getId())
                 .build();
@@ -91,7 +99,7 @@ public class MatchingMessageSender implements MessageSender {
         ChattingMessage chattingMessage = new ChattingMessage();
         chattingMessage.setChattingRoom(chattingRoom);
         chattingMessage.setMessage(sendMessage.getMessage());
-        chattingMessage.setType(sendMessage.getMessageType());
+        chattingMessage.setMessageType(sendMessage.getMessageType());
         chattingMessage.setSender(userRepository.getById(sendMessage.getSenderId()));
         chattingMessage.setVisibleTo("ALL");
         return chattingMessageRepository.save(chattingMessage);

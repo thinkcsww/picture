@@ -71,7 +71,7 @@ public class ChattingService {
                     .collect(Collectors.toList()).get(0);
 
             // 입장 소켓 전송
-            ChattingDto.EnterRoomMessageVM enterRoomMessageVM = new ChattingDto.EnterRoomMessageVM(ChattingMessage.Type.ENTER, currentUser.getId());
+            ChattingDto.StompMessageVM enterRoomMessageVM = ChattingDto.StompMessageVM.builder().messageType(ChattingMessage.Type.ENTER).senderId(currentUser.getId()).build();
             simpMessagingTemplate.convertAndSend("/room/" + chattingRoom.getId(), enterRoomMessageVM);
         }
 

@@ -136,7 +136,7 @@ const ChattingRoomScreen = ({ route }: any) => {
   useEffect(() => {
     if (lastMessage) {
       console.log(lastMessage);
-      if (lastMessage.messageType === Chatting.MessageType.MESSAGE) {
+      if (lastMessage.messageType === Chatting.MessageType.MESSAGE || lastMessage.messageType?.includes("MATCHING")) {
         const newPagesMessageList = { ...pagedMessageList };
         newPagesMessageList.content.unshift(lastMessage);
         setPagedMessageList(newPagesMessageList);
@@ -200,7 +200,7 @@ const ChattingRoomScreen = ({ route }: any) => {
   }
 
   const onPressPlus = () => {
-    console.log(user.id);
+    if (user.sellerEnabledYN !== 'Y') return;
     const body: any = {
       roomId: roomInfo.id,
       senderId: user.id,
@@ -209,8 +209,8 @@ const ChattingRoomScreen = ({ route }: any) => {
       price: 1000,
       specialty: Specialty.ETC,
       dueDate: new Date(),
-      sellerId: roomInfo.opponent.id,
-      clientId: user.id
+      sellerId: user.id,
+      clientId: roomInfo.opponent.id
     }
 
     stompClient.current!.publish({

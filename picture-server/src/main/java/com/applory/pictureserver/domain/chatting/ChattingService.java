@@ -136,7 +136,7 @@ public class ChattingService {
 
                     return ChattingDto.ChattingRoomVM.builder()
                             .id(room.getId())
-                            .lastMessage(lastMessage.getMessage())
+                            .lastMessage(new ChattingDto.MessageVM(lastMessage))
                             .lastMessageDt(lastMessage.getCreatedDt())
                             .unreadCount(unreadCount)
                             .opponent(opponent)

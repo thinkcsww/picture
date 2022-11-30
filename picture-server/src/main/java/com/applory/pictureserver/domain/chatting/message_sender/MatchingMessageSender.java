@@ -55,6 +55,7 @@ public class MatchingMessageSender implements MessageSender {
                     .price(sendMessageParams.getPrice())
                     .specialty(sendMessageParams.getSpecialty())
                     .status(Matching.Status.REQUEST)
+                    .comment(sendMessageParams.getRequestComment())
                     .build();
             matchingRepository.save(matching);
 
@@ -66,11 +67,25 @@ public class MatchingMessageSender implements MessageSender {
 
             sendMessageParams.setMessage(messageJson.toJSONString());
         } else if (sendMessageParams.getMessageType().equals(ChattingMessage.Type.ACCEPT_MATCHING)) {
-            matchingInDB.setCompleteYN("Y");
-            matchingInDB.setStatus(Matching.Status.ACCEPT);
+            if (!matchingInDB.getStatus().equals(Matching.Status.REQUEST)) {
+                throw new IllegalStateException("Matching: " + matchingInDB.getId() + " status is not REQUEST");
+            }
 
+            matchingInDB.setStatus(Matching.Status.ACCEPT);
             matchingRepository.save(matchingInDB);
+
+            JSONObject messageJson = new JSONObject();
+            messageJson.put("completeYN", "N");
+            messageJson.put("dueDate", matchingInDB.getDueDate());
+            messageJson.put("price", matchingInDB.getPrice());
+            messageJson.put("specialty", matchingInDB.getSpecialty());
+
+            sendMessageParams.setMessage(messageJson.toJSONString());
         } else if (sendMessageParams.getMessageType().equals(ChattingMessage.Type.DECLINE_MATCHING)) {
+            if (!matchingInDB.getStatus().equals(Matching.Status.REQUEST)) {
+                throw new IllegalStateException("Matching: " + matchingInDB.getId() + " status is not REQUEST");
+            }
+
             matchingInDB.setCompleteYN("Y");
             matchingInDB.setStatus(Matching.Status.DECLINE);
 

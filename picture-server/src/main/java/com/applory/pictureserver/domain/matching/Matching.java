@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -63,9 +64,11 @@ public class Matching {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @Column(name = "COMMENT")
+    private String comment;
 
     @Builder
-    public Matching(User seller, User client, Request request, Constant.Specialty specialty, Integer price, LocalDateTime dueDate, String completeYN, Status status) {
+    public Matching(User seller, User client, Request request, Constant.Specialty specialty, Integer price, LocalDateTime dueDate, String completeYN, Status status, String comment) {
         this.seller = seller;
         this.client = client;
         this.request = request;
@@ -74,5 +77,6 @@ public class Matching {
         this.dueDate = dueDate;
         this.completeYN = completeYN;
         this.status = status;
+        this.comment = comment;
     }
 }

@@ -45,6 +45,8 @@ public class ChattingDto {
 
         private LocalDateTime dueDate;
 
+        private String requestComment;
+
     }
 
     @Getter
@@ -124,7 +126,7 @@ public class ChattingDto {
 
         private LocalDateTime lastMessageDt;
 
-        private String lastMessage;
+        private ChattingDto.MessageVM lastMessage;
 
         private Integer unreadCount;
 

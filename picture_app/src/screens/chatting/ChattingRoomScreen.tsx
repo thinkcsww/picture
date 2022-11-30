@@ -182,10 +182,7 @@ const ChattingRoomScreen = ({ route }: any) => {
         body.clientId = clientId;
       }
 
-      stompClient.current!.publish({
-        destination: "/api/v1/chat/send",
-        body: JSON.stringify(body),
-      });
+      sendMessage(body);
       setText("");
     }
   };
@@ -213,9 +210,13 @@ const ChattingRoomScreen = ({ route }: any) => {
       clientId: roomInfo.opponent.id
     }
 
+    sendMessage(body);
+  }
+
+  const sendMessage = (body: any) => {
     stompClient.current!.publish({
       destination: "/api/v1/chat/send",
-      body: JSON.stringify(body),
+      body: JSON.stringify(body)
     });
   }
 
@@ -243,7 +244,10 @@ const ChattingRoomScreen = ({ route }: any) => {
         data={pagedMessageList.content}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item, index }) => {
-          return <ChattingRoomMessage item={item} />;
+          return <ChattingRoomMessage item={item}
+                                      roomInfo={roomInfo}
+                                      roomType={roomType}
+                                      sendMessage={sendMessage}/>;
         }}
         ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
         showsVerticalScrollIndicator={false}

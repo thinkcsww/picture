@@ -21,7 +21,7 @@ export namespace Chatting {
     id: string;
     opponent: User.VM;
     lastMessageDt: string;
-    lastMessage: string;
+    lastMessage: ChattingMessage;
     unreadCount: number;
     messages: PageResult<ChattingMessage>;
     newRoom: boolean;

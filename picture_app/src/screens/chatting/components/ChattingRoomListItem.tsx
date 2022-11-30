@@ -18,6 +18,15 @@ const ChattingRoomListItem = ({ item }: ChattingRoomListItemProps) => {
     navigation.navigate(RouteNames.ChattingRoom, { roomId: item.id });
   }
 
+  const getMessage = () => {
+    if (item.lastMessage.messageType === Chatting.MessageType.REQUEST_MATCHING) {
+      return '매칭 의뢰서'
+    } else if (item.lastMessage.messageType === Chatting.MessageType.MESSAGE) {
+      return item.lastMessage.message;
+    }
+  }
+
+
   return (
     <TouchableOpacity style={{
       flexDirection: 'row',
@@ -47,7 +56,7 @@ const ChattingRoomListItem = ({ item }: ChattingRoomListItemProps) => {
                   color: '#575757',
                   fontSize: 13,
                   marginTop: 4
-                }}>{ item.lastMessage }</Text>
+                }}>{ getMessage()  }</Text>
         </View>
       </View>
       <View style={{

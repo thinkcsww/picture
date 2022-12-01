@@ -19,4 +19,6 @@ public interface ChattingMessageRepository extends JpaRepository<ChattingMessage
 
     List<ChattingMessage> findAllByChattingRoomAndReadByIsNullAndSenderNot(ChattingRoom chattingRoom, User sender);
 
+    ChattingMessage findTopByChattingRoomIdAndMessageTypeOrderByCreatedDtDesc(UUID roomId, ChattingMessage.Type type);
+
 }

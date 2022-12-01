@@ -21,6 +21,10 @@ const ChattingRoomListItem = ({ item }: ChattingRoomListItemProps) => {
   const getMessage = () => {
     if (item.lastMessage.messageType === Chatting.MessageType.REQUEST_MATCHING) {
       return '매칭 의뢰서'
+    } else if (item.lastMessage.messageType === Chatting.MessageType.ACCEPT_MATCHING) {
+      return '매칭이 수락되었습니다.'
+    } else if (item.lastMessage.messageType === Chatting.MessageType.DECLINE_MATCHING) {
+      return '매칭이 거절되었습니다.'
     } else if (item.lastMessage.messageType === Chatting.MessageType.MESSAGE) {
       return item.lastMessage.message;
     }
@@ -59,31 +63,31 @@ const ChattingRoomListItem = ({ item }: ChattingRoomListItemProps) => {
                 }}>{ getMessage()  }</Text>
         </View>
       </View>
-      <View style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        backgroundColor: '#c9c9c9',
-        padding: 8,
-        borderRadius: 8
-      }}>
-        <View style={{
-          alignItems: 'center',
-          marginRight: 8,
-          marginLeft: 8
-        }}>
-          <Text style={{
-            fontSize: 16,
-            fontWeight: '500',
-            marginBottom: 4
-          }}>작업중</Text>
-          <Text style={{
-            color: '#595959',
-            fontSize: 10
-          }}>마감: 6일전</Text>
-        </View>
-        <Avatar avatarStyle={{ borderRadius: 8 }} size={50} source={Images.profile.dummy} />
-      </View>
+      {/*<View style={{*/}
+      {/*  flexDirection: 'row',*/}
+      {/*  alignItems: 'center',*/}
+      {/*  justifyContent: 'flex-end',*/}
+      {/*  backgroundColor: '#c9c9c9',*/}
+      {/*  padding: 8,*/}
+      {/*  borderRadius: 8*/}
+      {/*}}>*/}
+      {/*  <View style={{*/}
+      {/*    alignItems: 'center',*/}
+      {/*    marginRight: 8,*/}
+      {/*    marginLeft: 8*/}
+      {/*  }}>*/}
+      {/*    <Text style={{*/}
+      {/*      fontSize: 16,*/}
+      {/*      fontWeight: '500',*/}
+      {/*      marginBottom: 4*/}
+      {/*    }}>작업중</Text>*/}
+      {/*    <Text style={{*/}
+      {/*      color: '#595959',*/}
+      {/*      fontSize: 10*/}
+      {/*    }}>마감: 6일전</Text>*/}
+      {/*  </View>*/}
+      {/*  <Avatar avatarStyle={{ borderRadius: 8 }} size={50} source={Images.profile.dummy} />*/}
+      {/*</View>*/}
       <Badge value={10} status={'error'} containerStyle={{
         position: 'absolute',
         top: -5,

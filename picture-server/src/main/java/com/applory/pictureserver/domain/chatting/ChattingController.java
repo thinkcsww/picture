@@ -31,8 +31,8 @@ public class ChattingController {
     }
 
     @GetMapping("")
-    public List<ChattingDto.ChattingRoomVM> getRooms(Pageable pageable) {
-        return chattingService.getRooms(pageable);
+    public List<ChattingDto.ChattingRoomVM> getRooms() {
+        return chattingService.getRooms();
     }
 
     @GetMapping("/room/enter")

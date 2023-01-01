@@ -1,6 +1,7 @@
 package com.applory.pictureserver.domain.chatting;
 
 import com.applory.pictureserver.domain.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -22,11 +23,12 @@ public class ChattingRoomMember {
     @Column(name = "USE_YN", length = 1, columnDefinition = "varchar(1) default 'Y'")
     private String useYN;
 
-    @ManyToOne
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="CHATTING_ROOM_ID")
     private ChattingRoom chattingRoom;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
     private User user;
 }

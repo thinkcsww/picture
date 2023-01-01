@@ -1,6 +1,7 @@
 package com.applory.pictureserver.domain.chatting;
 
 import com.applory.pictureserver.domain.user.User;
+import com.applory.pictureserver.domain.user.UserDto;
 import com.applory.pictureserver.shared.Constant;
 import lombok.Builder;
 import lombok.Getter;
@@ -122,7 +123,7 @@ public class ChattingDto {
     public static class ChattingRoomVM {
         private UUID id;
 
-        private User opponent;
+        private UserDto.VM opponent;
 
         private LocalDateTime lastMessageDt;
 

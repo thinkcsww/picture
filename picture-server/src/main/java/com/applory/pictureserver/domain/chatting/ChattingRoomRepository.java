@@ -3,6 +3,7 @@ package com.applory.pictureserver.domain.chatting;
 import com.applory.pictureserver.domain.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface ChattingRoomRepository extends JpaRepository<ChattingRoom, UUID> {
+public interface ChattingRoomRepository extends JpaRepository<ChattingRoom, UUID>, ChattingRoomRepositoryCustom {
     Page<ChattingRoom> findAllByChattingRoomMembers_User(User user, Pageable pageable);
 
     Optional<ChattingRoom> findBySellerIdAndClientId(UUID sellerId, UUID clientId);

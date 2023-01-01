@@ -26,7 +26,7 @@ public class Request extends BaseTimeEntity {
     @Column(name = "ID", columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
     User user;
 

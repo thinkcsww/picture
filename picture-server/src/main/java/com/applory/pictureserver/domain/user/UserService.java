@@ -1,6 +1,9 @@
 package com.applory.pictureserver.domain.user;
 
 import com.applory.pictureserver.config.AppConfiguration;
+import com.applory.pictureserver.domain.matching.Matching;
+import com.applory.pictureserver.domain.matching.MatchingDto;
+import com.applory.pictureserver.domain.matching.MatchingRepository;
 import com.applory.pictureserver.exception.BadRequestException;
 import com.applory.pictureserver.exception.NotFoundException;
 import com.applory.pictureserver.shared.SecurityUtils;
@@ -11,14 +14,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final AppConfiguration appConfiguration;
+
+    private final MatchingRepository matchingRepository;
 
     private final UserRepository userRepository;
 
@@ -64,10 +71,22 @@ public class UserService {
         return userRepository.findClientUserBySearch(search, pageable);
     }
 
-    public User getUserMe() {
+    public UserDto.VM getUserMe(MatchingDto.Search search) {
         String username = SecurityUtils.getPrincipal();
 
-        return userRepository.findByUsername(username);
+        User findUser = userRepository.findByUsername(username);
+
+        search.setUserId(findUser.getId());
+        List<MatchingDto.VM> matchings = matchingRepository.findBySearch(search)
+                .stream()
+                .map((matching) -> new MatchingDto.VM(matching, findUser.getSellerEnabledYn()))
+                .collect(Collectors.toList());
+
+
+        UserDto.VM vm = new UserDto.VM(findUser);
+        vm.setMatchings(matchings);
+
+        return vm;
     }
 
     public void checkNickname(String nickname) {

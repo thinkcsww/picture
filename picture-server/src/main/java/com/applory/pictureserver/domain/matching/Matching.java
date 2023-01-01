@@ -34,15 +34,15 @@ public class Matching {
     @Column(name = "ID", columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SELLER_ID")
     private User seller;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CLIENT_ID")
     private User client;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REQUEST_ID")
     private Request request;
 

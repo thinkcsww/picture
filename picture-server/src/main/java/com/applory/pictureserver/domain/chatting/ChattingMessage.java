@@ -38,7 +38,7 @@ public class ChattingMessage extends BaseTimeEntity {
     @Column(name = "ID", columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CHATTING_ROOM_ID")
     private ChattingRoom chattingRoom;
 
@@ -47,7 +47,7 @@ public class ChattingMessage extends BaseTimeEntity {
     private String message;
 
     @NotNull
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SENDER_ID")
     private User sender;
 

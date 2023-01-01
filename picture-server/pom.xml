@@ -122,6 +122,12 @@
             <version>3.0.0</version>
         </dependency>
         <!-- swagger -->
+        <!-- hibernate5 -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-hibernate5</artifactId>
+        </dependency>
+        <!-- hibernate5 -->
     </dependencies>
 
     <build>

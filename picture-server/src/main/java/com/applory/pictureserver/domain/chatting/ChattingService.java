@@ -2,6 +2,7 @@ package com.applory.pictureserver.domain.chatting;
 
 import com.applory.pictureserver.domain.chatting.message_sender.MessageSender;
 import com.applory.pictureserver.domain.chatting.message_sender.MessageSenderFactory;
+import com.applory.pictureserver.domain.user.UserDto;
 import com.applory.pictureserver.shared.SecurityUtils;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserRepository;
@@ -12,12 +13,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class ChattingService {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
@@ -77,7 +79,7 @@ public class ChattingService {
 
         return ChattingDto.ChattingRoomVM.builder()
                 .id(chattingRoom == null ? UUID.randomUUID() : chattingRoom.getId())
-                .opponent(opponent)
+                .opponent(new UserDto.VM(opponent))
                 .messages(messages)
                 .newRoom(chattingRoom == null)
                 .build();
@@ -120,26 +122,36 @@ public class ChattingService {
 
     }
 
-    public List<ChattingDto.ChattingRoomVM> getRooms(Pageable pageable) {
+    public List<ChattingDto.ChattingRoomVM> getRooms() {
         User user = userRepository.findByUsername(SecurityUtils.getPrincipal());
 
-        return chattingRoomRepository.findAllByChattingRoomMembers_User(user, pageable)
+        // 2번 나눠서 쿼리 날려야하나?
+        // room을 sellerId or clientId로 전체 조회
+        // roomId list로 만들고
+        List<UUID> roomIds = chattingRoomRepository.findAllByUser(user).stream()
+                .map(ChattingRoom::getId)
+                .collect(Collectors.toList());
+
+        // in 절을 사용해서 fetch join
+        return chattingRoomRepository.findAllByRoomIds(roomIds)
                 .stream()
                 .map(room -> {
                     ChattingMessage lastMessage = chattingMessageRepository.findTopByChattingRoomOrderByCreatedDtDesc(room);
                     int unreadCount = chattingMessageRepository.countUnreadMessageOfRoom(room.getId(), user.getId());
 
-                    User opponent = room.getChattingRoomMembers().stream()
+                    List<User> users = room.getChattingRoomMembers().stream()
                             .map(ChattingRoomMember::getUser)
                             .filter(u -> !u.getUsername().equals(SecurityUtils.getPrincipal()))
-                            .collect(Collectors.toList()).get(0);
+                            .collect(Collectors.toList());
+
+                    User opponent = users.get(0);
 
                     return ChattingDto.ChattingRoomVM.builder()
                             .id(room.getId())
                             .lastMessage(new ChattingDto.MessageVM(lastMessage))
                             .lastMessageDt(lastMessage.getCreatedDt())
                             .unreadCount(unreadCount)
-                            .opponent(opponent)
+                            .opponent(new UserDto.VM(opponent))
                             .build();
 
                 }).sorted(Comparator.comparing(ChattingDto.ChattingRoomVM::getLastMessageDt).reversed())

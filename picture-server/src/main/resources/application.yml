@@ -17,6 +17,8 @@ spring:
         persistence:
           validation:
             mode: none
+      hibernate:
+        format_sql: true
     hibernate:
       ddl-auto: update
       naming:
@@ -26,7 +28,6 @@ spring:
     active: dev
 logging:
   level:
-    root: debug
     com.applory: debug
 #security:
 #  oauth2:

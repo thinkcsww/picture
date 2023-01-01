@@ -3,8 +3,10 @@ package com.applory.pictureserver.domain.user;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -12,22 +14,23 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import org.springframework.util.StringUtils;
 
 import java.awt.*;
+import java.util.UUID;
 
-public class UserRepositoryCustomImpl extends QuerydslRepositorySupport implements UserRepositoryCustom {
+import static com.applory.pictureserver.domain.matching.QMatching.matching;
+import static com.applory.pictureserver.domain.user.QUser.*;
+
+@RequiredArgsConstructor
+public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
-    public UserRepositoryCustomImpl(JPAQueryFactory jpaQueryFactory) {
-        super(User.class);
-        this.jpaQueryFactory = jpaQueryFactory;
-    }
 
     @Override
     public Page<User> findClientUserBySearch(UserDto.SearchClient search, Pageable pageable) {
-        QUser qUser = QUser.user;
-        JPQLQuery<User> query = jpaQueryFactory.select(qUser)
-                .from(qUser)
-                .where(qUser.sellerEnabledYn.eq("N"));
+        JPQLQuery<User> query = jpaQueryFactory.select(user)
+                .from(user)
+                .where(user.sellerEnabledYn.eq("N"))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize());
 
-        query = getQuerydsl().applyPagination(pageable, query);
         QueryResults<User> result = query.fetchResults();
 
         return new PageImpl<>(result.getResults(), pageable, result.getTotal());
@@ -35,33 +38,36 @@ public class UserRepositoryCustomImpl extends QuerydslRepositorySupport implemen
 
     @Override
     public Page<User> findSellerUserBySearch(UserDto.SearchSeller search, Pageable pageable) {
-        QUser qUser = QUser.user;
         JPQLQuery<User> query = jpaQueryFactory
-                .select(qUser)
-                .from(qUser)
-                .where(createSellerPredicate(search));
+                .select(user)
+                .from(user)
+                .where(
+                        user.sellerEnabledYn.eq("Y"),
+                        specialtyContains(search.getSpecialty()),
+                        nicknameLike(search.getNickname())
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize());
 
-        query = getQuerydsl().applyPagination(pageable, query);
         QueryResults<User> result = query.fetchResults();
 
         return new PageImpl<>(result.getResults(), pageable, result.getTotal());
     }
 
-    private Predicate createSellerPredicate(UserDto.SearchSeller search) {
-        QUser qUser = QUser.user;
-        BooleanBuilder booleanBuilder = new BooleanBuilder();
-
-        booleanBuilder.and(qUser.sellerEnabledYn.eq("Y"));
-
-        if (StringUtils.hasLength(search.getSpecialty())) {
-            booleanBuilder.and(qUser.specialty.contains(search.getSpecialty()));
+    private BooleanExpression nicknameLike(String nickname) {
+        if (!StringUtils.hasText(nickname)) {
+            return null;
         }
 
-        if (StringUtils.hasLength(search.getNickname())) {
-            booleanBuilder.and(qUser.nickname.like("%" + search.getNickname() + "%"));
+        return user.nickname.like("%" + nickname + "%");
+    }
+
+    private BooleanExpression specialtyContains(String specialty) {
+        if (!StringUtils.hasText(specialty)) {
+            return null;
         }
 
-        return booleanBuilder;
+        return user.specialty.contains(specialty);
     }
 
 

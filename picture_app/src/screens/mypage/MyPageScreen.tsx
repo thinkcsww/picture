@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Button, SafeAreaView, Text } from "react-native";
 import AsyncStorageService from "../../services/AsyncStorageService";
 import UserService from "../../services/UserService";
-import { useAppDispatch, useAppSelector } from "../../store/config";
+import { useAppDispatch } from "../../store/config";
 import { setUser } from "../../store/slices/commonSlice";
 
 const MyPageScreen = () => {
@@ -10,6 +10,7 @@ const MyPageScreen = () => {
 
   React.useEffect(() => {
     UserService.getUserMe().then((res: any) => {
+      console.log('==== 마이페이지 getUserMe ====')
       console.log(res);
       // dispatch(setUser(res))
     });

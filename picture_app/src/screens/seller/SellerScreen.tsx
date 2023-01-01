@@ -10,7 +10,7 @@ import { AxiosError } from "axios";
 import TabListHeader from "../../components/tab-list/TabListHeader";
 import TabListFilter from "../../components/tab-list/TabListFilter";
 import { Specialty } from "../../types/Common";
-import { PageResult } from "../../types/Page";
+import { PageResult, Result } from "../../types/Page";
 import { Divider } from "react-native-paper";
 import CommonNodata from "../../components/CommonNodata";
 import SellerListItem from "./components/SellerListItem";
@@ -47,8 +47,8 @@ const SellerScreen: FC<SellerScreenProps> = ({ navigation }) => {
   const getSellersQuery = useInfiniteQuery([SellerService.QueryKey.getSellers, selectedSpecialty, selectedFilter], ({ pageParam = 0 }) => {
     return SellerService.getSellers(selectedSpecialty.value, selectedFilter.value, pageParam);
   }, {
-    getNextPageParam: (lastPageData: PageResult) => {
-      return lastPageData.last ? undefined : lastPageData.number + 1;
+    getNextPageParam: (lastPageData: Result<PageResult>) => {
+      return lastPageData.data.last ? undefined : lastPageData.data.number + 1;
     },
     onSuccess: (result: any) => {
       console.log('==== Seller 리스트 조회 성공 ====');
@@ -107,7 +107,7 @@ const SellerScreen: FC<SellerScreenProps> = ({ navigation }) => {
     <TabListHeader onChangeSearchText={onChangeSearchText} searchText={searchText} selectedSpecialty={selectedSpecialty} onClickSelector={onClickSelector}/>
     <TabListFilter list={filterList} onPress={onSelectFilter} selectedFilter={selectedFilter}/>
     <FlatList
-      data={getSellersQuery.data?.pages.map((page: PageResult) => page.content).flat()}
+      data={getSellersQuery.data?.pages.map((page: Result<PageResult>) => page.data.content).flat()}
       onRefresh={onRefresh}
       refreshing={isFetching}
       ItemSeparatorComponent={() => <Divider style={{ height: 1, marginVertical: 20 }} />}

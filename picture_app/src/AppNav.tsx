@@ -130,7 +130,7 @@ const AppNav = () => {
           component={AddRequestScreen}
           listeners={tabEventListenerShowLoginScreen}
           options={{
-            tabBarLabel: "단골",
+            tabBarLabel: "의뢰하기",
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons name="book-edit-outline" color={color} size={26} />
             ),

@@ -10,6 +10,11 @@ export interface PageResult<T = any> {
   content: T[];
 }
 
+export interface Result<T = any> {
+  message: string;
+  data: T
+}
+
 export const emptyPageResult = () => {
   return {
     size: 20,

@@ -27,7 +27,7 @@ const AbstractHoc: FC = ({children}) => {
             Authorization: `Bearer ${token.access_token}`
           }
         })
-          .then((res) => {
+          .then((res: any) => {
 
             if (res.status === HttpStatus.OK) {
               console.log('=== AbstractHoc user me 성공 ===')
@@ -38,7 +38,7 @@ const AbstractHoc: FC = ({children}) => {
             }
 
             console.log(res);
-            dispatch(setUser(res.data))
+            dispatch(setUser(res.data.data))
           })
           .catch((e: AxiosError) => {
             console.log('=== AbstractHoc user me 에러 ===')

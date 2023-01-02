@@ -4,7 +4,7 @@ import { NavigationProp } from "@react-navigation/native";
 import { SelectValue } from "../../types/SelectValue";
 import { InfiniteData, useInfiniteQuery } from "react-query";
 import { AxiosError } from "axios";
-import TabListHeader from "../../components/tab-list/TabListHeader";
+import TabListHeaderWithOptions from "../../components/tab-list/TabListHeaderWithOptions";
 import TabListFilter from "../../components/tab-list/TabListFilter";
 import TabListSpecialtySelectModal from "../seller/components/TabListSpecialtySelectModal";
 import { RequestService } from "../../services/RequestService";
@@ -104,7 +104,7 @@ const RequestScreen: FC<RequestScreenProps> = ({ navigation }) => {
   return <SafeAreaView style={styles.container}>
     { showSelector && <TabListSpecialtySelectModal selectedSpecialty={selectedSpecialty.value} close={onCloseSelector} onSelect={onSelectSelectorItem}/> }
 
-    <TabListHeader selectedSpecialty={selectedSpecialty} onClickSelector={onClickSelector}/>
+    <TabListHeaderWithOptions selectedSpecialty={selectedSpecialty} onClickSelector={onClickSelector}/>
     <TabListFilter list={filterList} onPress={onSelectFilter} selectedFilter={selectedFilter}/>
 
     <FlatList

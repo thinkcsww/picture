@@ -7,7 +7,7 @@ import { SelectValue } from "../../types/SelectValue";
 import { useInfiniteQuery } from "react-query";
 import { SellerService } from "../../services/SellerService";
 import { AxiosError } from "axios";
-import TabListHeader from "../../components/tab-list/TabListHeader";
+import TabListHeaderWithOptions from "../../components/tab-list/TabListHeaderWithOptions";
 import TabListFilter from "../../components/tab-list/TabListFilter";
 import { Specialty } from "../../types/Common";
 import { PageResult, Result } from "../../types/Page";
@@ -104,7 +104,7 @@ const SellerScreen: FC<SellerScreenProps> = ({ navigation }) => {
   return <SafeAreaView style={styles.container}>
     { showSelector && <TabListSpecialtySelectModal selectedSpecialty={selectedSpecialty.value} close={onCloseSelector} onSelect={onSelectSelectorItem}/> }
 
-    <TabListHeader onChangeSearchText={onChangeSearchText} searchText={searchText} selectedSpecialty={selectedSpecialty} onClickSelector={onClickSelector}/>
+    <TabListHeaderWithOptions onChangeSearchText={onChangeSearchText} searchText={searchText} selectedSpecialty={selectedSpecialty} onClickSelector={onClickSelector}/>
     <TabListFilter list={filterList} onPress={onSelectFilter} selectedFilter={selectedFilter}/>
     <FlatList
       data={getSellersQuery.data?.pages.map((page: Result<PageResult>) => page.data.content).flat()}

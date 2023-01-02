@@ -4,6 +4,7 @@ import { SelectValue } from "../../types/SelectValue";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Icon from "react-native-vector-icons/Ionicons";
 import { Specialty } from "../../types/Common";
+import TabListHeaderTitle from "./TabListHeaderTitle";
 
 type TabListHeaderSelectorProps = {
   onPress: () => void,
@@ -34,18 +35,20 @@ const TabListHeaderSearch: FC<TabListHeaderSearchProps> = ({searchText, onChange
 }
 
 type TabListHeaderProps = {
-  onClickSelector: () => void,
-  selectedSpecialty: SelectValue<Specialty>,
+  onClickSelector?: () => void,
+  selectedSpecialty?: SelectValue<Specialty>,
   onChangeSearchText?: (text: string) => void,
   searchText?: string,
+  noOptions?: boolean,
+  title?: string,
 }
 
-const TabListHeader: FC<TabListHeaderProps> = ({ onClickSelector, selectedSpecialty, onChangeSearchText, searchText }) => {
+const TabListHeaderWithOptions: FC<TabListHeaderProps> = ({ onClickSelector, selectedSpecialty, onChangeSearchText, searchText, noOptions, title }) => {
   return (
     <View style={styles.header}>
-      <TabListHeaderSelector onPress={onClickSelector} selectedSpecialty={selectedSpecialty}/>
+      { onClickSelector && <TabListHeaderSelector onPress={onClickSelector} selectedSpecialty={selectedSpecialty!}/> }
       { onChangeSearchText && <TabListHeaderSearch searchText={searchText} onChangeSearchText={onChangeSearchText}/> }
-
+      { noOptions && <TabListHeaderTitle title={title!}/> }
     </View>
   )
 }
@@ -81,4 +84,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default TabListHeader
+export default TabListHeaderWithOptions

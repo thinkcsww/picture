@@ -6,6 +6,7 @@ import { useQuery } from "react-query";
 import { ChattingService } from "../../services/ChattingService";
 import { AxiosError } from "axios";
 import { Chatting } from "../../types/Chatting";
+import TabListHeaderWithOptions from "../../components/tab-list/TabListHeaderWithOptions";
 
 const ChattingScreen = () => {
 
@@ -41,19 +42,7 @@ const ChattingScreen = () => {
         }}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={() => <CommonNodata />}
-        ListHeaderComponent={() => (
-          <View style={{
-            padding: 12,
-            borderBottomColor: "black",
-            borderBottomWidth: 1,
-            marginBottom: 8,
-          }}>
-            <Text style={{
-              fontSize: 26,
-              color: "black",
-            }}>채팅</Text>
-          </View>
-        )}
+        ListHeaderComponent={() => <TabListHeaderWithOptions title={'채팅'} noOptions/>}
         ListFooterComponent={() => <View style={{ height: 30 }} />}
       />
     </SafeAreaView>

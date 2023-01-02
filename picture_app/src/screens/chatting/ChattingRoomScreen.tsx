@@ -3,7 +3,6 @@ import {
   FlatList,
   Keyboard,
   KeyboardAvoidingView,
-  NativeScrollEvent,
   Platform,
   SafeAreaView,
   TextInput,
@@ -26,8 +25,8 @@ import ChattingRoomMessage from "./components/ChattingRoomMessage";
 import CommonNodata from "../../components/CommonNodata";
 import { Env } from "../../constants/Env";
 import { emptyPageResult, PageResult } from "../../types/Page";
-import ChattingMessage = Chatting.ChattingMessage;
 import { Specialty } from "../../types/Common";
+import ChattingMessage = Chatting.ChattingMessage;
 
 const SCROLL_OFFSET = 0;
 const ChattingRoomScreen = ({ route }: any) => {
@@ -241,7 +240,7 @@ const ChattingRoomScreen = ({ route }: any) => {
         onEndReached={getMessages}
         inverted
         scrollEventThrottle={1000}
-        data={pagedMessageList.content}
+        data={pagedMessageList ? pagedMessageList.content : []}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item, index }) => {
           return <ChattingRoomMessage item={item}

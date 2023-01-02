@@ -1,8 +1,6 @@
 package com.applory.pictureserver.domain.user;
 
-import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -10,14 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.util.StringUtils;
 
-import java.awt.*;
-import java.util.UUID;
-
-import static com.applory.pictureserver.domain.matching.QMatching.matching;
-import static com.applory.pictureserver.domain.user.QUser.*;
+import static com.applory.pictureserver.domain.user.QUser.user;
 
 @RequiredArgsConstructor
 public class UserRepositoryCustomImpl implements UserRepositoryCustom {

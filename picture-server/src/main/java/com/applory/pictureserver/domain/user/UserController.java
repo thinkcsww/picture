@@ -32,8 +32,8 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public UserDto.VM getUserMe(MatchingDto.Search search) {
-        return userService.getUserMe(search);
+    public Result<UserDto.VM> getUserMe(MatchingDto.Search search) {
+        return Result.of(userService.getUserMe(search));
     }
 
     @GetMapping("/seller")

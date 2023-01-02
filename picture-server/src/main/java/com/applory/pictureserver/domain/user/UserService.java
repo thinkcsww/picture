@@ -75,13 +75,13 @@ public class UserService {
         String username = SecurityUtils.getPrincipal();
 
         User findUser = userRepository.findByUsername(username);
-
         search.setUserId(findUser.getId());
+        search.setCompleteYn("N");
+
         List<MatchingDto.VM> matchings = matchingRepository.findBySearch(search)
                 .stream()
                 .map((matching) -> new MatchingDto.VM(matching, findUser.getSellerEnabledYn()))
                 .collect(Collectors.toList());
-
 
         UserDto.VM vm = new UserDto.VM(findUser);
         vm.setMatchings(matchings);

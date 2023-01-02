@@ -75,6 +75,9 @@ public class ChattingService {
             // 입장 소켓 전송
             ChattingDto.StompMessageVM enterRoomMessageVM = ChattingDto.StompMessageVM.builder().messageType(ChattingMessage.Type.ENTER).senderId(currentUser.getId()).build();
             simpMessagingTemplate.convertAndSend("/room/" + chattingRoom.getId(), enterRoomMessageVM);
+        } else {
+            opponent = userRepository.findById(enterRoom.getTargetUserId())
+                    .orElseThrow(() -> new IllegalStateException("User: " + enterRoom.getTargetUserId() + " not exist") );
         }
 
         return ChattingDto.ChattingRoomVM.builder()

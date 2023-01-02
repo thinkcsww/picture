@@ -7,11 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
 import java.util.UUID;
 
-import static com.applory.pictureserver.domain.chatting.QChattingMessage.*;
+import static com.applory.pictureserver.domain.chatting.QChattingMessage.chattingMessage;
 
 @RequiredArgsConstructor
 public class ChattingMessageRepositoryCustomImpl implements ChattingMessageRepositoryCustom {

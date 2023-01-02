@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class Result<T> {
+    public String code;
     public T data;
     public String message;
 

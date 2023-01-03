@@ -88,7 +88,7 @@ const MyPageScreen = () => {
           }}>의뢰중인 작업</Text>
 
           {
-            state?.matchings.length > 0 ? (
+            state?.matchings.ACCEPT && state?.matchings.ACCEPT.length > 0 ? (
               <View style={{
                 backgroundColor: '#f1f1f1',
                 height: 100,
@@ -96,9 +96,53 @@ const MyPageScreen = () => {
                 justifyContent: 'center',
                 alignItems: 'center'
               }}>
-                <Text>{ state?.matchings[0]?.opponentNickname } 작가님과의 작업이 진행중이에요!! </Text>
-                <Text>마감기한: { DateUtils.getRemainTime(state?.matchings[0]?.dueDate) }</Text>
-                <Text>작업내용: {state?.matchings[0]?.comment}</Text>
+                <Text>{ state?.matchings.COMPLETE[0]?.opponentNickname } 작가님과의 작업이 진행중이에요!! </Text>
+                <Text>마감기한: { DateUtils.getRemainTime(state?.matchings.COMPLETE[0]?.dueDate) }</Text>
+                <Text>작업내용: {state?.matchings.COMPLETE[0]?.comment}</Text>
+
+              </View>
+            ) : (
+              <View style={{
+                backgroundColor: '#f1f1f1',
+                height: 100,
+                borderRadius: 8,
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}>
+                <Text>진행중인 의뢰가 없어요!</Text>
+                <Text>의뢰하러 가기 <MaterialCommunityIcons name={'clock'}/></Text>
+
+              </View>
+            )
+          }
+        </View>
+      </View>
+
+      <Divider style={{ height: 10, backgroundColor: '#f1f1f1'}}/>
+      <View style={{
+        paddingHorizontal: 20,
+      }}>
+        <View style={{
+          marginTop: 12
+        }}>
+          <Text style={{
+            fontSize: 18,
+            fontWeight: '500',
+            marginBottom: 6
+          }}>완료된 작업</Text>
+
+          {
+            state?.matchings.COMPLETE && state?.matchings.COMPLETE.length > 0 ? (
+              <View style={{
+                backgroundColor: '#f1f1f1',
+                height: 100,
+                borderRadius: 8,
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}>
+                <Text>{ state?.matchings.COMPLETE[0]?.opponentNickname } 작가님과의 작업 </Text>
+                <Text>완료일: { DateUtils.getFormattedDate(state?.matchings.COMPLETE[0]?.completeDt) }</Text>
+                <Text>작업내용: {state?.matchings.COMPLETE[0]?.comment}</Text>
 
               </View>
             ) : (

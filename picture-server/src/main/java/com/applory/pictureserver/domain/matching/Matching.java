@@ -25,7 +25,8 @@ public class Matching {
     public enum Status {
         REQUEST,
         ACCEPT,
-        DECLINE
+        DECLINE,
+        COMPLETE
     }
 
     @Id
@@ -59,6 +60,9 @@ public class Matching {
 
     @Column(name = "COMPLETE_YN", length = 1, columnDefinition = "varchar(1) default 'N'")
     private String completeYN;
+
+    @Column(name = "COMPLETE_DT")
+    private LocalDateTime completeDt;
 
     @Column(name = "STATUS")
     @Enumerated(EnumType.STRING)

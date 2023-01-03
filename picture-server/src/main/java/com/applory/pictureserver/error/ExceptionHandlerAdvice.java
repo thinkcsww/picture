@@ -1,5 +1,6 @@
 package com.applory.pictureserver.error;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -14,10 +15,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
+@Slf4j
 public class ExceptionHandlerAdvice {
-    @ExceptionHandler({MethodArgumentNotValidException.class})
+    @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     ApiError handleRequestBodyValidationException (MethodArgumentNotValidException exception, HttpServletRequest request) {
+        log.error(exception.getMessage());
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), "Validation error", request.getServletPath());
 
         BindingResult bindingResult = exception.getBindingResult();
@@ -32,21 +35,11 @@ public class ExceptionHandlerAdvice {
         return apiError;
     }
 
-
-    @ExceptionHandler({BindException.class})
+    @ExceptionHandler(IllegalStateException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    ApiError handleRequestParamValidationException (BindException exception, HttpServletRequest request) {
-        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), "Validation error", request.getServletPath());
+    ApiError handleIllegalStateException (IllegalStateException exception, HttpServletRequest request) {
+        log.error(exception.getMessage());
 
-        BindingResult bindingResult = exception.getBindingResult();
-
-        Map<String, String> validationErrors = new HashMap<>();
-
-        for (FieldError fieldError: bindingResult.getFieldErrors()) {
-            validationErrors.put(fieldError.getField(), fieldError.getDefaultMessage());
-        }
-
-        apiError.setValidationErrors(validationErrors);
-        return apiError;
+        return new ApiError(HttpStatus.BAD_REQUEST.value(), exception.getMessage(), request.getServletPath());
     }
 }

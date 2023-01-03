@@ -1,5 +1,6 @@
 package com.applory.pictureserver.domain.user;
 
+import com.applory.pictureserver.domain.matching.Matching;
 import com.applory.pictureserver.domain.matching.MatchingDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.lang.Nullable;
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class UserDto {
@@ -32,7 +34,7 @@ public class UserDto {
         private Integer backgroundPrice;
         private Integer officialPrice;
 
-        private List<MatchingDto.VM> matchings;
+        private Map<Matching.Status, List<MatchingDto.VM>> matchings;
 
         public VM(User user) {
             this.id = user.getId();

@@ -29,7 +29,8 @@ public class ChattingMessage extends BaseTimeEntity {
         RECEIVE,
         REQUEST_MATCHING,
         ACCEPT_MATCHING,
-        DECLINE_MATCHING
+        DECLINE_MATCHING,
+        COMPLETE_MATCHING,
     }
 
     @Id

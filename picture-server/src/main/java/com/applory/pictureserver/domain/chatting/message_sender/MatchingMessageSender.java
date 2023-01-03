@@ -40,7 +40,7 @@ public class MatchingMessageSender implements MessageSender {
         User client = userRepository.getById(sendMessageParams.getClientId());
         User seller = userRepository.getById(sendMessageParams.getSellerId());
 
-        Matching matchingInDB = matchingRepository.findBySellerAndClientAndCompleteYN(seller, client, "N");
+        Matching matchingInDB = matchingRepository.findBySellerAndClientAndCompleteYN(seller, client, "N").orElseThrow(() -> new IllegalStateException("matching not exist"));
         if (sendMessageParams.getMessageType().equals(ChattingMessage.Type.REQUEST_MATCHING)) {
 
             if (matchingInDB != null) {
@@ -70,9 +70,7 @@ public class MatchingMessageSender implements MessageSender {
             if (!matchingInDB.getStatus().equals(Matching.Status.REQUEST)) {
                 throw new IllegalStateException("Matching: " + matchingInDB.getId() + " status is not REQUEST");
             }
-
             matchingInDB.setStatus(Matching.Status.ACCEPT);
-            matchingRepository.save(matchingInDB);
 
             JSONObject messageJson = new JSONObject();
             messageJson.put("completeYN", "Y");
@@ -84,7 +82,6 @@ public class MatchingMessageSender implements MessageSender {
 
             ChattingMessage requestMatchingMessage = chattingMessageRepository.findTopByChattingRoomIdAndMessageTypeOrderByCreatedDtDesc(sendMessageParams.getRoomId(), ChattingMessage.Type.REQUEST_MATCHING);
             requestMatchingMessage.setMessage(requestMatchingMessage.getMessage().replace("\"completeYN\":\"N\"", "\"completeYN\":\"Y\""));
-            chattingMessageRepository.save(requestMatchingMessage);
 
         } else if (sendMessageParams.getMessageType().equals(ChattingMessage.Type.DECLINE_MATCHING)) {
             if (!matchingInDB.getStatus().equals(Matching.Status.REQUEST)) {
@@ -93,14 +90,20 @@ public class MatchingMessageSender implements MessageSender {
 
             matchingInDB.setCompleteYN("Y");
             matchingInDB.setStatus(Matching.Status.DECLINE);
-            matchingRepository.save(matchingInDB);
 
             ChattingMessage requestMatchingMessage = chattingMessageRepository.findTopByChattingRoomIdAndMessageTypeOrderByCreatedDtDesc(sendMessageParams.getRoomId(), ChattingMessage.Type.REQUEST_MATCHING);
             requestMatchingMessage.setMessage(requestMatchingMessage.getMessage().replace("\"completeYN\":\"N\"", "\"completeYN\":\"Y\""));
-            chattingMessageRepository.save(requestMatchingMessage);
+        } else if (sendMessageParams.getMessageType().equals(ChattingMessage.Type.COMPLETE_MATCHING)) {
+            if (!matchingInDB.getStatus().equals(Matching.Status.ACCEPT) && matchingInDB.getCompleteYN().equals("Y")) {
+                throw new IllegalStateException("Cannot complete matching: " + matchingInDB.getId() + " , should have ACCEPT status and completeYN must be 'N'");
+            }
+
+            matchingInDB.setCompleteYN("Y");
+            matchingInDB.setStatus(Matching.Status.COMPLETE);
+
+            ChattingMessage requestMatchingMessage = chattingMessageRepository.findTopByChattingRoomIdAndMessageTypeOrderByCreatedDtDesc(sendMessageParams.getRoomId(), ChattingMessage.Type.REQUEST_MATCHING);
+            requestMatchingMessage.setMessage(requestMatchingMessage.getMessage().replace("\"completeYN\":\"N\"", "\"completeYN\":\"Y\""));
         }
-
-
 
         ChattingMessage chattingMessage = saveMessage(sendMessageParams, targetChattingRoom);
         sendMessageParams.setMessageId(chattingMessage.getId());

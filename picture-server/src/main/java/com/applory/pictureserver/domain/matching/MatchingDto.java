@@ -28,6 +28,8 @@ public class MatchingDto {
 
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
         LocalDateTime dueDate;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        LocalDateTime completeDt;
         Matching.Status status;
 
         public VM(Matching matching, String isSellerYn) {
@@ -40,6 +42,7 @@ public class MatchingDto {
             this.matchingId = matching.getId();
             this.dueDate = matching.getDueDate();
             this.status = matching.getStatus();
+            this.completeDt = matching.getCompleteDt();
         }
     }
 }

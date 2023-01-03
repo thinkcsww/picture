@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -76,12 +77,12 @@ public class UserService {
 
         User findUser = userRepository.findByUsername(username);
         search.setUserId(findUser.getId());
-        search.setCompleteYn("N");
 
-        List<MatchingDto.VM> matchings = matchingRepository.findBySearch(search)
+
+        Map<Matching.Status, List<MatchingDto.VM>> matchings = matchingRepository.findBySearch(search)
                 .stream()
                 .map((matching) -> new MatchingDto.VM(matching, findUser.getSellerEnabledYn()))
-                .collect(Collectors.toList());
+                .collect(Collectors.groupingBy(MatchingDto.VM::getStatus));
 
         UserDto.VM vm = new UserDto.VM(findUser);
         vm.setMatchings(matchings);

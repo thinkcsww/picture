@@ -68,11 +68,13 @@ const LeftRequestMatchingMessage = ({ message, onClickProfile, roomInfo, roomTyp
           <Text>{`최종 의뢰서가 작성되었습니다.
 마감기한: ${DateUtils.getFormattedDate(parsedMessage.dueDate)}
 비용: ${parsedMessage.price}원
-작업내용: 용왕톤으로 부탁드립니다.
+작업내용: 용왕톤으로 부탁드립니다.`}
+            { parsedMessage.completeYN === 'Y' ? '' : `
 
-의뢰를 확정하시겠습니까?`}</Text>
+의뢰를 확정하시겠습니까?`}
+          </Text>
           {
-            parsedMessage.completeYN === 'Y' && (
+            parsedMessage.completeYN === 'N' && (
               <View style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',

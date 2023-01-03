@@ -12,6 +12,8 @@ import RightTextMessage from "./RightTextMessage";
 import RightRequestMatchingMessage from "./RightRequestMatchingMessage";
 import RightAcceptMatchingMessage from "./RightAcceptMatchingMessage";
 import LeftAcceptMatchingMessage from "./LeftAcceptMatchingMessage";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import MatchingCompleteMessage from "./MatchingCompleteMessage";
 
 type ChattingRoomMessageListProps = {
   item: Chatting.ChattingMessage,
@@ -40,6 +42,8 @@ const ChattingRoomMessage = ({item, sendMessage, roomInfo, roomType}: ChattingRo
       return <RightRequestMatchingMessage message={item}/>
     } else if (item.messageType === Chatting.MessageType.ACCEPT_MATCHING) {
       return <RightAcceptMatchingMessage message={item}/>
+    } else if (item.messageType === Chatting.MessageType.COMPLETE_MATCHING) {
+      return <MatchingCompleteMessage/>
     }
 
     return <RightTextMessage message={item}/>

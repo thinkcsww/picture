@@ -195,8 +195,8 @@ const ChattingRoomScreen = ({ route }: any) => {
     }
   }
 
-  const onPressPlus = () => {
-    if (user.sellerEnabledYN !== 'Y') return;
+  const requestMatching = () => {
+    if (user.sellerEnabledYN !== "Y") return;
     const body: any = {
       roomId: roomInfo.id,
       senderId: user.id,
@@ -206,10 +206,27 @@ const ChattingRoomScreen = ({ route }: any) => {
       specialty: Specialty.ETC,
       dueDate: new Date(),
       sellerId: user.id,
-      clientId: roomInfo.opponent.id
-    }
+      clientId: roomInfo.opponent.id,
+    };
 
     sendMessage(body);
+  };
+
+  const completeMatching = () => {
+    const body: any = {
+      roomId: roomInfo.id,
+      senderId: user.id,
+      roomType: roomType,
+      messageType: Chatting.MessageType.COMPLETE_MATCHING,
+      clientId: user.id,
+      sellerId: roomInfo.opponent.id,
+    };
+
+    sendMessage(body);
+  };
+
+  const onPressPlus = () => {
+    completeMatching();
   }
 
   const sendMessage = (body: any) => {

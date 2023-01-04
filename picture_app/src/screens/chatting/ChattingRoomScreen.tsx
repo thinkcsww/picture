@@ -27,6 +27,7 @@ import { Env } from "../../constants/Env";
 import { emptyPageResult, PageResult } from "../../types/Page";
 import { Specialty } from "../../types/Common";
 import ChattingMessage = Chatting.ChattingMessage;
+import { launchImageLibrary } from "react-native-image-picker";
 
 const SCROLL_OFFSET = 0;
 const ChattingRoomScreen = ({ route }: any) => {
@@ -225,8 +226,26 @@ const ChattingRoomScreen = ({ route }: any) => {
     sendMessage(body);
   };
 
+  const sendImage = () => {
+    launchImageLibrary({
+      includeBase64: true,
+      mediaType: 'photo'
+    }).then((res) => {
+      if (!res.didCancel) {
+        if (res!.assets!.length > 0) {
+          console.log(res.assets![0].base64)
+          stompClient.current!.publish({
+            destination: "/api/v1/chat/send",
+            binaryBody: res.assets![0].base64 as any,
+            headers: {'content-type': 'application/octet-stream'}});
+        }
+      }
+
+    })
+  }
+
   const onPressPlus = () => {
-    completeMatching();
+    sendImage();
   }
 
   const sendMessage = (body: any) => {

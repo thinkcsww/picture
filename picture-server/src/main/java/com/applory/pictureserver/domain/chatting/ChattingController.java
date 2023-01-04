@@ -1,5 +1,6 @@
 package com.applory.pictureserver.domain.chatting;
 
+import com.applory.pictureserver.shared.Result;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -43,6 +44,12 @@ public class ChattingController {
     @GetMapping("/messages")
     public Page<ChattingDto.MessageVM> getMessages(@RequestParam UUID roomId, Pageable pageable) {
         return chattingService.getMessages(roomId, pageable);
+    }
+
+    @PostMapping("/{roomId}/photo")
+    public Result<Object> sendPhoto(@Valid ChattingDto.SendMessageParams createMessage) {
+        chattingService.send(createMessage);
+        return Result.success();
     }
 
 

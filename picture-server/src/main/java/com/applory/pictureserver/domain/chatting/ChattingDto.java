@@ -1,6 +1,5 @@
 package com.applory.pictureserver.domain.chatting;
 
-import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserDto;
 import com.applory.pictureserver.shared.Constant;
 import lombok.Builder;
@@ -8,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -47,6 +47,8 @@ public class ChattingDto {
         private LocalDateTime dueDate;
 
         private String requestComment;
+
+        private MultipartFile attachFile;
 
     }
 

@@ -29,6 +29,7 @@ spring:
 logging:
   level:
     com.applory: debug
+    org.springframework.messaging: debug
 #security:
 #  oauth2:
 #    client:

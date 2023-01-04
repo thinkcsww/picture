@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -163,5 +164,15 @@ public class ChattingService {
 
     public Page<ChattingDto.MessageVM> getMessages(UUID roomId, Pageable pageable) {
         return chattingMessageRepository.findByChattingRoomIdOrderByCreatedDtDesc(roomId, pageable).map(ChattingDto.MessageVM::new);
+    }
+
+    public Object sendPhoto(MultipartFile multipartFile) {
+        if (multipartFile.isEmpty()) {
+            return null;
+        }
+
+
+
+        return null;
     }
 }

@@ -10,11 +10,24 @@ public class Result<T> {
     public T data;
     public String message;
 
-    public static <T> Result<T> of (T data) {
-        return new Result<>(data);
+    public static <T> Result<T> success() {
+        return new Result<>(ResultCode.OK);
+    }
+    public static <T> Result<T> success(T data) {
+        return new Result<>(ResultCode.OK, data);
     }
 
-    public Result(T data) {
+    public Result(String code, T data) {
+        this.code = code;
         this.data = data;
+    }
+
+    public Result(String code) {
+        this.code = code;
+    }
+
+    static class ResultCode {
+        public static final String OK = "0001";
+        public static final String FAIL = "0002";
     }
 }

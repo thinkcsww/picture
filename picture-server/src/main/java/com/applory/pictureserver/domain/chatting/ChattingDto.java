@@ -2,10 +2,7 @@ package com.applory.pictureserver.domain.chatting;
 
 import com.applory.pictureserver.domain.user.UserDto;
 import com.applory.pictureserver.shared.Constant;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -85,7 +82,7 @@ public class ChattingDto {
 
     @Getter
     @Setter
-    @NoArgsConstructor
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class StompMessageVM {
         @NotNull
         private UUID roomId;
@@ -105,9 +102,10 @@ public class ChattingDto {
 
         private UUID id;
 
+        private String filePath;
 
         @Builder
-        public StompMessageVM(UUID roomId, UUID senderId, UUID sellerId, UUID clientId, String message, ChattingRoom.Type roomType, ChattingMessage.Type messageType, UUID id) {
+        public StompMessageVM(UUID roomId, UUID senderId, UUID sellerId, UUID clientId, String message, ChattingRoom.Type roomType, ChattingMessage.Type messageType, UUID id, String filePath) {
             this.roomId = roomId;
             this.senderId = senderId;
             this.sellerId = sellerId;
@@ -116,6 +114,7 @@ public class ChattingDto {
             this.roomType = roomType;
             this.messageType = messageType;
             this.id = id;
+            this.filePath = filePath;
         }
     }
 

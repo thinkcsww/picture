@@ -1,5 +1,6 @@
 package com.applory.pictureserver.domain.chatting;
 
+import com.applory.pictureserver.domain.file.File;
 import com.applory.pictureserver.shared.BaseTimeEntity;
 import com.applory.pictureserver.domain.user.User;
 import lombok.Getter;
@@ -58,6 +59,10 @@ public class ChattingMessage extends BaseTimeEntity {
 
     @Column(name ="READ_BY")
     private String readBy;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FILE_ID")
+    private File file;
 
     @NotNull
     @Enumerated(EnumType.STRING)

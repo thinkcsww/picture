@@ -69,7 +69,6 @@ public class TextMessageSender implements MessageSender {
         simpMessagingTemplate.convertAndSend("/room/" + sendMessageParams.getRoomId(), stompMessageVM);
     }
 
-    @Transactional
     ChattingRoom saveNewRoom(ChattingDto.SendMessageParams createMessage) {
         ChattingRoom chattingRoom;
         chattingRoom = new ChattingRoom();
@@ -86,7 +85,6 @@ public class TextMessageSender implements MessageSender {
         return newChattingRoom;
     }
 
-    @Transactional
     List<ChattingRoomMember> saveNewRoomMember(ChattingDto.SendMessageParams createMessage, ChattingRoom chattingRoomInDB) {
         List<ChattingRoomMember> chattingRoomMembers = new ArrayList<>();
         for (UUID userId : createMessage.getUserIdList()) {
@@ -104,7 +102,6 @@ public class TextMessageSender implements MessageSender {
         return chattingRoomMemberRepository.saveAll(chattingRoomMembers);
     }
 
-    @Transactional
     ChattingMessage saveMessage(ChattingDto.SendMessageParams sendMessage, ChattingRoom chattingRoomInDB) {
         ChattingMessage chattingMessage = new ChattingMessage();
         chattingMessage.setChattingRoom(chattingRoomInDB);

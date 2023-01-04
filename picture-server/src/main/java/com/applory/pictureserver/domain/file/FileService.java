@@ -5,14 +5,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Component
-public class FileStore {
+public class FileService {
+
+    private final FileRepository fileRepository;
+
+    public FileService(FileRepository fileRepository) {
+        this.fileRepository = fileRepository;
+    }
 
     @Value("${picture.upload-path}")
     private String fileDir;
@@ -21,8 +26,8 @@ public class FileStore {
         return fileDir + filename;
     }
 
-    public List<UploadFile> storeFiles(List<MultipartFile> multipartFiles) throws IOException {
-        List<UploadFile> storeFileResult = new ArrayList<>();
+    public List<File> storeFiles(List<MultipartFile> multipartFiles) throws IOException {
+        List<File> storeFileResult = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
             if (!multipartFile.isEmpty()) {
                 storeFileResult.add(storeFile(multipartFile));
@@ -31,15 +36,21 @@ public class FileStore {
         return storeFileResult;
     }
 
-    public UploadFile storeFile(MultipartFile multipartFile) throws IOException {
+    public File storeFile(MultipartFile multipartFile) throws IOException {
         if (multipartFile.isEmpty()) {
             return null;
         }
 
         String originalFilename = multipartFile.getOriginalFilename();
         String storeFileName = createStoreFileName(originalFilename);
-        multipartFile.transferTo(new File(getFullPath(storeFileName)));
-        return new UploadFile(originalFilename, storeFileName);
+        multipartFile.transferTo(new java.io.File(getFullPath(storeFileName)));
+
+        File file = File.builder()
+                .originFileName(originalFilename)
+                .storeFileName(storeFileName)
+                .build();
+
+        return fileRepository.save(file);
     }
 
     private String createStoreFileName(String originalFilename) {

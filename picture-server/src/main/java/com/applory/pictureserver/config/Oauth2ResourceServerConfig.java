@@ -32,6 +32,7 @@ public class Oauth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
                         "/swagger-resources/**",
                         "/swagger-ui.html",
                         "/swagger/**",
+                        "/api/v1/chattings/images/**",
                         "/v3/api-docs",
                         "/webjars/**",
                         "/h2-console/**").permitAll()

@@ -23,7 +23,7 @@ public class FileService {
     private String fileDir;
 
     public String getFullPath(String filename) {
-        return fileDir + filename;
+        return fileDir + "/" + filename;
     }
 
     public List<File> storeFiles(List<MultipartFile> multipartFiles) throws IOException {

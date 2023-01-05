@@ -15,11 +15,14 @@ public class MessageSenderFactory {
 
     private final MatchingMessageSender matchingMessageSender;
 
-    public MessageSenderFactory(TextMessageSender textMessageSender, EnterMessageSender enterMessageSender, ReceiveMessageSender receiveMessageSender, MatchingMessageSender matchingMessageSender) {
+    private final ImageMessageSender imageMessageSender;
+
+    public MessageSenderFactory(TextMessageSender textMessageSender, EnterMessageSender enterMessageSender, ReceiveMessageSender receiveMessageSender, MatchingMessageSender matchingMessageSender, ImageMessageSender imageMessageSender) {
         this.textMessageSender = textMessageSender;
         this.enterMessageSender = enterMessageSender;
         this.receiveMessageSender = receiveMessageSender;
         this.matchingMessageSender = matchingMessageSender;
+        this.imageMessageSender = imageMessageSender;
     }
 
     public MessageSender build(ChattingMessage.Type type) {
@@ -32,6 +35,8 @@ public class MessageSenderFactory {
         || ChattingMessage.Type.DECLINE_MATCHING.equals(type)
         || ChattingMessage.Type.COMPLETE_MATCHING.equals(type)){
             return matchingMessageSender;
+        } else if (ChattingMessage.Type.IMAGE.equals(type)) {
+            return imageMessageSender;
         }
 
         return textMessageSender;

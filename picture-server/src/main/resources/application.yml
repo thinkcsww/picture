@@ -62,6 +62,10 @@ picture:
   upload-path: uploads-test
 ---
 spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
   config:
     activate:
       on-profile: dev
@@ -89,4 +93,4 @@ spring:
 #    overwrite-existing-jobs: true
 #    scheduler-name: MyScheduler
 picture:
-  upload-path: uploads-dev
+  upload-path: /Users/sunwoongchoi/Desktop/images/picture

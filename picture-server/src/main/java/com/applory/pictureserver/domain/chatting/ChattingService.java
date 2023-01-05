@@ -165,14 +165,4 @@ public class ChattingService {
     public Page<ChattingDto.MessageVM> getMessages(UUID roomId, Pageable pageable) {
         return chattingMessageRepository.findByChattingRoomIdOrderByCreatedDtDesc(roomId, pageable).map(ChattingDto.MessageVM::new);
     }
-
-    public Object sendPhoto(MultipartFile multipartFile) {
-        if (multipartFile.isEmpty()) {
-            return null;
-        }
-
-
-
-        return null;
-    }
 }

@@ -70,6 +70,7 @@ public class ChattingDto {
         private String createdDt;
         private String readBy;
         private ChattingMessage.Type messageType;
+        private String fileName;
 
         public MessageVM(ChattingMessage message) {
             this.senderId = message.getSender().getId();
@@ -77,6 +78,9 @@ public class ChattingDto {
             this.createdDt = message.getCreatedDt().toString();
             this.readBy = message.getReadBy();
             this.messageType = message.getMessageType();
+            if (message.getFile() != null) {
+                this.fileName = message.getFile().getStoreFileName();
+            }
         }
     }
 

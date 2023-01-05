@@ -5,9 +5,11 @@ import com.applory.pictureserver.domain.file.FileService;
 import com.applory.pictureserver.domain.file.File;
 import com.applory.pictureserver.domain.user.UserRepository;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+@Component
 public class ImageMessageSender implements MessageSender {
 
     private final ChattingRoomRepository chattingRoomRepository;
@@ -41,7 +43,7 @@ public class ImageMessageSender implements MessageSender {
 
             ChattingDto.StompMessageVM stompMessageVM = ChattingDto.StompMessageVM.builder()
                     .senderId(sendMessageParams.getSenderId())
-                    .roomType(sendMessageParams.getRoomType())
+                    .roomType(ChattingRoom.Type.PRIVATE)
                     .messageType(chattingMessage.getMessageType())
                     .message(chattingMessage.getMessage())
                     .id(chattingMessage.getId())
@@ -57,8 +59,8 @@ public class ImageMessageSender implements MessageSender {
     ChattingMessage saveMessage(ChattingDto.SendMessageParams sendMessage, ChattingRoom chattingRoomInDB, File file) {
         ChattingMessage chattingMessage = new ChattingMessage();
         chattingMessage.setChattingRoom(chattingRoomInDB);
-        chattingMessage.setMessage(sendMessage.getMessage());
-        chattingMessage.setMessageType(sendMessage.getMessageType());
+        chattingMessage.setMessage("");
+        chattingMessage.setMessageType(ChattingMessage.Type.IMAGE);
         chattingMessage.setSender(userRepository.getById(sendMessage.getSenderId()));
         chattingMessage.setVisibleTo("ALL");
         chattingMessage.setFile(file);

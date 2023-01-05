@@ -13,7 +13,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import AppHeader from "../../components/AppHeader";
 import { Colors } from "../../colors";
 import { useQuery } from "react-query";
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 import { ChattingService } from "../../services/ChattingService";
 import { Client, IMessage } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
@@ -28,6 +28,7 @@ import { emptyPageResult, PageResult } from "../../types/Page";
 import { Specialty } from "../../types/Common";
 import ChattingMessage = Chatting.ChattingMessage;
 import { launchImageLibrary } from "react-native-image-picker";
+import { instance } from "../../hooks/useAxiosLoader";
 
 const SCROLL_OFFSET = 0;
 const ChattingRoomScreen = ({ route }: any) => {
@@ -233,11 +234,32 @@ const ChattingRoomScreen = ({ route }: any) => {
     }).then((res) => {
       if (!res.didCancel) {
         if (res!.assets!.length > 0) {
-          console.log(res.assets![0].base64)
-          stompClient.current!.publish({
-            destination: "/api/v1/chat/send",
-            binaryBody: res.assets![0].base64 as any,
-            headers: {'content-type': 'application/octet-stream'}});
+          const image = res.assets![0];
+          const formData = new FormData();
+          formData.append('attachFile', {
+            name: image.fileName,
+            type: image.type,
+            uri:
+              Platform.OS === 'android'
+                ? image.uri!
+                : image.uri!.replace('file://', ''),
+          });
+          formData.append('roomId', roomId)
+          formData.append('senderId', user.id)
+          formData.append("messageType", Chatting.MessageType.IMAGE);
+
+
+          instance.post(`http://localhost:8080/api/v1/chattings/${roomId}/photo`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          })
+            .then((response) => {
+              console.log(response.data);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         }
       }
 

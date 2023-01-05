@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import { Avatar } from "@rneui/themed";
 import Images from "../../../../assets/images";
 import { Colors } from "../../../colors";
@@ -14,6 +14,7 @@ import RightAcceptMatchingMessage from "./RightAcceptMatchingMessage";
 import LeftAcceptMatchingMessage from "./LeftAcceptMatchingMessage";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MatchingCompleteMessage from "./MatchingCompleteMessage";
+import { isTabletMode } from "react-native-device-info";
 
 type ChattingRoomMessageListProps = {
   item: Chatting.ChattingMessage,
@@ -44,6 +45,17 @@ const ChattingRoomMessage = ({item, sendMessage, roomInfo, roomType}: ChattingRo
       return <RightAcceptMatchingMessage message={item}/>
     } else if (item.messageType === Chatting.MessageType.COMPLETE_MATCHING) {
       return <MatchingCompleteMessage/>
+    } else if (item.messageType === Chatting.MessageType.IMAGE) {
+      return <View>
+        <Image
+          style={{
+            width: 50,
+            height: 50
+          }}
+          source={{
+          uri: `http://localhost:8080/api/v1/chattings/images/${item.fileName}`
+        }}/>
+      </View>
     }
 
     return <RightTextMessage message={item}/>

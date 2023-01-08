@@ -33,7 +33,6 @@ public class MatchingMessageSender implements MessageSender {
     }
 
     @Override
-    @Transactional
     public void sendMessage(ChattingDto.SendMessageParams sendMessageParams) {
         ChattingRoom targetChattingRoom = chattingRoomRepository.findById(sendMessageParams.getRoomId()).orElseThrow(() -> new NotFoundException("Rood does not exist: " + sendMessageParams.getRoomId()));
 
@@ -120,7 +119,6 @@ public class MatchingMessageSender implements MessageSender {
         simpMessagingTemplate.convertAndSend("/room/" + sendMessageParams.getRoomId(), stompMessageVM);
     }
 
-    @Transactional
     ChattingMessage saveMessage(ChattingDto.SendMessageParams sendMessage, ChattingRoom chattingRoom) {
         ChattingMessage chattingMessage = new ChattingMessage();
         chattingMessage.setChattingRoom(chattingRoom);

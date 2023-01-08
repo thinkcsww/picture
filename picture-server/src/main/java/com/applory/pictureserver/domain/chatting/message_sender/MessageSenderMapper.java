@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 // TODO - 객체를 찍어내는 곳은 아니라 팩토리라는 이름이 좀 애매하다. Map을 사용해서 서비스에서 처리하도록 바꾸는건 어떤가?
 @Component
-public class MessageSenderFactory {
+public class MessageSenderMapper {
 
     private final TextMessageSender textMessageSender;
 
@@ -17,7 +17,7 @@ public class MessageSenderFactory {
 
     private final ImageMessageSender imageMessageSender;
 
-    public MessageSenderFactory(TextMessageSender textMessageSender, EnterMessageSender enterMessageSender, ReceiveMessageSender receiveMessageSender, MatchingMessageSender matchingMessageSender, ImageMessageSender imageMessageSender) {
+    public MessageSenderMapper(TextMessageSender textMessageSender, EnterMessageSender enterMessageSender, ReceiveMessageSender receiveMessageSender, MatchingMessageSender matchingMessageSender, ImageMessageSender imageMessageSender) {
         this.textMessageSender = textMessageSender;
         this.enterMessageSender = enterMessageSender;
         this.receiveMessageSender = receiveMessageSender;
@@ -25,7 +25,7 @@ public class MessageSenderFactory {
         this.imageMessageSender = imageMessageSender;
     }
 
-    public MessageSender build(ChattingMessage.Type type) {
+    public MessageSender find(ChattingMessage.Type type) {
         if (ChattingMessage.Type.ENTER.equals(type)) {
             return enterMessageSender;
         } else if (ChattingMessage.Type.RECEIVE.equals(type)) {

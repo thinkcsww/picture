@@ -1,4 +1,4 @@
-package com.applory.pictureserver;
+package com.applory.pictureserver.controller;
 
 import com.applory.pictureserver.domain.request.RequestRepository;
 import com.applory.pictureserver.domain.user.UserRepository;

@@ -1,5 +1,8 @@
-package com.applory.pictureserver;
+package com.applory.pictureserver.controller;
 
+import com.applory.pictureserver.RestTemplateInterceptor;
+import com.applory.pictureserver.TestPage;
+import com.applory.pictureserver.TestUtil;
 import com.applory.pictureserver.config.AppConfiguration;
 import com.applory.pictureserver.error.ApiError;
 import com.applory.pictureserver.domain.oauth.AuthDto;

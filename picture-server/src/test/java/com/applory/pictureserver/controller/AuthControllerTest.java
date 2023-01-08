@@ -1,5 +1,6 @@
-package com.applory.pictureserver;
+package com.applory.pictureserver.controller;
 
+import com.applory.pictureserver.TestUtil;
 import com.applory.pictureserver.error.ApiError;
 import com.applory.pictureserver.domain.oauth.AuthDto;
 import com.applory.pictureserver.domain.oauth.MyOAuth2Token;

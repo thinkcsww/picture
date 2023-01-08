@@ -1,7 +1,7 @@
 package com.applory.pictureserver.domain.chatting;
 
 import com.applory.pictureserver.domain.chatting.message_sender.MessageSender;
-import com.applory.pictureserver.domain.chatting.message_sender.MessageSenderFactory;
+import com.applory.pictureserver.domain.chatting.message_sender.MessageSenderMapper;
 import com.applory.pictureserver.domain.user.UserDto;
 import com.applory.pictureserver.shared.SecurityUtils;
 import com.applory.pictureserver.domain.user.User;
@@ -14,7 +14,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,15 +32,15 @@ public class ChattingService {
 
     private final UserRepository userRepository;
 
-    private final MessageSenderFactory messageSenderFactory;
+    private final MessageSenderMapper messageSenderMapper;
 
-    public ChattingService(SimpMessagingTemplate simpMessagingTemplate, ChattingRoomRepository chattingRoomRepository, ChattingRoomMemberRepository chattingRoomMemberRepository, ChattingMessageRepository chattingMessageRepository, UserRepository userRepository, MessageSenderFactory messageSenderFactory) {
+    public ChattingService(SimpMessagingTemplate simpMessagingTemplate, ChattingRoomRepository chattingRoomRepository, ChattingRoomMemberRepository chattingRoomMemberRepository, ChattingMessageRepository chattingMessageRepository, UserRepository userRepository, MessageSenderMapper messageSenderFactory) {
         this.simpMessagingTemplate = simpMessagingTemplate;
         this.chattingRoomRepository = chattingRoomRepository;
         this.chattingRoomMemberRepository = chattingRoomMemberRepository;
         this.chattingMessageRepository = chattingMessageRepository;
         this.userRepository = userRepository;
-        this.messageSenderFactory = messageSenderFactory;
+        this.messageSenderMapper = messageSenderFactory;
     }
 
     @Transactional
@@ -91,7 +90,7 @@ public class ChattingService {
 
     @Transactional
     public void send(ChattingDto.SendMessageParams createMessage) {
-        MessageSender messageSender = messageSenderFactory.build(createMessage.getMessageType());
+        MessageSender messageSender = messageSenderMapper.find(createMessage.getMessageType());
         messageSender.sendMessage(createMessage);
 
     }

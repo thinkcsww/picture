@@ -2,19 +2,14 @@ package com.applory.pictureserver.domain.chatting;
 
 import com.applory.pictureserver.domain.file.FileService;
 import com.applory.pictureserver.shared.Result;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.*;
-import sun.misc.IOUtils;
 
 import javax.validation.Valid;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.util.List;
 import java.util.UUID;
 
@@ -64,14 +59,7 @@ public class ChattingController {
 
     @ResponseBody
     @GetMapping("/images/{filename}")
-    public byte[] downloadImage(@PathVariable String filename) throws IOException {
-//        return new UrlResource("file:" + fileService.getFullPath(filename));
-
-        InputStream in = getClass()
-                .getClassLoader()
-                .getResourceAsStream("f65c4613-e8f7-4e46-b836-3482b9729b5f.jpg");
-        return IOUtils.readAllBytes(in);
+    public Result<byte[]> downloadImage(@PathVariable String filename) throws IOException {
+        return Result.success(fileService.getFile(filename));
     }
-
-
 }

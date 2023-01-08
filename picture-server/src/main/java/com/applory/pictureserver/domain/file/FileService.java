@@ -2,8 +2,10 @@ package com.applory.pictureserver.domain.file;
 
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import sun.misc.IOUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -65,4 +67,9 @@ public class FileService {
     }
 
 
+    public byte[] getFile(String filename) throws IOException {
+        FileSystemResource file = new FileSystemResource(getFullPath(filename));
+        return IOUtils.readAllBytes(file.getInputStream());
+
+    }
 }

@@ -1,7 +1,6 @@
 package com.applory.pictureserver.domain.matching;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.util.StringUtils;
@@ -17,8 +16,8 @@ public class MatchingRepositoryCustomImpl implements MatchingRepositoryCustom {
 
     @Override
     public List<Matching> findBySearch(MatchingDto.Search search) {
-        return jpaQueryFactory.select(matching)
-                .from(matching)
+        return jpaQueryFactory
+                .selectFrom(matching)
                 .where(
                         userIdEq(search.sellerEnabledYn, search.userId),
                         completeYnEq(search.completeYn)

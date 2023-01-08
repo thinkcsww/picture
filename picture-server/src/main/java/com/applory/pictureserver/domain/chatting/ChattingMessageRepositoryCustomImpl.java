@@ -18,8 +18,8 @@ public class ChattingMessageRepositoryCustomImpl implements ChattingMessageRepos
 
     @Override
     public int countUnreadMessageOfRoom(UUID roomId, UUID userId) {
-        JPQLQuery<ChattingMessage> query = jpaQueryFactory.select(chattingMessage)
-                .from(chattingMessage)
+        JPQLQuery<ChattingMessage> query = jpaQueryFactory
+                .selectFrom(chattingMessage)
                 .where(chattingMessage.chattingRoom.id.eq(roomId)
                         .and(chattingMessage.sender.id.ne(userId))
                         .and(chattingMessage.readBy.notLike("%" + userId + "%").or(chattingMessage.readBy.isNull()))
@@ -29,8 +29,8 @@ public class ChattingMessageRepositoryCustomImpl implements ChattingMessageRepos
 
     @Override
     public Page<ChattingMessage> findByChattingRoomId(UUID roomId, String userId, Pageable pageable) {
-        JPQLQuery<ChattingMessage> query = jpaQueryFactory.select(chattingMessage)
-                .from(chattingMessage)
+        JPQLQuery<ChattingMessage> query = jpaQueryFactory
+                .selectFrom(chattingMessage)
                 .where(chattingMessage.chattingRoom.id.eq(roomId)
                         .and(chattingMessage.visibleTo.eq(ChattingMessage.VisibleToType.ALL.toString()).or(chattingMessage.visibleTo.eq(userId.toString()))))
                 .offset(pageable.getOffset())

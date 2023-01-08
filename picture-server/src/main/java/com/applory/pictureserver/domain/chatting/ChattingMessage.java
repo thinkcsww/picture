@@ -66,7 +66,7 @@ public class ChattingMessage extends BaseTimeEntity {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "TYPE", columnDefinition = "default 'MESSAGE'")
+    @Column(name = "MESSAGE_TYPE")
     private ChattingMessage.Type messageType;
 
 }

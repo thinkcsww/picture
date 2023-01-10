@@ -2,6 +2,9 @@ package com.applory.pictureserver.domain.chatting;
 
 import com.applory.pictureserver.domain.chatting.message_sender.MessageSender;
 import com.applory.pictureserver.domain.chatting.message_sender.MessageSenderMapper;
+import com.applory.pictureserver.domain.matching.Matching;
+import com.applory.pictureserver.domain.matching.MatchingDto;
+import com.applory.pictureserver.domain.matching.MatchingRepository;
 import com.applory.pictureserver.domain.user.UserDto;
 import com.applory.pictureserver.shared.SecurityUtils;
 import com.applory.pictureserver.domain.user.User;
@@ -30,17 +33,20 @@ public class ChattingService {
 
     private final ChattingMessageRepository chattingMessageRepository;
 
+    private final MatchingRepository matchingRepository;
+
     private final UserRepository userRepository;
 
     private final MessageSenderMapper messageSenderMapper;
 
-    public ChattingService(SimpMessagingTemplate simpMessagingTemplate, ChattingRoomRepository chattingRoomRepository, ChattingRoomMemberRepository chattingRoomMemberRepository, ChattingMessageRepository chattingMessageRepository, UserRepository userRepository, MessageSenderMapper messageSenderFactory) {
+    public ChattingService(SimpMessagingTemplate simpMessagingTemplate, ChattingRoomRepository chattingRoomRepository, ChattingRoomMemberRepository chattingRoomMemberRepository, ChattingMessageRepository chattingMessageRepository, MatchingRepository matchingRepository, UserRepository userRepository, MessageSenderMapper messageSenderMapper) {
         this.simpMessagingTemplate = simpMessagingTemplate;
         this.chattingRoomRepository = chattingRoomRepository;
         this.chattingRoomMemberRepository = chattingRoomMemberRepository;
         this.chattingMessageRepository = chattingMessageRepository;
+        this.matchingRepository = matchingRepository;
         this.userRepository = userRepository;
-        this.messageSenderMapper = messageSenderFactory;
+        this.messageSenderMapper = messageSenderMapper;
     }
 
     @Transactional
@@ -48,6 +54,7 @@ public class ChattingService {
         ChattingRoom chattingRoom = null;
         User opponent = null;
         Page<ChattingDto.MessageVM> messages = null;
+        Optional<Matching> matchingInDB = Optional.empty();
 
         if (enterRoom.getRoomId() != null) {
             chattingRoom = chattingRoomRepository.findById(enterRoom.getRoomId()).orElseThrow(() -> new NotFoundException("Room does not exist: " + enterRoom.getRoomId()));
@@ -72,6 +79,9 @@ public class ChattingService {
                     .filter(user -> !user.getUsername().equals(SecurityUtils.getPrincipal()))
                     .collect(Collectors.toList()).get(0);
 
+            // 매칭 정보 조회
+            matchingInDB = matchingRepository.findBySeller_IdAndClient_IdAndCompleteYN(chattingRoom.getSellerId(), chattingRoom.getClientId(), "N");
+
             // 입장 소켓 전송
             ChattingDto.StompMessageVM enterRoomMessageVM = ChattingDto.StompMessageVM.builder().messageType(ChattingMessage.Type.ENTER).senderId(currentUser.getId()).build();
             simpMessagingTemplate.convertAndSend("/room/" + chattingRoom.getId(), enterRoomMessageVM);
@@ -85,6 +95,7 @@ public class ChattingService {
                 .opponent(new UserDto.VM(opponent))
                 .messages(messages)
                 .newRoom(chattingRoom == null)
+                .matching(matchingInDB.map(MatchingDto.VM::new).orElse(null))
                 .build();
     }
 

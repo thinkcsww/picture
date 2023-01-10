@@ -8,5 +8,6 @@ import java.util.UUID;
 
 public interface MatchingRepository extends JpaRepository<Matching, UUID>, MatchingRepositoryCustom {
     Optional<Matching> findBySellerAndClientAndCompleteYN(User seller, User client, String completeYN);
+    Optional<Matching> findBySeller_IdAndClient_IdAndCompleteYN(UUID sellerId, UUID clientId, String completeYN);
 
 }

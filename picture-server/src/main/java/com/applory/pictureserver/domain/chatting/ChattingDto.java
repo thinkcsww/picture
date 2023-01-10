@@ -1,5 +1,6 @@
 package com.applory.pictureserver.domain.chatting;
 
+import com.applory.pictureserver.domain.matching.MatchingDto;
 import com.applory.pictureserver.domain.user.UserDto;
 import com.applory.pictureserver.shared.Constant;
 import lombok.*;
@@ -46,6 +47,8 @@ public class ChattingDto {
         private String requestComment;
 
         private MultipartFile attachFile;
+
+        private String fileName;
 
     }
 
@@ -106,10 +109,10 @@ public class ChattingDto {
 
         private UUID id;
 
-        private String filePath;
+        private String fileName;
 
         @Builder
-        public StompMessageVM(UUID roomId, UUID senderId, UUID sellerId, UUID clientId, String message, ChattingRoom.Type roomType, ChattingMessage.Type messageType, UUID id, String filePath) {
+        public StompMessageVM(UUID roomId, UUID senderId, UUID sellerId, UUID clientId, String message, ChattingRoom.Type roomType, ChattingMessage.Type messageType, UUID id, String fileName) {
             this.roomId = roomId;
             this.senderId = senderId;
             this.sellerId = sellerId;
@@ -118,7 +121,7 @@ public class ChattingDto {
             this.roomType = roomType;
             this.messageType = messageType;
             this.id = id;
-            this.filePath = filePath;
+            this.fileName = fileName;
         }
     }
 
@@ -139,5 +142,7 @@ public class ChattingDto {
         private Page<MessageVM> messages;
 
         private boolean newRoom;
+
+        private MatchingDto.VM matching;
     }
 }

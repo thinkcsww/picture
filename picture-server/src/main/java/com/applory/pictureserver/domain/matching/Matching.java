@@ -71,8 +71,13 @@ public class Matching {
     @Column(name = "COMMENT")
     private String comment;
 
+    // 사진 교환 여부
+    @Column(name = "PICTURE_YN", columnDefinition = "varchar(1) default 'N'")
+    private String pictureYN;
+
     @Builder
-    public Matching(User seller, User client, Request request, Constant.Specialty specialty, Integer price, LocalDateTime dueDate, String completeYN, Status status, String comment) {
+
+    public Matching(User seller, User client, Request request, Constant.Specialty specialty, Integer price, LocalDateTime dueDate, String completeYN, LocalDateTime completeDt, Status status, String comment, String pictureYN) {
         this.seller = seller;
         this.client = client;
         this.request = request;
@@ -80,7 +85,9 @@ public class Matching {
         this.price = price;
         this.dueDate = dueDate;
         this.completeYN = completeYN;
+        this.completeDt = completeDt;
         this.status = status;
         this.comment = comment;
+        this.pictureYN = pictureYN;
     }
 }

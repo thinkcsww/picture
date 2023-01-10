@@ -44,5 +44,13 @@ public class MatchingDto {
             this.status = matching.getStatus();
             this.completeDt = matching.getCompleteDt();
         }
+
+        public VM(Matching matching) {
+            this.comment = matching.getComment();
+            this.matchingId = matching.getId();
+            this.dueDate = matching.getDueDate();
+            this.status = matching.getStatus();
+            this.completeDt = matching.getCompleteDt();
+        }
     }
 }

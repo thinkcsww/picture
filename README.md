@@ -2,7 +2,7 @@
 
 기존의 사진 앱에서나 보정 앱에서 혼자 처리하기 어려운 작업들을 간단하게 의뢰할 수 있는 서비스입니다. 앞머리를 늘린다거나, 배경을 제거하는 등의 작업들은 어렵지 않지만, 포토샵이 없이는 처리가 어렵습니다. 이와 같은 사진 보정이 필요할 때 작가를 검색하고 평점, 별점 등을 확인 한 후에 채팅을 통해서 의뢰하고 결과물을 교환할 수 있습니다.
 
-<img width="206" alt="image" src="https://user-images.githubusercontent.com/35441780/211564296-211a95d4-0ef5-4cf1-958a-36940fbe6805.png">               <img width="206" alt="image" src="https://user-images.githubusercontent.com/35441780/211564459-50dd5ed2-c674-4bb5-9eb6-2d35a2ee4917.png">               <img width="204" alt="image" src="https://user-images.githubusercontent.com/35441780/211564529-beb8a31c-3999-4a85-8aa7-894908f79dcc.png">
+<img width="206" alt="image" src="https://user-images.githubusercontent.com/35441780/211566574-c88270e6-915a-4a2f-81e8-53cba6f31db5.png"> <img width="205" alt="image" src="https://user-images.githubusercontent.com/35441780/211566600-245fd0f1-4a1d-4205-8eba-628ed4275b19.png"> <img width="207" alt="image" src="https://user-images.githubusercontent.com/35441780/211566615-e469fdaf-cbae-4d08-97e5-9ac39d53f2c1.png">
 
 
 

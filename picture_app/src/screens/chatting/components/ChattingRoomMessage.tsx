@@ -15,6 +15,7 @@ import LeftAcceptMatchingMessage from "./LeftAcceptMatchingMessage";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MatchingCompleteMessage from "./MatchingCompleteMessage";
 import { isTabletMode } from "react-native-device-info";
+import RightImageMessage from "./RightImageMessage";
 
 type ChattingRoomMessageListProps = {
   item: Chatting.ChattingMessage,
@@ -46,16 +47,7 @@ const ChattingRoomMessage = ({item, sendMessage, roomInfo, roomType}: ChattingRo
     } else if (item.messageType === Chatting.MessageType.COMPLETE_MATCHING) {
       return <MatchingCompleteMessage/>
     } else if (item.messageType === Chatting.MessageType.IMAGE) {
-      return <View>
-        <Image
-          style={{
-            width: 50,
-            height: 50
-          }}
-          source={{
-          uri: `http://localhost:8080/api/v1/chattings/images/${item.fileName}`
-        }}/>
-      </View>
+      return <RightImageMessage message={item}/>
     }
 
     return <RightTextMessage message={item}/>

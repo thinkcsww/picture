@@ -35,5 +35,6 @@ export namespace Chatting {
     createdDt: string;
     readBy: string;
     messageType: MessageType;
+    fileName: string;
   }
 }

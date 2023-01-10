@@ -59,7 +59,7 @@ public class ChattingController {
 
     @ResponseBody
     @GetMapping("/images/{filename}")
-    public Result<byte[]> downloadImage(@PathVariable String filename) throws IOException {
-        return Result.success(fileService.getFile(filename));
+    public byte[] downloadImage(@PathVariable String filename) throws IOException {
+        return fileService.getFile(filename);
     }
 }

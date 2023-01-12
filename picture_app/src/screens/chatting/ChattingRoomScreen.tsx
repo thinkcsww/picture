@@ -137,7 +137,7 @@ const ChattingRoomScreen = ({ route }: any) => {
   useEffect(() => {
     if (lastMessage) {
       console.log(lastMessage);
-      if (lastMessage.messageType === Chatting.MessageType.MESSAGE || lastMessage.messageType?.includes("MATCHING")) {
+      if (lastMessage.messageType !== Chatting.MessageType.ENTER && lastMessage.messageType !== Chatting.MessageType.RECEIVE) {
         const newPagesMessageList = { ...pagedMessageList };
         newPagesMessageList.content.unshift(lastMessage);
         setPagedMessageList(newPagesMessageList);
@@ -249,15 +249,17 @@ const ChattingRoomScreen = ({ route }: any) => {
           formData.append("messageType", Chatting.MessageType.IMAGE);
 
 
-          instance.post(`http://localhost:8080/api/v1/chattings/${roomId}/photo`, formData, {
+          instance.post(`${Env.host}/api/v1/chattings/${roomId}/photo`, formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
             },
           })
             .then((response) => {
+              console.log('=== 성공 ===')
               console.log(response.data);
             })
             .catch((error) => {
+              console.log('=== 에러 ===')
               console.log(error);
             });
         }

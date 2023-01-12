@@ -3,9 +3,6 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
-  config:
-    activate:
-      on-profile: dev
   datasource:
     url: jdbc:mysql://localhost:3306/PICTURE?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
     username: picture
@@ -29,7 +26,7 @@ spring:
   quartz:
     auto-startup: false
 picture:
-  upload-path: /Users/sunwoongchoi/Desktop/images/picture
+  upload-path: /Users/sunwoongchoi/Desktop/images/picture # 개인 경로 설정
   pw-salt: durtnlchrhtn@1
   jwt-sign-key: durtnlchrhtn@1
   client-id: applory

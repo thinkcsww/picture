@@ -31,8 +31,6 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
-picture:
-  upload-path: /Users/sunwoongchoi/Desktop/images/picture
 
 logging:
   level:

@@ -21,6 +21,7 @@ FLUSH PRIVILEGES;
 서버 실행 방법 
 ```
 1. DB -> 테이블은 hibernate가 자동으로 생성
+2. application.yml의 picture.upload-path 설정
 2. mvn clean package -P dev -DskipTests 
 3. java -server -Xms2g -Xmx2g -Dspring.profiles.active=dev -jar target/*.jar
 ```

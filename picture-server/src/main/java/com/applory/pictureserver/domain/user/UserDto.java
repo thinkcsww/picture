@@ -2,6 +2,7 @@ package com.applory.pictureserver.domain.user;
 
 import com.applory.pictureserver.domain.matching.Matching;
 import com.applory.pictureserver.domain.matching.MatchingDto;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -134,5 +135,14 @@ public class UserDto {
     @Setter
     public static class SearchClient {
 
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    public static class Search {
+        public String sellerEnabledYn;
+        public UUID userId;
+        public String completeYn;
     }
 }

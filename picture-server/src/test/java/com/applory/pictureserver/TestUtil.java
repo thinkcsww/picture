@@ -1,5 +1,6 @@
 package com.applory.pictureserver;
 
+import com.applory.pictureserver.domain.matching.Matching;
 import com.applory.pictureserver.domain.oauth.AuthDto;
 import com.applory.pictureserver.domain.request.RequestDto;
 import com.applory.pictureserver.shared.Constant;
@@ -9,6 +10,49 @@ import com.applory.pictureserver.domain.user.UserDto;
 import java.time.LocalDateTime;
 
 public class TestUtil {
+
+    public static User createSeller() {
+        User sellerUser = new User();
+        sellerUser.setNickname(TestConstants.TEST_SELLER_NICKNAME);
+        sellerUser.setUsername(TestConstants.TEST_SELLER_USERNAME);
+        sellerUser.setOfficialPrice(2000);
+        sellerUser.setBackgroundPrice(2000);
+        sellerUser.setPeoplePrice(2000);
+        sellerUser.setDescription("셀러 설명입니다.");
+        sellerUser.setSnsType(User.SnsType.KAKAO);
+        sellerUser.setSpecialty(Constant.Specialty.BACKGROUND.toString());
+        sellerUser.setSellerEnabledYn("Y");
+        sellerUser.setWorkHourFromDt(1110);
+        sellerUser.setWorkHourToDt(1810);
+
+        return sellerUser;
+    }
+
+    public static User createClient() {
+        User clientUser = new User();
+        clientUser.setNickname(TestConstants.TEST_CLIENT_NICKNAME);
+        clientUser.setUsername(TestConstants.TEST_CLIENT_USERNAME);
+        clientUser.setDescription("클라이언트 설명입니다.");
+        clientUser.setSnsType(User.SnsType.KAKAO);
+        clientUser.setSellerEnabledYn("N");
+
+        return clientUser;
+    }
+
+    public static Matching createMatching(User seller, User client, Matching.Status status) {
+        Matching matching = new Matching();
+        matching.setStatus(Matching.Status.REQUEST);
+        matching.setSeller(seller);
+        matching.setClient(client);
+        matching.setDueDate(LocalDateTime.now().plusHours(5));
+        matching.setCompleteYN("N");
+        matching.setComment("잘 부탁드립니다^^");
+        matching.setPrice(2000);
+
+        return matching;
+    }
+
+
     public static UserDto.Create createValidClientUser(String username) {
         UserDto.Create user = new UserDto.Create();
         user.setUsername(username);

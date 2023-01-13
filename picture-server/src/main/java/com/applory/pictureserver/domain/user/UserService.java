@@ -72,14 +72,15 @@ public class UserService {
         return userRepository.findClientUserBySearch(search, pageable);
     }
 
-    public UserDto.VM getUserMe(MatchingDto.Search search) {
-        String username = SecurityUtils.getPrincipal();
+    public UserDto.VM getUserMe() {
+        User findUser = userRepository.findByUsername(SecurityUtils.getPrincipal());
 
-        User findUser = userRepository.findByUsername(username);
-        search.setUserId(findUser.getId());
+        MatchingDto.Search matchingSearch = MatchingDto.Search.builder()
+                .userId(findUser.getId())
+                .sellerEnabledYn(findUser.getSellerEnabledYn())
+                .build();
 
-
-        Map<Matching.Status, List<MatchingDto.VM>> matchings = matchingRepository.findBySearch(search)
+        Map<Matching.Status, List<MatchingDto.VM>> matchings = matchingRepository.findBySearch(matchingSearch)
                 .stream()
                 .map((matching) -> new MatchingDto.VM(matching, findUser.getSellerEnabledYn()))
                 .collect(Collectors.groupingBy(MatchingDto.VM::getStatus));
@@ -109,6 +110,5 @@ public class UserService {
         } else {
             throw new NotFoundException(id + " user is not found");
         }
-
     }
 }

@@ -1,6 +1,5 @@
-package com.applory.pictureserver.service;
+package com.applory.pictureserver.domain.file;
 
-import com.applory.pictureserver.domain.file.FileService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

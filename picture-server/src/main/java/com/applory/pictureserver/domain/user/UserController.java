@@ -1,6 +1,5 @@
 package com.applory.pictureserver.domain.user;
 
-import com.applory.pictureserver.domain.matching.MatchingDto;
 import com.applory.pictureserver.shared.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,8 +30,8 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public Result<UserDto.VM> getUserMe(MatchingDto.Search search) {
-        return Result.success(userService.getUserMe(search));
+    public Result<UserDto.VM> getUserMe() {
+        return Result.success(userService.getUserMe());
     }
 
     @GetMapping("/seller")

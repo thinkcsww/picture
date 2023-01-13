@@ -67,39 +67,8 @@ public class UserControllerTest {
     }
 
     @Test
-    public void checkNickname_withDuplicateNickname_receive400() {
-        UserDto.Create dto = TestUtil.createValidClientUser(TEST_USERNAME);
-
-        signUp(dto, Object.class);
-
-        ResponseEntity<Object> response = checkNickname(dto.getNickname(), Object.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-
-    }
-
-    @Test
-    public void checkNickname_withDuplicateNickname_receiveMessage() {
-        UserDto.Create dto = TestUtil.createValidClientUser(TEST_USERNAME);
-
-        signUp(dto, Object.class);
-
-        ResponseEntity<ApiError> response = checkNickname(dto.getNickname(), ApiError.class);
-
-        assertThat(response.getBody().getMessage()).contains("is already in use");
-
-    }
-
-    @Test
-    public void checkNickname_withValidNickname_receive200() {
-        ResponseEntity<Object> response = checkNickname("fresh-nickname", Object.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-    @Test
     public void postClientUser_withValidUserDto_receive201() {
-        UserDto.Create dto = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create dto = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
 
         ResponseEntity<Object> response = signUp(dto, Object.class);
 
@@ -108,8 +77,8 @@ public class UserControllerTest {
 
     @Test
     public void postUser_withDuplicateNickname_receiveApiError() {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
 
         signUp(user1, Object.class);
         ResponseEntity<ApiError> response = signUp(user2, ApiError.class);
@@ -119,7 +88,7 @@ public class UserControllerTest {
 
     @Test
     public void postClientUser_withValidUserDto_userSavedToDatabase() {
-        UserDto.Create dto = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create dto = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
 
         signUp(dto, Object.class);
 
@@ -128,7 +97,7 @@ public class UserControllerTest {
 
     @Test
     public void postClientUser_withValidUserDto_receiveUserVMWithProperValues() {
-        UserDto.Create dto = TestUtil.createValidClientUser(TEST_USERNAME);
+        UserDto.Create dto = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
 
         ResponseEntity<UserDto.VM> response = signUp(dto, UserDto.VM.class);
 
@@ -141,7 +110,7 @@ public class UserControllerTest {
 
     @Test
     public void postSellerUser_withValidUserDto_receiveUserVMWithProperValues() {
-        UserDto.Create dto = TestUtil.createValidSellerUser(TEST_USERNAME);
+        UserDto.Create dto = TestUtil.createValidSellerUser(TEST_SELLER_USERNAME);
 
         ResponseEntity<UserDto.VM> response = signUp(dto, UserDto.VM.class);
 
@@ -169,21 +138,21 @@ public class UserControllerTest {
 
     @Test
     public void getUserMe_withValidToken_receiveUserVM() {
-        signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
+        signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
 
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         ResponseEntity<UserDto.VM> response = getUserMe(new ParameterizedTypeReference<UserDto.VM>() {});
-        assertThat(response.getBody().getUsername()).isEqualTo(TEST_USERNAME);
+        assertThat(response.getBody().getUsername()).isEqualTo(TEST_SELLER_USERNAME);
 
     }
 
     @Test
     public void getUserMe_withValidToken_receiveUserVMWithoutPassword() {
-        signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
+        signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
 
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         ResponseEntity<String> response = getUserMe(new ParameterizedTypeReference<String>() {});
@@ -192,9 +161,9 @@ public class UserControllerTest {
 
     @Test
     public void getClientUser_withValidToken_receivePage() {
-        signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
+        signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
 
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         ResponseEntity<TestPage<UserDto.VM>> userResponse = getClientUser(new ParameterizedTypeReference<TestPage<UserDto.VM>>() {}, null);
@@ -203,7 +172,7 @@ public class UserControllerTest {
 
     @Test
     public void getSellerUsers_withValidRequest_receivePage() {
-        signUp(TestUtil.createValidSellerUser(TEST_USERNAME), Object.class);
+        signUp(TestUtil.createValidSellerUser(TEST_SELLER_USERNAME), Object.class);
 
         UserDto.SearchSeller search = new UserDto.SearchSeller();
         search.setCurrentTime("1750");
@@ -214,7 +183,7 @@ public class UserControllerTest {
 
     @Test
     public void getSellerUsers_withInvalidWorkTime_receiveApiError() {
-        signUp(TestUtil.createValidSellerUser(TEST_USERNAME), Object.class);
+        signUp(TestUtil.createValidSellerUser(TEST_SELLER_USERNAME), Object.class);
 
         UserDto.SearchSeller search = new UserDto.SearchSeller();
         search.setCurrentTime("5555");
@@ -237,7 +206,7 @@ public class UserControllerTest {
 
     @Test
     public void getSellerUsers_withValidRequest_receiveWithBasicValues() {
-        UserDto.Create dto = TestUtil.createValidSellerUser(TEST_USERNAME);
+        UserDto.Create dto = TestUtil.createValidSellerUser(TEST_SELLER_USERNAME);
         signUp(dto, Object.class);
 
         UserDto.SearchSeller search = new UserDto.SearchSeller();

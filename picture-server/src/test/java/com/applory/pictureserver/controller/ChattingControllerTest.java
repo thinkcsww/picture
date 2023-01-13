@@ -113,9 +113,9 @@ public class ChattingControllerTest {
     @Test
     public void startChatting_withValidToken_stompSessionIsNotNull() throws ExecutionException, InterruptedException, TimeoutException, URISyntaxException {
 
-        signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
+        signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
 
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
@@ -124,12 +124,12 @@ public class ChattingControllerTest {
 
     @Test
     public void startChatting_whenRoomIsNotExistCreateRoom_chatroomIsCreated() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
@@ -148,12 +148,12 @@ public class ChattingControllerTest {
 
     @Test
     public void startChatting_whenRoomIsNotExistCreateRoom_chatroomMemberIsCreated() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
@@ -172,12 +172,12 @@ public class ChattingControllerTest {
 
     @Test
     public void startChatting_whenRoomIsNotExistCreateRoom_chatroomMemberIsCreatedAndUseYnIsSetToY() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
@@ -196,12 +196,12 @@ public class ChattingControllerTest {
 
     @Test
     public void startChatting_whenRoomIsNotExistCreateRoom_chatroomMemberIsConnectedWithRightChattingRoom() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
@@ -222,12 +222,12 @@ public class ChattingControllerTest {
 
     @Test
     public void startChatting_whenRoomIsNotExistCreateRoom_chatMessageIsCreated() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
@@ -246,12 +246,12 @@ public class ChattingControllerTest {
 
     @Test
     public void startChatting_whenRoomIsNotExistCreateRoom_chatMessageIsConnectedWithRightChatRoom() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
@@ -272,12 +272,12 @@ public class ChattingControllerTest {
 
     @Test
     public void startChatting_whenRoomIsNotExistCreateRoom_chatMessageIsConnectedWithRightSender() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
@@ -296,8 +296,8 @@ public class ChattingControllerTest {
 
     @Test
     public void startChatting_whenILeftThisRoomBefore_recycleTheRoomAlreadyExist() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
 
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
@@ -339,8 +339,8 @@ public class ChattingControllerTest {
 
     @Test
     public void startChatting_whenILeftThisRoomBefore_everyRoomMemberUseYnIsY() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
 
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
@@ -380,8 +380,8 @@ public class ChattingControllerTest {
 
     @Test
     public void sendMessage_whenOpponentLeftRoom_everyRoomMemberUseYnIsY() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
 
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
@@ -432,8 +432,8 @@ public class ChattingControllerTest {
     @Test
     public void sendMessage_withValidDto_sentMessageIsCorrect() throws ExecutionException, InterruptedException, TimeoutException, URISyntaxException {
 
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
@@ -443,7 +443,7 @@ public class ChattingControllerTest {
         createMessage.setSenderId(sender.getId());
         createMessage.setMessage("HI");
 
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
@@ -477,9 +477,9 @@ public class ChattingControllerTest {
 
     @Test
     public void getRooms_withValidToken_receive200() {
-        signUp(TestUtil.createValidClientUser(TEST_USERNAME), Object.class);
+        signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
 
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
         authenticate(tokenResponse.getBody().getAccess_token());
 
         ResponseEntity<Object> response = getRooms(0, 5, Object.class);
@@ -498,14 +498,14 @@ public class ChattingControllerTest {
 
     @Test
     public void getRooms_withValidToken_receiveRoomsOrderByLatestTime() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
-        UserDto.Create user3 = TestUtil.createValidClientUser(TEST_USERNAME + "3");
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
+        UserDto.Create user3 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "3");
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
         UserDto.VM receiver2 = signUp(user3, UserDto.VM.class).getBody();
 
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
@@ -557,7 +557,7 @@ public class ChattingControllerTest {
     public void getRooms_withValidToken_receiveRoomWithUnreadCountWhenIamReceiver() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
         sendToOnePersonHowManyMessagesAndAuthenticate(2);
 
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME + "2"), MyOAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME + "2"), MyOAuth2Token.class);
         clearInterceptors();
         authenticate(tokenResponse.getBody().getAccess_token());
 
@@ -614,8 +614,8 @@ public class ChattingControllerTest {
 
     @Test
     public void leaveRoom_withInvalidToken_receive401() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
@@ -625,7 +625,7 @@ public class ChattingControllerTest {
         createMessage.setSenderId(sender.getId());
         createMessage.setMessage("HI");
 
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
         String token = tokenResponse.getBody().getAccess_token();
         authenticate(token);
         connectStomp(token);
@@ -645,8 +645,8 @@ public class ChattingControllerTest {
 
     @Test
     public void leaveRoom_whenBothUserInRoom_receive204() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
@@ -656,7 +656,7 @@ public class ChattingControllerTest {
         createMessage.setSenderId(sender.getId());
         createMessage.setMessage("HI");
 
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
         String token = tokenResponse.getBody().getAccess_token();
         authenticate(token);
         connectStomp(token);
@@ -671,8 +671,8 @@ public class ChattingControllerTest {
 
     @Test
     public void leaveRoom_whenBothUserInRoom_setRoomMemberUseYnToN() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
@@ -682,7 +682,7 @@ public class ChattingControllerTest {
         createMessage.setSenderId(sender.getId());
         createMessage.setMessage("HI");
 
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
         String token = tokenResponse.getBody().getAccess_token();
         authenticate(token);
         connectStomp(token);
@@ -699,8 +699,8 @@ public class ChattingControllerTest {
 
     @Test
     public void leaveRoom_whenBothUserInRoom_updateMessageVisibleToRoomMemberWhoLeft() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
@@ -710,7 +710,7 @@ public class ChattingControllerTest {
         createMessage.setSenderId(sender.getId());
         createMessage.setMessage("HI");
 
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
         String token = tokenResponse.getBody().getAccess_token();
         authenticate(token);
         connectStomp(token);
@@ -733,8 +733,8 @@ public class ChattingControllerTest {
 
     @Test
     public void leaveRoom_whenOnlyOneUserIsInRoom_everyRoomMemberUseYnIsN() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
 
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
@@ -773,8 +773,8 @@ public class ChattingControllerTest {
 
     @Test
     public void leaveRoom_whenOnlyOneUserInRoom_updateMessageReadabilityToNoOneCanRead() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
 
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
@@ -813,8 +813,8 @@ public class ChattingControllerTest {
 
     @Test
     public void startChatting_afterBothLeftRoom_useExistedRoomButCannotReadOldMessage() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
 
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
@@ -904,12 +904,12 @@ public class ChattingControllerTest {
     }
 
     private RoomInfo sendToOnePersonHowManyMessagesAndAuthenticate(int howManyMessages) throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_USERNAME + "2");
+        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
+        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
         UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_USERNAME), MyOAuth2Token.class);
+        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 

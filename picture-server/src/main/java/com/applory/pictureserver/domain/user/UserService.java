@@ -4,8 +4,9 @@ import com.applory.pictureserver.config.AppConfiguration;
 import com.applory.pictureserver.domain.matching.Matching;
 import com.applory.pictureserver.domain.matching.MatchingDto;
 import com.applory.pictureserver.domain.matching.MatchingRepository;
+import com.applory.pictureserver.domain.review.ReviewDTO;
+import com.applory.pictureserver.domain.review.ReviewRepository;
 import com.applory.pictureserver.exception.BadRequestException;
-import com.applory.pictureserver.exception.NotFoundException;
 import com.applory.pictureserver.shared.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,7 +17,6 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -31,6 +31,8 @@ public class UserService {
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final ReviewRepository reviewRepository;
 
     public User createUser(UserDto.Create dto) {
         User user = new User();
@@ -100,15 +102,15 @@ public class UserService {
     }
 
     public UserDto.SellerVM getSellerUser(UUID id) {
-        Optional<User> optionalUser = userRepository.findById(id);
+        User user = userRepository.findById(id).orElseThrow(() -> new IllegalStateException("Seller: " + id + " not exist"));
+        ReviewDTO.ReviewVM latestReview = new ReviewDTO.ReviewVM(reviewRepository.findSellersLatestReview(user));
+        int reviewCnt = reviewRepository.countBySeller(user);
 
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            UserDto.SellerVM sellerVM = new UserDto.SellerVM(user);
 
-            return sellerVM;
-        } else {
-            throw new NotFoundException(id + " user is not found");
-        }
+        UserDto.SellerVM sellerVM = new UserDto.SellerVM(user);
+        sellerVM.setReview(latestReview);
+        sellerVM.setReviewCount(reviewCnt);
+
+        return sellerVM;
     }
 }

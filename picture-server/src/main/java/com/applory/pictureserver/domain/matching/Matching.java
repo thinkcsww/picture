@@ -2,13 +2,13 @@ package com.applory.pictureserver.domain.matching;
 
 import com.applory.pictureserver.domain.request.Request;
 import com.applory.pictureserver.domain.user.User;
+import com.applory.pictureserver.shared.BaseTimeEntity;
 import com.applory.pictureserver.shared.Constant;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -20,7 +20,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "MATCHING")
-public class Matching {
+public class Matching extends BaseTimeEntity {
 
     public enum Status {
         REQUEST,
@@ -76,7 +76,6 @@ public class Matching {
     private String pictureYN;
 
     @Builder
-
     public Matching(User seller, User client, Request request, Constant.Specialty specialty, Integer price, LocalDateTime dueDate, String completeYN, LocalDateTime completeDt, Status status, String comment, String pictureYN) {
         this.seller = seller;
         this.client = client;

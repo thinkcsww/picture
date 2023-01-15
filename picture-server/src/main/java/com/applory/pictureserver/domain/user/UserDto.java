@@ -2,6 +2,7 @@ package com.applory.pictureserver.domain.user;
 
 import com.applory.pictureserver.domain.matching.Matching;
 import com.applory.pictureserver.domain.matching.MatchingDto;
+import com.applory.pictureserver.domain.review.ReviewDTO;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -73,6 +74,7 @@ public class UserDto {
         private Integer peoplePrice;
         private Integer backgroundPrice;
         private Integer officialPrice;
+        private ReviewDTO.ReviewVM review;
 
         private int rating;
 

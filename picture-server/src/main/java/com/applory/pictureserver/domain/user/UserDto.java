@@ -3,6 +3,7 @@ package com.applory.pictureserver.domain.user;
 import com.applory.pictureserver.domain.matching.Matching;
 import com.applory.pictureserver.domain.matching.MatchingDto;
 import com.applory.pictureserver.domain.review.ReviewDTO;
+import com.applory.pictureserver.shared.Constant;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -74,13 +75,14 @@ public class UserDto {
         private Integer peoplePrice;
         private Integer backgroundPrice;
         private Integer officialPrice;
-        private ReviewDTO.ReviewVM review;
+        private ReviewDTO.ReviewVM latestReview;
+        Map<Constant.Specialty, List<Matching>> matchings;
 
         private int rating;
 
         private int closingRate;
 
-        private int reviewCount;
+        private long reviewCount;
 
         public SellerVM(User user) {
             this.id = user.getId();

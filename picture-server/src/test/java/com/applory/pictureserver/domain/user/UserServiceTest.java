@@ -6,6 +6,8 @@ import com.applory.pictureserver.config.WithMockClientLogin;
 import com.applory.pictureserver.config.WithMockSellerLogin;
 import com.applory.pictureserver.domain.matching.Matching;
 import com.applory.pictureserver.domain.matching.MatchingRepository;
+import com.applory.pictureserver.domain.review.Review;
+import com.applory.pictureserver.domain.review.ReviewRepository;
 import com.applory.pictureserver.exception.BadRequestException;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,11 +34,21 @@ public class UserServiceTest {
     @Autowired
     private MatchingRepository matchingRepository;
 
+    @Autowired
+    private ReviewRepository reviewRepository;
+
     @BeforeEach
     public void setUp() {
         User seller = userRepository.save(TestUtil.createSeller());
         User client = userRepository.save(TestUtil.createClient());
         Matching matching = matchingRepository.save(TestUtil.createMatching(seller, client, Matching.Status.REQUEST));
+        Review review = new Review();
+        review.setContent("content");
+        review.setSeller(seller);
+        review.setClient(client);
+        review.setRate(3);
+
+        reviewRepository.save(review);
     }
 
     @DisplayName("Client 생성 성공")
@@ -119,6 +131,16 @@ public class UserServiceTest {
         error.isInstanceOf(BadRequestException.class);
         error.hasMessageContaining("is already in use");
 
+    }
+
+    @DisplayName("Seller 상세 조회 성공 - 최신 리뷰와 리뷰 카운트 함께 조회")
+    @Test
+    public void getSeller_withReviewCntAndLatestReview_success() {
+        User sellerInDB = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
+        UserDto.SellerVM sellerUser = userService.getSellerUser(sellerInDB.getId());
+
+        assertThat(sellerUser.getReviewCount()).isGreaterThan(0);
+        assertThat(sellerUser.getLatestReview()).isNotNull();
     }
 
 }

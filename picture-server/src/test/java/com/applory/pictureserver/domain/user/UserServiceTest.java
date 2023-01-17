@@ -53,7 +53,7 @@ public class UserServiceTest {
         userRepository.save(seller2);
 
         User client = userRepository.save(TestUtil.createClient());
-        matchingRepository.save(TestUtil.createMatching(seller1, client, Matching.Status.COMPLETE, Constant.Specialty.BACKGROUND,"Y"));
+        matchingRepository.save(TestUtil.createMatching(seller1, client, Matching.Status.COMPLETE, Constant.Specialty.BACKGROUND, "Y"));
         matchingRepository.save(TestUtil.createMatching(seller1, client, Matching.Status.COMPLETE, Constant.Specialty.PEOPLE, "Y"));
         matchingRepository.save(TestUtil.createMatching(seller1, client, Matching.Status.COMPLETE, Constant.Specialty.OFFICIAL, "Y"));
         matchingRepository.save(TestUtil.createMatching(seller1, client, Matching.Status.COMPLETE, Constant.Specialty.ETC, "Y"));
@@ -65,22 +65,22 @@ public class UserServiceTest {
         review.setRate(3);
 
         Review review2 = new Review();
-        review.setContent("review2");
-        review.setSeller(seller1);
-        review.setClient(client);
-        review.setRate(1);
+        review2.setContent("review2");
+        review2.setSeller(seller1);
+        review2.setClient(client);
+        review2.setRate(1);
 
         Review review3 = new Review();
-        review.setContent("review3");
-        review.setSeller(seller1);
-        review.setClient(client);
-        review.setRate(5);
+        review3.setContent("review3");
+        review3.setSeller(seller1);
+        review3.setClient(client);
+        review3.setRate(1);
 
         Review review4 = new Review();
-        review.setContent("review4");
-        review.setSeller(seller2);
-        review.setClient(client);
-        review.setRate(5);
+        review4.setContent("review4");
+        review4.setSeller(seller2);
+        review4.setClient(client);
+        review4.setRate(5);
 
         reviewRepository.save(review);
         reviewRepository.save(review2);

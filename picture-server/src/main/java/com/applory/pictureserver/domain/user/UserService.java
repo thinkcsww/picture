@@ -5,6 +5,7 @@ import com.applory.pictureserver.domain.matching.Matching;
 import com.applory.pictureserver.domain.matching.MatchingDto;
 import com.applory.pictureserver.domain.matching.MatchingRepository;
 import com.applory.pictureserver.domain.review.*;
+import com.applory.pictureserver.domain.user.querydto.SellerListVM;
 import com.applory.pictureserver.exception.BadRequestException;
 import com.applory.pictureserver.shared.Constant;
 import com.applory.pictureserver.shared.SecurityUtils;
@@ -68,7 +69,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Page<User> getSellerUsers(UserDto.SearchSeller search, Pageable pageable) {
+    public Page<SellerListVM> getSellerUsers(UserDto.SearchSeller search, Pageable pageable) {
         return userRepository.findSellerUserBySearch(search, pageable);
     }
 
@@ -103,22 +104,23 @@ public class UserService {
         }
     }
 
-    public UserDto.SellerVM getSellerUser(UUID id) {
+    public UserDto.SellerVM getSellerDetail(UUID id) {
         User seller = userRepository.findById(id).orElseThrow(() -> new IllegalStateException("Seller: " + id + " not exist"));
         List<Review> reviews = reviewRepository.findBySellerOrderByCreatedDt(seller);
 
-        // TODO - matching 타입 별로 count만 빼서 내려주기
-        Map<Constant.Specialty, List<Matching>> matchings = matchingRepository.findBySellerAndCompleteYN(seller, "Y")
+        List<Map<Constant.Specialty, Integer>> matchingCountBySpecialty = matchingRepository.findBySellerAndCompleteYN(seller, "Y")
                 .stream()
-                .collect(Collectors.groupingBy(Matching::getSpecialty));
-
+                .collect(Collectors.groupingBy(Matching::getSpecialty))
+                .entrySet().stream()
+                .map(entry -> Map.of(entry.getKey(), entry.getValue().size()))
+                .collect(Collectors.toList());
 
 
         UserDto.SellerVM sellerVM = new UserDto.SellerVM(seller);
         sellerVM.setLatestReview(!CollectionUtils.isEmpty(reviews) ? new ReviewDTO.ReviewVM(reviews.get(0)) : null);
         sellerVM.setReviewCount(reviews.size());
         sellerVM.setRating(reviews.stream().collect(Collectors.averagingInt(Review::getRate)).intValue());
-        sellerVM.setMatchings(matchings);
+        sellerVM.setMatchingCountBySpecialty(matchingCountBySpecialty);
 
         return sellerVM;
     }

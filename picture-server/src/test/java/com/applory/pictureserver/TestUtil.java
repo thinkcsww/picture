@@ -20,7 +20,7 @@ public class TestUtil {
         sellerUser.setPeoplePrice(2000);
         sellerUser.setDescription("셀러 설명입니다.");
         sellerUser.setSnsType(User.SnsType.KAKAO);
-        sellerUser.setSpecialty(Constant.Specialty.BACKGROUND.toString());
+        sellerUser.setSpecialty(Constant.Specialty.PEOPLE.toString());
         sellerUser.setSellerEnabledYn("Y");
         sellerUser.setWorkHourFromDt(1110);
         sellerUser.setWorkHourToDt(1810);
@@ -39,13 +39,14 @@ public class TestUtil {
         return clientUser;
     }
 
-    public static Matching createMatching(User seller, User client, Matching.Status status) {
+    public static Matching createMatching(User seller, User client, Matching.Status status, Constant.Specialty specialty, String completeYN) {
         Matching matching = new Matching();
-        matching.setStatus(Matching.Status.REQUEST);
+        matching.setStatus(status);
         matching.setSeller(seller);
         matching.setClient(client);
+        matching.setSpecialty(specialty);
         matching.setDueDate(LocalDateTime.now().plusHours(5));
-        matching.setCompleteYN("N");
+        matching.setCompleteYN(completeYN);
         matching.setComment("잘 부탁드립니다^^");
         matching.setPrice(2000);
 

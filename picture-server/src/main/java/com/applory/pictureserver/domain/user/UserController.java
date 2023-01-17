@@ -1,5 +1,6 @@
 package com.applory.pictureserver.domain.user;
 
+import com.applory.pictureserver.domain.user.querydto.SellerListVM;
 import com.applory.pictureserver.shared.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,8 +36,8 @@ public class UserController {
     }
 
     @GetMapping("/seller")
-    public Result<Page<UserDto.SellerVM>> getSellerUsers(@Valid UserDto.SearchSeller search, Pageable pageable) {
-        return Result.success(userService.getSellerUsers(search, pageable).map(UserDto.SellerVM::new));
+    public Result<Page<SellerListVM>> getSellerUsers(@Valid UserDto.SearchSeller search, Pageable pageable) {
+        return Result.success(userService.getSellerUsers(search, pageable));
     }
 
     @GetMapping("/client")
@@ -46,6 +47,6 @@ public class UserController {
 
     @GetMapping("/seller/{id}")
     public UserDto.SellerVM getSellerUser(@PathVariable UUID id) {
-        return userService.getSellerUser(id);
+        return userService.getSellerDetail(id);
     }
 }

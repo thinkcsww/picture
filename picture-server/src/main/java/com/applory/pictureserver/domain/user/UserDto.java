@@ -4,10 +4,7 @@ import com.applory.pictureserver.domain.matching.Matching;
 import com.applory.pictureserver.domain.matching.MatchingDto;
 import com.applory.pictureserver.domain.review.ReviewDTO;
 import com.applory.pictureserver.shared.Constant;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.*;
@@ -76,7 +73,7 @@ public class UserDto {
         private Integer backgroundPrice;
         private Integer officialPrice;
         private ReviewDTO.ReviewVM latestReview;
-        Map<Constant.Specialty, List<Matching>> matchings;
+        List<Map<Constant.Specialty, Integer>> matchingCountBySpecialty;
 
         private int rating;
 
@@ -133,6 +130,7 @@ public class UserDto {
         private String specialty;
 
         private String nickname;
+
     }
 
     @Getter
@@ -149,4 +147,6 @@ public class UserDto {
         public UUID userId;
         public String completeYn;
     }
+
+
 }

@@ -2,15 +2,11 @@ package com.applory.pictureserver.domain.user;
 
 import com.applory.pictureserver.domain.user.querydto.SellerListVM;
 import com.applory.pictureserver.shared.Constant;
-import com.applory.pictureserver.shared.QueryDslUtils;
 import com.querydsl.core.QueryResults;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Path;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +17,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
-import static com.applory.pictureserver.domain.request.QRequest.request;
 import static com.applory.pictureserver.domain.review.QReview.review;
 import static com.applory.pictureserver.domain.user.QUser.user;
 
@@ -53,7 +47,8 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
                                 user.nickname,
                                 user.description,
                                 review.rate.avg(),
-                                review.rate.count()
+                                review.rate.count(),
+                                getPrice(search.getSpecialty())
                         )
                 )
                 .from(user)
@@ -73,6 +68,16 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         return new PageImpl<>(result.getResults(), pageable, result.getTotal());
     }
 
+    private NumberPath<Integer> getPrice(Constant.Specialty specialty) {
+        if (specialty.equals(Constant.Specialty.PEOPLE)) {
+            return user.peoplePrice;
+        } else if (specialty.equals(Constant.Specialty.BACKGROUND)) {
+            return user.backgroundPrice;
+        } else {
+            return user.officialPrice;
+        }
+    }
+
     private BooleanExpression nicknameLike(String nickname) {
         if (!StringUtils.hasText(nickname)) {
             return null;
@@ -81,20 +86,21 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         return user.nickname.like("%" + nickname + "%");
     }
 
-    private BooleanExpression specialtyContains(String specialty) {
-        if (!StringUtils.hasText(specialty)) {
-            return user.specialty.contains("PEOPLE");
+    private BooleanExpression specialtyContains(Constant.Specialty specialty) {
+        if (Objects.isNull(specialty)) {
+            return user.specialty.contains(Constant.Specialty.PEOPLE.toString());
         }
 
-        return user.specialty.contains(specialty);
+        return user.specialty.contains(specialty.toString());
     }
 
     private final String PRICE = "price";
     private final String REVIEW = "review";
     private final String RATING = "rating";
 
-    private OrderSpecifier getOrderSpecifier(Pageable pageable, String specialty) {
-        OrderSpecifier orderSpecifier = null;
+    private OrderSpecifier getOrderSpecifier(Pageable pageable, Constant.Specialty specialty) {
+        OrderSpecifier orderSpecifier = user.createdDt.desc();
+
         if (!ObjectUtils.isEmpty(pageable.getSort())) {
             for (Sort.Order sortOrder : pageable.getSort()) {
                 switch (sortOrder.getProperty()) {

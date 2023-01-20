@@ -3,6 +3,7 @@ package com.applory.pictureserver;
 import com.applory.pictureserver.domain.matching.Matching;
 import com.applory.pictureserver.domain.oauth.AuthDto;
 import com.applory.pictureserver.domain.request.RequestDto;
+import com.applory.pictureserver.domain.review.Review;
 import com.applory.pictureserver.shared.Constant;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserDto;
@@ -37,6 +38,16 @@ public class TestUtil {
         clientUser.setSellerEnabledYn("N");
 
         return clientUser;
+    }
+
+    public static Review createReview(User seller, User client, int rate) {
+        Review review = new Review();
+        review.setContent("content");
+        review.setSeller(seller);
+        review.setClient(client);
+        review.setRate(rate);
+
+        return review;
     }
 
     public static Matching createMatching(User seller, User client, Matching.Status status, Constant.Specialty specialty, String completeYN) {

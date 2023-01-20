@@ -262,7 +262,7 @@ public class UserControllerTest {
 
         UserDto.SearchSeller search = new UserDto.SearchSeller();
         search.setCurrentTime("1730");
-        search.setSpecialty(Constant.Specialty.OFFICIAL.toString());
+        search.setSpecialty(Constant.Specialty.OFFICIAL);
 
         ResponseEntity<TestPage<UserDto.SellerVM>> userResponse = getSellerUsers(new ParameterizedTypeReference<TestPage<UserDto.SellerVM>>() {}, search, PageRequest.of(0, 5));
         assertThat(userResponse.getBody().getContent().get(0).getSpecialty()).contains(Constant.Specialty.OFFICIAL.toString());
@@ -284,7 +284,7 @@ public class UserControllerTest {
 
         UserDto.SearchSeller search = new UserDto.SearchSeller();
         search.setCurrentTime("1730");
-        search.setSpecialty(Constant.Specialty.OFFICIAL.toString());
+        search.setSpecialty(Constant.Specialty.OFFICIAL);
 
         ResponseEntity<TestPage<UserDto.SellerVM>> userResponse = getSellerUsers(new ParameterizedTypeReference<TestPage<UserDto.SellerVM>>() {}, search, PageRequest.of(0, 5));
         assertThat(userResponse.getBody().getContent().get(0).getSpecialty()).contains(Constant.Specialty.OFFICIAL.toString());
@@ -308,7 +308,7 @@ public class UserControllerTest {
 
         UserDto.SearchSeller search = new UserDto.SearchSeller();
         search.setCurrentTime("1730");
-        search.setSpecialty(Constant.Specialty.PEOPLE.toString());
+        search.setSpecialty(Constant.Specialty.PEOPLE);
 
         ResponseEntity<TestPage<UserDto.SellerVM>> userResponse = getSellerUsers(new ParameterizedTypeReference<TestPage<UserDto.SellerVM>>() {}, search, PageRequest.of(0, 5, Sort.by("peoplePrice").ascending()));
         assertThat(userResponse.getBody().getContent().get(0).getNickname()).isEqualTo(user1.getNickname());
@@ -334,7 +334,7 @@ public class UserControllerTest {
 
         UserDto.SearchSeller search = new UserDto.SearchSeller();
         search.setCurrentTime("1730");
-        search.setSpecialty(Constant.Specialty.PEOPLE.toString());
+        search.setSpecialty(Constant.Specialty.PEOPLE);
 
         ResponseEntity<TestPage<UserDto.SellerVM>> userResponse = getSellerUsers(new ParameterizedTypeReference<TestPage<UserDto.SellerVM>>() {}, search, PageRequest.of(0, 5, Sort.by("peoplePrice").descending()));
         assertThat(userResponse.getBody().getContent().get(0).getNickname()).isEqualTo(user3.getNickname());

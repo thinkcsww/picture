@@ -47,9 +47,10 @@ public class UserServiceTest {
     public void setUp() {
         User seller1 = userRepository.save(TestUtil.createSeller());
         User seller2 = TestUtil.createSeller();
-        seller2.setUsername("seller1");
-        seller2.setNickname("nick1");
+        seller2.setUsername("seller2");
+        seller2.setNickname("nick2");
         seller2.setSpecialty(Constant.Specialty.PEOPLE.toString());
+        seller2.setPeoplePrice(1000000);
         userRepository.save(seller2);
 
         User client = userRepository.save(TestUtil.createClient());
@@ -58,34 +59,11 @@ public class UserServiceTest {
         matchingRepository.save(TestUtil.createMatching(seller1, client, Matching.Status.COMPLETE, Constant.Specialty.OFFICIAL, "Y"));
         matchingRepository.save(TestUtil.createMatching(seller1, client, Matching.Status.COMPLETE, Constant.Specialty.ETC, "Y"));
 
-        Review review = new Review();
-        review.setContent("content");
-        review.setSeller(seller1);
-        review.setClient(client);
-        review.setRate(3);
+        reviewRepository.save(TestUtil.createReview(seller1, client, 3));
+        reviewRepository.save(TestUtil.createReview(seller1, client, 1));
+        reviewRepository.save(TestUtil.createReview(seller1, client, 1));
+        reviewRepository.save(TestUtil.createReview(seller2, client, 5));
 
-        Review review2 = new Review();
-        review2.setContent("review2");
-        review2.setSeller(seller1);
-        review2.setClient(client);
-        review2.setRate(1);
-
-        Review review3 = new Review();
-        review3.setContent("review3");
-        review3.setSeller(seller1);
-        review3.setClient(client);
-        review3.setRate(1);
-
-        Review review4 = new Review();
-        review4.setContent("review4");
-        review4.setSeller(seller2);
-        review4.setClient(client);
-        review4.setRate(5);
-
-        reviewRepository.save(review);
-        reviewRepository.save(review2);
-        reviewRepository.save(review3);
-        reviewRepository.save(review4);
     }
 
     @DisplayName("유저 생성")
@@ -191,14 +169,48 @@ public class UserServiceTest {
     @DisplayName("Seller 리스트")
     @Nested
     class SellerList {
-        @DisplayName("Seller 리스트 조회 - 기본값 조회")
+        @DisplayName("Seller 리스트 조회 - 기본 조회, 최신 회원가입순")
         @Test
         void getSeller_withDefaultOption_success() {
             UserDto.SearchSeller searchSeller = new UserDto.SearchSeller();
-            searchSeller.setSpecialty(Constant.Specialty.PEOPLE.toString());
-            Page<SellerListVM> sellerUsers = userService.getSellerUsers(searchSeller, PageRequest.of(0, 20, Sort.by("price")));
-            assertThat(sellerUsers.getContent().get(0).getRateAvg()).isGreaterThan(0);
+            Page<SellerListVM> sellerUsers = userService.getSellerUsers(searchSeller, PageRequest.of(0, 20));
 
+            assertThat(sellerUsers.getContent().get(0).getRateAvg()).isGreaterThan(0);
+            assertThat(sellerUsers.getContent().get(0).getReviewCnt()).isGreaterThan(0);
+            assertThat(sellerUsers.getContent().get(0).getId()).isNotNull();
+            assertThat(sellerUsers.getContent().get(0).getNickname()).isNotNull();
+            assertThat(sellerUsers.getContent().get(0).getDescription()).isNotNull();
+        }
+
+        @DisplayName("Seller 리스트 조회 - 리뷰 많은 순")
+        @Test
+        void getSeller_sortByReviewCnt_success() {
+            UserDto.SearchSeller searchSeller = new UserDto.SearchSeller();
+            Page<SellerListVM> sellerUsers = userService.getSellerUsers(searchSeller, PageRequest.of(0, 20, Sort.by("review")));
+
+            assertThat(sellerUsers.getContent().get(0).getNickname()).isEqualTo(TestConstants.TEST_SELLER_NICKNAME);
+            assertThat(sellerUsers.getContent().get(1).getNickname()).isEqualTo("nick2");
+        }
+
+        @DisplayName("Seller 리스트 조회 - 평점 높은 순")
+        @Test
+        void getSeller_sortByRating_success() {
+            UserDto.SearchSeller searchSeller = new UserDto.SearchSeller();
+            Page<SellerListVM> sellerUsers = userService.getSellerUsers(searchSeller, PageRequest.of(0, 20, Sort.by("rating")));
+
+            assertThat(sellerUsers.getContent().get(0).getNickname()).isEqualTo("nick2");
+            assertThat(sellerUsers.getContent().get(1).getNickname()).isEqualTo(TestConstants.TEST_SELLER_NICKNAME);
+        }
+
+        @DisplayName("Seller 리스트 조회 - 가격 낮은 순")
+        @Test
+        void getSeller_sortByPrice_success() {
+            UserDto.SearchSeller searchSeller = new UserDto.SearchSeller();
+            searchSeller.setSpecialty(Constant.Specialty.PEOPLE);
+            Page<SellerListVM> sellerUsers = userService.getSellerUsers(searchSeller, PageRequest.of(0, 20, Sort.by("price")));
+
+            assertThat(sellerUsers.getContent().get(0).getNickname()).isEqualTo(TestConstants.TEST_SELLER_NICKNAME);
+            assertThat(sellerUsers.getContent().get(1).getNickname()).isEqualTo("nick2");
         }
     }
 

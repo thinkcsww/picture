@@ -13,4 +13,5 @@ public class SellerListVM {
     private String description;
     private Double rateAvg;
     private Long reviewCnt;
+    private Integer price;
 }

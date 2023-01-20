@@ -127,7 +127,7 @@ public class UserDto {
         @Nullable
         private String currentTime;
 
-        private String specialty;
+        private Constant.Specialty specialty;
 
         private String nickname;
 

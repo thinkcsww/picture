@@ -6,11 +6,9 @@ import com.applory.pictureserver.config.WithMockClientLogin;
 import com.applory.pictureserver.config.WithMockSellerLogin;
 import com.applory.pictureserver.domain.matching.Matching;
 import com.applory.pictureserver.domain.matching.MatchingRepository;
-import com.applory.pictureserver.domain.review.Review;
 import com.applory.pictureserver.domain.review.ReviewRepository;
 import com.applory.pictureserver.domain.user.querydto.SellerListVM;
 import com.applory.pictureserver.exception.BadRequestException;
-import com.applory.pictureserver.shared.Constant;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.applory.pictureserver.shared.Constant.Specialty.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -45,19 +44,19 @@ public class UserServiceTest {
 
     @BeforeEach
     public void setUp() {
-        User seller1 = userRepository.save(TestUtil.createSeller());
-        User seller2 = TestUtil.createSeller();
+        User seller1 = userRepository.save(TestUtil.createSeller(TestConstants.TEST_SELLER_NICKNAME, PEOPLE));
+        User seller2 = TestUtil.createSeller("nick2", PEOPLE);
         seller2.setUsername("seller2");
-        seller2.setNickname("nick2");
-        seller2.setSpecialty(Constant.Specialty.PEOPLE.toString());
+        seller2.setSpecialty(PEOPLE.toString());
         seller2.setPeoplePrice(1000000);
         userRepository.save(seller2);
 
         User client = userRepository.save(TestUtil.createClient());
-        matchingRepository.save(TestUtil.createMatching(seller1, client, Matching.Status.COMPLETE, Constant.Specialty.BACKGROUND, "Y"));
-        matchingRepository.save(TestUtil.createMatching(seller1, client, Matching.Status.COMPLETE, Constant.Specialty.PEOPLE, "Y"));
-        matchingRepository.save(TestUtil.createMatching(seller1, client, Matching.Status.COMPLETE, Constant.Specialty.OFFICIAL, "Y"));
-        matchingRepository.save(TestUtil.createMatching(seller1, client, Matching.Status.COMPLETE, Constant.Specialty.ETC, "Y"));
+        matchingRepository.save(TestUtil.createMatching(seller1, client, Matching.Status.COMPLETE, BACKGROUND, "Y"));
+        matchingRepository.save(TestUtil.createMatching(seller1, client, Matching.Status.COMPLETE, PEOPLE, "Y"));
+        matchingRepository.save(TestUtil.createMatching(seller1, client, Matching.Status.COMPLETE, OFFICIAL, "Y"));
+        matchingRepository.save(TestUtil.createMatching(seller1, client, Matching.Status.COMPLETE, ETC, "Y"));
+        matchingRepository.save(TestUtil.createMatching(seller2, client, Matching.Status.COMPLETE, ETC, "Y"));
 
         reviewRepository.save(TestUtil.createReview(seller1, client, 3));
         reviewRepository.save(TestUtil.createReview(seller1, client, 1));
@@ -130,13 +129,11 @@ public class UserServiceTest {
         @WithMockSellerLogin
         @Test
         public void getUserMe_sellerInfoWithMatching() {
-
             User seller = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
             User client = userRepository.findByUsername(TestConstants.TEST_CLIENT_USERNAME);
-            matchingRepository.save(TestUtil.createMatching(seller, client, Matching.Status.REQUEST, Constant.Specialty.ETC, "Y"));
+            matchingRepository.save(TestUtil.createMatching(seller, client, Matching.Status.REQUEST, ETC, "Y"));
 
             UserDto.VM userMe = userService.getUserMe();
-
 
             assertThat(userMe.getUsername()).isEqualTo(TestConstants.TEST_SELLER_USERNAME);
             assertThat(userMe.getSpecialty()).isNotNull();
@@ -159,7 +156,7 @@ public class UserServiceTest {
         public void getUserMe_clientInfoWithMatching() {
             User seller = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
             User client = userRepository.findByUsername(TestConstants.TEST_CLIENT_USERNAME);
-            matchingRepository.save(TestUtil.createMatching(seller, client, Matching.Status.REQUEST, Constant.Specialty.ETC, "Y"));
+            matchingRepository.save(TestUtil.createMatching(seller, client, Matching.Status.REQUEST, ETC, "Y"));
 
             UserDto.VM userMe = userService.getUserMe();
             assertThat(userMe.getMatchings().get(Matching.Status.REQUEST)).isNotEmpty();
@@ -180,6 +177,7 @@ public class UserServiceTest {
             assertThat(sellerUsers.getContent().get(0).getId()).isNotNull();
             assertThat(sellerUsers.getContent().get(0).getNickname()).isNotNull();
             assertThat(sellerUsers.getContent().get(0).getDescription()).isNotNull();
+            assertThat(sellerUsers.getContent().get(1).getCompleteMatchingCnt()).isGreaterThan(0);
         }
 
         @DisplayName("Seller 리스트 조회 - 리뷰 많은 순")
@@ -206,11 +204,47 @@ public class UserServiceTest {
         @Test
         void getSeller_sortByPrice_success() {
             UserDto.SearchSeller searchSeller = new UserDto.SearchSeller();
-            searchSeller.setSpecialty(Constant.Specialty.PEOPLE);
+            searchSeller.setSpecialty(PEOPLE);
             Page<SellerListVM> sellerUsers = userService.getSellerUsers(searchSeller, PageRequest.of(0, 20, Sort.by("price")));
 
             assertThat(sellerUsers.getContent().get(0).getNickname()).isEqualTo(TestConstants.TEST_SELLER_NICKNAME);
             assertThat(sellerUsers.getContent().get(1).getNickname()).isEqualTo("nick2");
+        }
+
+        @DisplayName("Seller 리스트 조회 - 완료 작업 많은 순")
+        @Test
+        void getSeller_sortByCompleteMatchingCnt_success() {
+            UserDto.SearchSeller searchSeller = new UserDto.SearchSeller();
+            Page<SellerListVM> sellerUsers = userService.getSellerUsers(searchSeller, PageRequest.of(0, 20, Sort.by("matching")));
+
+            assertThat(sellerUsers.getContent().get(0).getNickname()).isEqualTo(TestConstants.TEST_SELLER_NICKNAME);
+            assertThat(sellerUsers.getContent().get(1).getNickname()).isEqualTo("nick2");
+        }
+
+        @DisplayName("Seller 리스트 조회 - 닉네임으로 검색")
+        @Test
+        void getSeller_searchByNickname_success() {
+            UserDto.SearchSeller searchSeller = new UserDto.SearchSeller();
+            searchSeller.setNickname("nick3");
+            Page<SellerListVM> sellerUsers = userService.getSellerUsers(searchSeller, PageRequest.of(0, 20));
+
+            for (SellerListVM sellerListVM: sellerUsers.getContent()) {
+                assertThat(sellerListVM.getNickname()).contains("nick3");
+            }
+        }
+
+        @DisplayName("Seller 리스트 조회 - Specialty로 검색")
+        @Test
+        void getSeller_searchByPeopleSpecialty_success() {
+            userRepository.save(TestUtil.createSeller("nick3", PEOPLE));
+            userRepository.save(TestUtil.createSeller("nick4", BACKGROUND));
+            userRepository.save(TestUtil.createSeller("nick5", BACKGROUND));
+            userRepository.save(TestUtil.createSeller("nick6", OFFICIAL));
+
+            UserDto.SearchSeller searchSeller = new UserDto.SearchSeller();
+            searchSeller.setSpecialty(OFFICIAL);
+            Page<SellerListVM> sellerUsers = userService.getSellerUsers(searchSeller, PageRequest.of(0, 20));
+            assertThat(sellerUsers.getContent().size()).isEqualTo(1);
         }
     }
 
@@ -224,6 +258,15 @@ public class UserServiceTest {
             UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId());
 
             assertThat(sellerUser.getLatestReview()).isNotNull();
+        }
+
+        @DisplayName("Seller 상세 조회 성공 - 비밀번호는 빼고 조회")
+        @Test
+        public void getSeller_withoutPassword_success() {
+            User sellerInDB = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
+            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId());
+
+            assertThat(sellerUser.toString()).doesNotContain("password");
         }
 
         @DisplayName("Seller 상세 조회 성공 - 리뷰 카운트 함께 조회")

@@ -19,6 +19,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -100,12 +101,12 @@ public class UserService {
         User userInDB = userRepository.findByNickname(nickname);
 
         if (userInDB != null) {
-            throw new BadRequestException(nickname + " is already in use");
+            throw new IllegalStateException(nickname + " is already in use");
         }
     }
 
     public UserDto.SellerVM getSellerDetail(UUID id) {
-        User seller = userRepository.findById(id).orElseThrow(() -> new IllegalStateException("Seller: " + id + " not exist"));
+        User seller = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Seller: " + id + " not exist"));
         List<Review> reviews = reviewRepository.findBySellerOrderByCreatedDt(seller);
 
         List<Map<Constant.Specialty, Integer>> matchingCountBySpecialty = matchingRepository.findBySellerAndCompleteYN(seller, "Y")

@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.applory.pictureserver.shared.Constant.Specialty.PEOPLE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Transactional
@@ -31,7 +32,7 @@ class ReviewServiceTest {
 
     @BeforeEach
     public void setUp() {
-        User seller = userRepository.save(TestUtil.createSeller());
+        User seller = userRepository.save(TestUtil.createSeller(TestConstants.TEST_SELLER_NICKNAME, PEOPLE));
         User client = userRepository.save(TestUtil.createClient());
     }
 

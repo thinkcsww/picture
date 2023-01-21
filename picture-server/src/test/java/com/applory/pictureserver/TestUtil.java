@@ -12,16 +12,17 @@ import java.time.LocalDateTime;
 
 public class TestUtil {
 
-    public static User createSeller() {
+    public static User createSeller(String nickname, Constant.Specialty specialty) {
         User sellerUser = new User();
-        sellerUser.setNickname(TestConstants.TEST_SELLER_NICKNAME);
+        sellerUser.setPassword("password");
+        sellerUser.setNickname(nickname);
         sellerUser.setUsername(TestConstants.TEST_SELLER_USERNAME);
         sellerUser.setOfficialPrice(2000);
         sellerUser.setBackgroundPrice(2000);
         sellerUser.setPeoplePrice(2000);
         sellerUser.setDescription("셀러 설명입니다.");
         sellerUser.setSnsType(User.SnsType.KAKAO);
-        sellerUser.setSpecialty(Constant.Specialty.PEOPLE.toString());
+        sellerUser.setSpecialty(specialty.toString());
         sellerUser.setSellerEnabledYn("Y");
         sellerUser.setWorkHourFromDt(1110);
         sellerUser.setWorkHourToDt(1810);

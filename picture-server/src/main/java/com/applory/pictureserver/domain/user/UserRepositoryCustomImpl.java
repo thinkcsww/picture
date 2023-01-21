@@ -19,6 +19,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.Objects;
 
+import static com.applory.pictureserver.domain.matching.QMatching.matching;
 import static com.applory.pictureserver.domain.review.QReview.review;
 import static com.applory.pictureserver.domain.user.QUser.user;
 
@@ -47,12 +48,14 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
                                 user.nickname,
                                 user.description,
                                 review.rate.avg(),
-                                review.rate.count(),
-                                getPrice(search.getSpecialty())
+                                review.id.countDistinct(),
+                                getPrice(search.getSpecialty()),
+                                matching.id.countDistinct()
                         )
                 )
                 .from(user)
                 .leftJoin(review).on(user.id.eq(review.seller().id))
+                .leftJoin(matching).on(user.id.eq(matching.seller().id).and(matching.completeYN.eq("Y")))
                 .where(
                         user.sellerEnabledYn.eq("Y"),
                         specialtyContains(search.getSpecialty()),
@@ -69,12 +72,16 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     }
 
     private NumberPath<Integer> getPrice(Constant.Specialty specialty) {
-        if (specialty.equals(Constant.Specialty.PEOPLE)) {
+        if (Objects.isNull(specialty)) {
             return user.peoplePrice;
+        }
+
+        if (specialty.equals(Constant.Specialty.OFFICIAL)) {
+            return user.officialPrice;
         } else if (specialty.equals(Constant.Specialty.BACKGROUND)) {
             return user.backgroundPrice;
         } else {
-            return user.officialPrice;
+            return user.peoplePrice;
         }
     }
 
@@ -97,6 +104,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     private final String PRICE = "price";
     private final String REVIEW = "review";
     private final String RATING = "rating";
+    private final String MATCHING = "matching";
 
     private OrderSpecifier getOrderSpecifier(Pageable pageable, Constant.Specialty specialty) {
         OrderSpecifier orderSpecifier = user.createdDt.desc();
@@ -115,10 +123,13 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
                         break;
 
                     case REVIEW:
-                        orderSpecifier = review.count().desc();
+                        orderSpecifier = review.countDistinct().desc();
                         break;
                     case RATING:
                         orderSpecifier = review.rate.avg().desc();
+                        break;
+                    case MATCHING:
+                        orderSpecifier = matching.countDistinct().desc();
                         break;
                     default:
                         break;

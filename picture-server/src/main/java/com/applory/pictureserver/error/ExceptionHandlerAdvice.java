@@ -13,13 +13,33 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 @Slf4j
 public class ExceptionHandlerAdvice {
-    @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    ApiError handleRequestBodyValidationException (MethodArgumentNotValidException exception, HttpServletRequest request) {
+    ApiError handleMethodArgumentNotValidException (MethodArgumentNotValidException exception, HttpServletRequest request) {
+        log.error(exception.getMessage());
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), "Validation error", request.getServletPath());
+
+        BindingResult bindingResult = exception.getBindingResult();
+
+        Map<String, String> validationErrors = new HashMap<>();
+
+        for (FieldError fieldError: bindingResult.getFieldErrors()) {
+            validationErrors.put(fieldError.getField(), fieldError.getDefaultMessage());
+        }
+
+        apiError.setValidationErrors(validationErrors);
+        return apiError;
+    }
+
+    @ExceptionHandler(BindException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ApiError handleRequestBodyValidationException (BindException exception, HttpServletRequest request) {
         log.error(exception.getMessage());
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), "Validation error", request.getServletPath());
 
@@ -38,6 +58,14 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler(IllegalStateException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     ApiError handleIllegalStateException (IllegalStateException exception, HttpServletRequest request) {
+        log.error(exception.getMessage());
+
+        return new ApiError(HttpStatus.BAD_REQUEST.value(), exception.getMessage(), request.getServletPath());
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    ApiError handleNoSuchElementException (NoSuchElementException exception, HttpServletRequest request) {
         log.error(exception.getMessage());
 
         return new ApiError(HttpStatus.BAD_REQUEST.value(), exception.getMessage(), request.getServletPath());

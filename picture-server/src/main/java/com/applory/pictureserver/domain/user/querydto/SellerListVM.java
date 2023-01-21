@@ -14,4 +14,5 @@ public class SellerListVM {
     private Double rateAvg;
     private Long reviewCnt;
     private Integer price;
+    private Long completeMatchingCnt;
 }

@@ -6,7 +6,6 @@ import com.applory.pictureserver.domain.matching.MatchingDto;
 import com.applory.pictureserver.domain.matching.MatchingRepository;
 import com.applory.pictureserver.domain.review.*;
 import com.applory.pictureserver.domain.user.querydto.SellerListVM;
-import com.applory.pictureserver.exception.BadRequestException;
 import com.applory.pictureserver.shared.Constant;
 import com.applory.pictureserver.shared.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +54,7 @@ public class UserService {
 
         if (StringUtils.hasLength(dto.getSellerEnabledYN()) && "Y".equals(dto.getSellerEnabledYN())) {
             if (dto.getWorkHourFromDt() > dto.getWorkHourToDt()) {
-                throw new BadRequestException("fromDt is bigger than toDt");
+                throw new IllegalStateException("fromDt is bigger than toDt");
             }
 
             user.setSellerEnabledYn(dto.getSellerEnabledYN());

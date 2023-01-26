@@ -2,6 +2,7 @@ package com.applory.pictureserver;
 
 import com.applory.pictureserver.domain.matching.Matching;
 import com.applory.pictureserver.domain.oauth.AuthDto;
+import com.applory.pictureserver.domain.request.Request;
 import com.applory.pictureserver.domain.request.RequestDto;
 import com.applory.pictureserver.domain.review.Review;
 import com.applory.pictureserver.shared.Constant;
@@ -110,10 +111,32 @@ public class TestUtil {
         dto.setDesiredPrice(2000);
         dto.setDescription("설명입니다");
         dto.setTitle("제목입니다");
-        dto.setDueDate(LocalDateTime.of(2022, 12, 25, 23, 59));
+        dto.setDueDate(LocalDateTime.now().plusHours(24));
         dto.setMatchYn("N");
         dto.setCompleteYn("N");
 
         return dto;
+    }
+
+    public static Request createRequest(User user, LocalDateTime dueDate, String title, String desc, Constant.Specialty specialty, int price) {
+        Request create = new Request();
+        create.setUser(user);
+        create.setTitle(title);
+        create.setSpecialty(specialty);
+        create.setDueDate(dueDate);
+        create.setDescription(desc);
+        create.setDesiredPrice(price);
+        create.setMatchYN("N");
+        return create;
+    }
+
+    public static RequestDto.Create createRequestDto(LocalDateTime dueDate, String title, String desc, Constant.Specialty specialty, int price) {
+        RequestDto.Create create = new RequestDto.Create();
+        create.setTitle(title);
+        create.setSpecialty(specialty);
+        create.setDueDate(dueDate);
+        create.setDescription(desc);
+        create.setDesiredPrice(price);
+        return create;
     }
 }

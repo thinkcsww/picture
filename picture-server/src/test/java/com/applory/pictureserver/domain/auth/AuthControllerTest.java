@@ -1,4 +1,4 @@
-package com.applory.pictureserver.controller;
+package com.applory.pictureserver.domain.auth;
 
 import com.applory.pictureserver.TestUtil;
 import com.applory.pictureserver.error.ApiError;

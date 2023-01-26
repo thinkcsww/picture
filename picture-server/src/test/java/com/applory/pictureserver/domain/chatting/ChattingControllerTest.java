@@ -1,8 +1,7 @@
-package com.applory.pictureserver.controller;
+package com.applory.pictureserver.domain.chatting;
 
 import com.applory.pictureserver.RestTemplateInterceptor;
 import com.applory.pictureserver.TestUtil;
-import com.applory.pictureserver.domain.chatting.*;
 import com.applory.pictureserver.domain.oauth.AuthDto;
 import com.applory.pictureserver.domain.oauth.MyOAuth2Token;
 import com.applory.pictureserver.domain.request.RequestRepository;
@@ -84,16 +83,16 @@ public class ChattingControllerTest {
         stompClient = new WebSocketStompClient(new SockJsClient(
                 asList(new WebSocketTransport(new StandardWebSocketClient()))));
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+    }
+
+    @AfterEach
+    public void cleanUp() {
         requestRepository.deleteAll();
         chattingMessageRepository.deleteAll();
         chattingRoomMemberRepository.deleteAll();
         chattingRoomRepository.deleteAll();
         userRepository.deleteAll();
 
-    }
-
-    @AfterEach
-    public void cleanUp() {
         if (stompSession != null && stompSession.isConnected()) {
             stompSession.disconnect();
         }

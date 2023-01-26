@@ -1,9 +1,9 @@
-package com.applory.pictureserver.controller;
+package com.applory.pictureserver.domain.review;
 
 import com.applory.pictureserver.domain.request.RequestRepository;
 import com.applory.pictureserver.domain.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,7 +28,7 @@ public class ReviewControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @BeforeEach
+    @AfterEach
     public void cleanUp() {
         requestRepository.deleteAll();
         userRepository.deleteAll();

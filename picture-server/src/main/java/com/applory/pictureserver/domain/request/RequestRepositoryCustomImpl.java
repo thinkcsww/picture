@@ -1,9 +1,7 @@
 package com.applory.pictureserver.domain.request;
 
 import com.applory.pictureserver.shared.Constant;
-import com.applory.pictureserver.shared.QueryDslUtils;
 import com.querydsl.core.QueryResults;
-import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
@@ -15,11 +13,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import static com.applory.pictureserver.domain.request.QRequest.request;
+import static com.applory.pictureserver.shared.Constant.Specialty.PEOPLE;
 
 public class RequestRepositoryCustomImpl implements RequestRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
@@ -34,14 +31,14 @@ public class RequestRepositoryCustomImpl implements RequestRepositoryCustom {
                 .selectFrom(request)
                 .where(
                         request.dueDate.after(LocalDateTime.now()),
-                        request.matchYN.eq("N"),
+                        request.matchYN.ne("Y"),
                         specialTyEq(search.getSpecialty()),
                         userIdEq(search.getUserId()),
                         exceptId(search.getExceptThisId()),
                         dueDateBetween(search.getFromForDueDt(), search.getToForDueDt())
 
                 )
-                .orderBy(getAllOrderSpecifiers(pageable).toArray(new OrderSpecifier[0]))
+                .orderBy(getAllOrderSpecifiers(pageable))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 
@@ -52,7 +49,7 @@ public class RequestRepositoryCustomImpl implements RequestRepositoryCustom {
 
     private BooleanExpression specialTyEq(Constant.Specialty value) {
         if (ObjectUtils.isEmpty(value)) {
-            return null;
+            return request.specialty.eq(PEOPLE);
         }
 
         return request.specialty.eq(value);
@@ -82,25 +79,20 @@ public class RequestRepositoryCustomImpl implements RequestRepositoryCustom {
         return request.dueDate.between(from, to);
     }
 
-    private final String DESIRED_PRICE = "desiredPrice";
+    private final String PRICE = "price";
     private final String DUE_DATE = "dueDate";
 
-    private List<OrderSpecifier> getAllOrderSpecifiers(Pageable pageable) {
-        List<OrderSpecifier> ORDERS = new ArrayList<>();
+    private OrderSpecifier getAllOrderSpecifiers(Pageable pageable) {
+        OrderSpecifier orderSpecifier = request.createdDt.desc();
 
         if (!ObjectUtils.isEmpty(pageable.getSort())) {
             for (Sort.Order order : pageable.getSort()) {
-                Order direction = order.getDirection().isAscending() ? Order.ASC : Order.DESC;
-
                 switch (order.getProperty()) {
-                    case DESIRED_PRICE:
-                        OrderSpecifier<?> desiredPrice = QueryDslUtils.getSortedColumn(direction, request, DESIRED_PRICE);
-                        ORDERS.add(desiredPrice);
+                    case PRICE:
+                        orderSpecifier = request.desiredPrice.desc();
                         break;
-
                     case DUE_DATE:
-                        OrderSpecifier<?> dueDate = QueryDslUtils.getSortedColumn(direction, request, DUE_DATE);
-                        ORDERS.add(dueDate);
+                        orderSpecifier = request.dueDate.asc();
                         break;
                     default:
                         break;
@@ -108,6 +100,6 @@ public class RequestRepositoryCustomImpl implements RequestRepositoryCustom {
             }
         }
 
-        return ORDERS;
+        return orderSpecifier;
     }
 }

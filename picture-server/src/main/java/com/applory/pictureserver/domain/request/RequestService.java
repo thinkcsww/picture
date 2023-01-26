@@ -20,14 +20,22 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class RequestService {
 
     private final RequestRepository requestRepository;
 
     private final UserRepository userRepository;
 
-    public Request createRequest(RequestDto.Create dto) {
+    public RequestService(RequestRepository requestRepository, UserRepository userRepository) {
+        this.requestRepository = requestRepository;
+        this.userRepository = userRepository;
+    }
+
+    public RequestDto.VM createRequest(RequestDto.Create dto) {
+        if (dto.getDueDate().isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("Invalid DueDate: DueDate is past");
+        }
+
         Request request = new Request();
         request.setSpecialty(dto.getSpecialty());
         request.setTitle(dto.getTitle());
@@ -42,11 +50,12 @@ public class RequestService {
         User user = userRepository.findByUsername(username);
         request.setUser(user);
 
-        return requestRepository.save(request);
+        Request save = requestRepository.save(request);
+        return new RequestDto.VM(save);
     }
 
-    public Page<Request> getRequests(RequestDto.Search search, Pageable pageable) {
-        return requestRepository.findRequestBySearchQ(search, pageable);
+    public Page<RequestDto.VM> getRequests(RequestDto.Search search, Pageable pageable) {
+        return requestRepository.findRequestBySearchQ(search, pageable).map(RequestDto.VM::new);
     }
 
     @Transactional

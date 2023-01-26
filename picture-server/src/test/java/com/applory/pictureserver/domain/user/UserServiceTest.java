@@ -8,7 +8,6 @@ import com.applory.pictureserver.domain.matching.Matching;
 import com.applory.pictureserver.domain.matching.MatchingRepository;
 import com.applory.pictureserver.domain.review.ReviewRepository;
 import com.applory.pictureserver.domain.user.querydto.SellerListVM;
-import com.applory.pictureserver.exception.BadRequestException;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -89,7 +88,7 @@ public class UserServiceTest {
             createDTO.setWorkHourFromDt(20000);
 
             AbstractThrowableAssert<?, ? extends Throwable> error = assertThatThrownBy(() -> userService.createUser(createDTO));
-            error.isInstanceOf(BadRequestException.class);
+            error.isInstanceOf(IllegalStateException.class);
             error.hasMessageContaining("fromDt is bigger than toDt");
 
         }
@@ -106,7 +105,7 @@ public class UserServiceTest {
 
             AbstractThrowableAssert<?, ? extends Throwable> error = assertThatThrownBy(() -> userService.checkNickname(TestConstants.TEST_SELLER_NICKNAME));
 
-            error.isInstanceOf(BadRequestException.class);
+            error.isInstanceOf(IllegalStateException.class);
             error.hasMessageContaining("is already in use");
 
         }

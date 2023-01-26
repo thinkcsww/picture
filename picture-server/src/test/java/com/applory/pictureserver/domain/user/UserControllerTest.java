@@ -1,4 +1,4 @@
-package com.applory.pictureserver.controller;
+package com.applory.pictureserver.domain.user;
 
 import com.applory.pictureserver.RestTemplateInterceptor;
 import com.applory.pictureserver.TestPage;
@@ -6,13 +6,9 @@ import com.applory.pictureserver.TestUtil;
 import com.applory.pictureserver.config.AppConfiguration;
 import com.applory.pictureserver.domain.oauth.AuthDto;
 import com.applory.pictureserver.domain.oauth.MyOAuth2Token;
-import com.applory.pictureserver.domain.user.User;
-import com.applory.pictureserver.domain.user.UserDto;
-import com.applory.pictureserver.domain.user.UserRepository;
-import com.applory.pictureserver.domain.user.UserService;
 import com.applory.pictureserver.error.ApiError;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +55,7 @@ public class UserControllerTest {
     @Autowired
     UserRepository userRepository;
 
-    @BeforeEach
+    @AfterEach
     public void cleanUp() {
         userRepository.deleteAll();
         testRestTemplate.getRestTemplate().getInterceptors().clear();

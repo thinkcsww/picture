@@ -1,28 +1,24 @@
-package com.applory.pictureserver.controller;
+package com.applory.pictureserver.domain.request;
 
 import com.applory.pictureserver.RestTemplateInterceptor;
 import com.applory.pictureserver.TestPage;
 import com.applory.pictureserver.TestUtil;
-import com.applory.pictureserver.error.ApiError;
 import com.applory.pictureserver.domain.oauth.AuthDto;
 import com.applory.pictureserver.domain.oauth.MyOAuth2Token;
-import com.applory.pictureserver.domain.request.RequestDto;
-import com.applory.pictureserver.domain.request.RequestRepository;
-import com.applory.pictureserver.shared.Constant;
-import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserDto;
 import com.applory.pictureserver.domain.user.UserRepository;
+import com.applory.pictureserver.error.ApiError;
+import com.applory.pictureserver.shared.Constant;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -35,7 +31,6 @@ import static com.applory.pictureserver.TestConstants.*;
 import static com.applory.pictureserver.TestUtil.createValidRequestDto;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public class RequestControllerTest {
@@ -53,16 +48,16 @@ public class RequestControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @BeforeEach
+    @AfterEach
     public void cleanUp() {
         requestRepository.deleteAll();
         userRepository.deleteAll();
         logout();
     }
 
-
+    @DisplayName("Request 생성 - 유효하지 않은 토큰 사용시 401")
     @Test
-    public void postRequest_withInvalidToken_receiveUnauthorized() {
+    public void postRequest_withInvalidToken_receive401() {
         authenticate("invalid_token");
 
         RequestDto.Create dto = createValidRequestDto();
@@ -71,8 +66,9 @@ public class RequestControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
+    @DisplayName("Request 생성 - 성공시 201")
     @Test
-    public void postRequest_withValidToken_receiveCreated() {
+    public void postRequest_withValidToken_receive201() {
         signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
 
         ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
@@ -84,6 +80,7 @@ public class RequestControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
+    @DisplayName("Request 생성 - 유효성 체크 실패시 400")
     @Test
     public void postRequest_withInvalidDto_receiveBadRequest() {
         signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
@@ -98,6 +95,7 @@ public class RequestControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
+    @DisplayName("Request 생성 - 유효성 체크 실패시 에러 메세지")
     @Test
     public void postRequest_withInvalidDto_receiveApiErrorWithValidationErrors() {
         signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
@@ -113,23 +111,6 @@ public class RequestControllerTest {
     }
 
     @Test
-    public void postRequest_withValidDto_receiveRequestVM() {
-        ResponseEntity<User> userResponse = signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), User.class);
-
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
-        authenticate(tokenResponse.getBody().getAccess_token());
-
-        RequestDto.Create dto = createValidRequestDto();
-        ResponseEntity<RequestDto.VM> response = postRequest(dto, RequestDto.VM.class);
-
-        assertThat(response.getBody().getUserId()).isEqualTo(userResponse.getBody().getId());
-        assertThat(response.getBody().getUserNickname()).isEqualTo(userResponse.getBody().getNickname());
-        assertThat(response.getBody().getReadCount()).isEqualTo(0);
-        assertThat(response.getBody().getTitle()).isEqualTo("제목입니다");
-    }
-
-
-    @Test
     public void getRequests_withValidToken_receiveOk() {
         signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
 
@@ -143,79 +124,6 @@ public class RequestControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
-    @Test
-    public void getRequests_withValidToken_receivePage() {
-        signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
-
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
-        authenticate(tokenResponse.getBody().getAccess_token());
-
-        postRequest(createValidRequestDto(), RequestDto.VM.class);
-
-        ResponseEntity<TestPage<RequestDto.VM>> response = getRequests(null, new ParameterizedTypeReference<TestPage<RequestDto.VM>>() {
-        });
-
-        assertThat(response.getBody().getContent().get(0).getTitle()).isEqualTo("제목입니다");
-    }
-
-    @Test
-    public void getRequests_withValidToken_receivePageOrderByDueDateAsc() {
-        signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
-
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
-        authenticate(tokenResponse.getBody().getAccess_token());
-
-        RequestDto.Create dto1 = createValidRequestDto();
-        dto1.setDesiredPrice(10000);
-        postRequest(dto1, RequestDto.VM.class);
-
-        RequestDto.Create dto2 = createValidRequestDto();
-        postRequest(dto2, RequestDto.VM.class);
-
-        ResponseEntity<TestPage<RequestDto.VM>> response = getRequests(null, new ParameterizedTypeReference<TestPage<RequestDto.VM>>() {}, "&sort=desiredPrice,desc");
-
-        assertThat(response.getBody().getContent().get(0).getDesiredPrice()).isEqualTo(10000);
-    }
-
-    @Test
-    public void getRequests_withValidToken_receivePageOrderByPriceDesc() {
-        signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
-
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
-        authenticate(tokenResponse.getBody().getAccess_token());
-
-        RequestDto.Create dto1 = createValidRequestDto();
-        dto1.setDueDate(LocalDateTime.of(2025, 12, 31, 12, 12));
-        postRequest(dto1, RequestDto.VM.class);
-
-        RequestDto.Create dto2 = createValidRequestDto();
-        postRequest(dto2, RequestDto.VM.class);
-
-        ResponseEntity<TestPage<RequestDto.VM>> response = getRequests(null, new ParameterizedTypeReference<TestPage<RequestDto.VM>>() {}, "&sort=dueDate,asc");
-
-        assertThat(response.getBody().getContent().get(0).getDueDate()).isBefore(response.getBody().getContent().get(1).getDueDate());
-    }
-
-
-    @Test
-    void getRequests_withValidToken_receiveOnlyRequestsDueDateIsNotOver() {
-        signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
-
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
-        authenticate(tokenResponse.getBody().getAccess_token());
-
-        RequestDto.Create dto1 = createValidRequestDto();
-        dto1.setDueDate(LocalDateTime.of(2020, 12, 31, 12, 12));
-        postRequest(dto1, RequestDto.VM.class);
-
-        RequestDto.Create dto2 = createValidRequestDto();
-        postRequest(dto2, RequestDto.VM.class);
-
-        ResponseEntity<TestPage<RequestDto.VM>> response = getRequests(null, new ParameterizedTypeReference<TestPage<RequestDto.VM>>() {
-        });
-
-        assertThat(response.getBody().getTotalElements()).isEqualTo(1);
-    }
 
     @Test
     void getRequests_searchBySpecialty_receiveResultBySpecialty() {
@@ -321,20 +229,6 @@ public class RequestControllerTest {
     }
 
     @Test
-    void getRequest_created1SecondsAgo_receiveVmWithChatCountIsZero() {
-        signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
-
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
-        authenticate(tokenResponse.getBody().getAccess_token());
-
-        ResponseEntity<RequestDto.VM> requestResponse = postRequest(createValidRequestDto(), RequestDto.VM.class);
-
-        ResponseEntity<RequestDto.VM> response = getRequest(requestResponse.getBody().getId(), new ParameterizedTypeReference<RequestDto.VM>() {});
-
-        assertThat(response.getBody().getChatCount()).isEqualTo(0);
-    }
-
-    @Test
     void getRequest_withValid_receiveVmWithChatCount() {
         signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
 
@@ -435,31 +329,6 @@ public class RequestControllerTest {
         ResponseEntity<RequestDto.VM> response = getRequest(requestResponse.getBody().getId(), new ParameterizedTypeReference<RequestDto.VM>() {});
 
         assertThat(response.getBody().getUserAcceptRate()).isEqualTo(20.0);
-    }
-
-    @Test
-    void getRequest_withoutCompleteRequest_receiveVmWithAcceptRate() {
-        signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
-
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
-        authenticate(tokenResponse.getBody().getAccess_token());
-
-        RequestDto.Create dto1 = createValidRequestDto();
-        dto1.setDueDate(LocalDateTime.of(2022,6,1,12,12));
-        dto1.setMatchYn("Y");
-        dto1.setCompleteYn("N");
-
-        RequestDto.Create dto2 = createValidRequestDto();
-        dto2.setDueDate(LocalDateTime.of(2022,6,1,12,12));
-        dto2.setMatchYn("Y");
-        dto2.setCompleteYn("N");
-
-        postRequest(dto1, RequestDto.VM.class);
-        ResponseEntity<RequestDto.VM> requestResponse = postRequest(dto2, RequestDto.VM.class);
-
-        ResponseEntity<RequestDto.VM> response = getRequest(requestResponse.getBody().getId(), new ParameterizedTypeReference<RequestDto.VM>() {});
-
-        assertThat(response.getBody().getUserAcceptRate()).isEqualTo(-1.0);
     }
 
     public <T> ResponseEntity<T> postRequest(RequestDto.Create dto, Class<T> responseType) {

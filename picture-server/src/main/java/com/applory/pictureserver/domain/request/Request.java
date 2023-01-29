@@ -50,6 +50,9 @@ public class Request extends BaseTimeEntity {
     @Column(name = "READ_COUNT")
     private Integer readCount;
 
+    @Column(name = "CHAT_COUNT", columnDefinition = "SMALLINT default 0")
+    private Integer chatCount;
+
     @Column(name = "MATCH_YN", length = 1, columnDefinition = "varchar(1) default 'N'")
     private String matchYN;
 

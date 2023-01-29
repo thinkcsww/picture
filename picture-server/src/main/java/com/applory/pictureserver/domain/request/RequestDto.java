@@ -65,6 +65,7 @@ public class RequestDto {
             this.description = request.getDescription();
             this.readCount = request.getReadCount();
             this.matchYn = request.getMatchYN();
+            this.chatCount = request.getChatCount();
         }
     }
 

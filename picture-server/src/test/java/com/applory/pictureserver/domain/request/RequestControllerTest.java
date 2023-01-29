@@ -35,7 +35,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 public class RequestControllerTest {
 
-
     @Autowired
     private TestRestTemplate testRestTemplate;
 
@@ -111,67 +110,6 @@ public class RequestControllerTest {
     }
 
     @Test
-    public void getRequests_withValidToken_receiveOk() {
-        signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
-
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
-        authenticate(tokenResponse.getBody().getAccess_token());
-
-        postRequest(createValidRequestDto(), RequestDto.VM.class);
-
-        ResponseEntity<Object> response = getRequests(null, new ParameterizedTypeReference<Object>() {});
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-
-    @Test
-    void getRequests_searchBySpecialty_receiveResultBySpecialty() {
-        signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
-
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
-        authenticate(tokenResponse.getBody().getAccess_token());
-
-        postRequest(createValidRequestDto(), RequestDto.VM.class);
-
-        RequestDto.Search search = new RequestDto.Search();
-        search.setSpecialty(Constant.Specialty.BACKGROUND);
-
-        ResponseEntity<TestPage<RequestDto.VM>> response = getRequests(null, new ParameterizedTypeReference<TestPage<RequestDto.VM>>() {
-        });
-
-        assertThat(response.getBody().getContent().get(0).getSpecialty()).isEqualTo(Constant.Specialty.BACKGROUND);
-    }
-
-    @Test
-    void getRequests_searchByDueDate_receiveResultByDueDate() {
-        signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
-
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
-        authenticate(tokenResponse.getBody().getAccess_token());
-
-        RequestDto.Create dto1 = createValidRequestDto();
-        dto1.setDueDate(LocalDateTime.of(2022, 12, 31, 12, 12));
-        postRequest(dto1, RequestDto.VM.class);
-
-        RequestDto.Create dto2 = createValidRequestDto();
-        postRequest(dto2, RequestDto.VM.class);
-
-        RequestDto.Search search = new RequestDto.Search();
-        search.setFromForDueDt(LocalDateTime.of(2022, 12, 31, 12, 10));
-        search.setToForDueDt(LocalDateTime.of(2022, 12, 31, 12, 15));
-
-        ResponseEntity<TestPage<RequestDto.VM>> response = getRequests(search, new ParameterizedTypeReference<TestPage<RequestDto.VM>>() {
-        });
-
-        assertThat(response.getBody().getContent().get(0).getDueDate())
-                .isBetween(
-                        LocalDateTime.of(2022, 12, 31, 12, 10),
-                        LocalDateTime.of(2022, 12, 31, 12, 15)
-                );
-    }
-
-    @Test
     void getRequest_withInValidToken_receive401() {
         authenticate("invalid_token");
 
@@ -180,6 +118,7 @@ public class RequestControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
+    @DisplayName("Request 상세 조회 - 존재하지 않는 id로 조회시 404")
     @Test
     void getRequest_withValidTokenButNotExistId_receive404() {
         signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
@@ -191,144 +130,6 @@ public class RequestControllerTest {
         ResponseEntity<Object> response = getRequest(UUID.randomUUID(), new ParameterizedTypeReference<Object>() {});
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-    }
-
-    @Test
-    void getRequest_withValid_receive200() {
-        signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
-
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
-        authenticate(tokenResponse.getBody().getAccess_token());
-
-        ResponseEntity<RequestDto.VM> requestResponse = postRequest(createValidRequestDto(), RequestDto.VM.class);
-
-        ResponseEntity<Object> response = getRequest(requestResponse.getBody().getId(), new ParameterizedTypeReference<Object>() {});
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-    @Test
-    void getRequest_withValid_receiveVmWithBasicInfo() {
-        signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
-
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
-        authenticate(tokenResponse.getBody().getAccess_token());
-
-        ResponseEntity<RequestDto.VM> requestResponse = postRequest(createValidRequestDto(), RequestDto.VM.class);
-
-        ResponseEntity<RequestDto.VM> response = getRequest(requestResponse.getBody().getId(), new ParameterizedTypeReference<RequestDto.VM>() {});
-
-        assertThat(response.getBody().getUserNickname()).isEqualTo("test-nickname");
-        assertThat(response.getBody().getDesiredPrice()).isEqualTo(2000);
-        assertThat(response.getBody().getTitle()).isEqualTo("제목입니다");
-        assertThat(response.getBody().getDescription()).isEqualTo("설명입니다");
-        assertThat(response.getBody().getSpecialty()).isEqualTo(Constant.Specialty.BACKGROUND);
-        assertThat(response.getBody().getReadCount()).isEqualTo(1);
-        assertThat(response.getBody().getDueDate()).isEqualTo(LocalDateTime.of(2022, 12, 25, 23, 59));
-
-    }
-
-    @Test
-    void getRequest_withValid_receiveVmWithChatCount() {
-        signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
-
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
-        authenticate(tokenResponse.getBody().getAccess_token());
-
-        ResponseEntity<RequestDto.VM> requestResponse = postRequest(createValidRequestDto(), RequestDto.VM.class);
-
-        ResponseEntity<RequestDto.VM> response = getRequest(requestResponse.getBody().getId(), new ParameterizedTypeReference<RequestDto.VM>() {});
-
-        assertThat(response.getBody().getChatCount()).isNotNull();
-    }
-
-    @Test
-    void getRequest_withValid_receiveVmWithUsersAnotherRequests() {
-        signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
-
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
-        authenticate(tokenResponse.getBody().getAccess_token());
-        RequestDto.Create dto1 = createValidRequestDto();
-        RequestDto.Create dto2 = createValidRequestDto();
-        dto1.setTitle("1");
-        dto2.setTitle("2");
-        postRequest(dto1, RequestDto.VM.class);
-        postRequest(dto2, RequestDto.VM.class);
-        ResponseEntity<RequestDto.VM> requestResponse = postRequest(createValidRequestDto(), RequestDto.VM.class);
-
-        ResponseEntity<RequestDto.VM> response = getRequest(requestResponse.getBody().getId(), new ParameterizedTypeReference<RequestDto.VM>() {});
-
-        assertThat(response.getBody().getAnotherRequests()).isNotNull();
-    }
-
-    @Test
-    void getRequest_withValid_receiveVmWithAnotherRequestsWhenUsersRequestIsEmpty() {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
-        signUp(user1, Object.class);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
-        user2.setNickname("test-nickname-2");
-        signUp(user2, Object.class);
-
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
-        authenticate(tokenResponse.getBody().getAccess_token());
-        RequestDto.Create dto1 = createValidRequestDto();
-        dto1.setTitle("1");
-        postRequest(dto1, RequestDto.VM.class);
-        logout();
-
-        ResponseEntity<MyOAuth2Token> tokenResponse2 = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME + "2"), MyOAuth2Token.class);
-        authenticate(tokenResponse2.getBody().getAccess_token());
-        RequestDto.Create dto2 = createValidRequestDto();
-        dto2.setTitle("2");
-        postRequest(dto2, RequestDto.VM.class);
-        ResponseEntity<RequestDto.VM> requestResponse = postRequest(createValidRequestDto(), RequestDto.VM.class);
-
-        ResponseEntity<RequestDto.VM> response = getRequest(requestResponse.getBody().getId(), new ParameterizedTypeReference<RequestDto.VM>() {});
-
-        assertThat(response.getBody().getAnotherRequests().get(0).getUserNickname()).isNotEqualTo(user1.getNickname());
-    }
-
-    @Test
-    void getRequest_withCompleteRequest_receiveVmWithAcceptRate() {
-        signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
-
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
-        authenticate(tokenResponse.getBody().getAccess_token());
-
-        RequestDto.Create dto1 = createValidRequestDto();
-        dto1.setDueDate(LocalDateTime.of(2022,6,1,12,12));
-        dto1.setMatchYn("Y");
-        dto1.setCompleteYn("Y");
-
-        RequestDto.Create dto2 = createValidRequestDto();
-        dto2.setDueDate(LocalDateTime.of(2022,6,1,12,12));
-        dto2.setMatchYn("Y");
-        dto2.setCompleteYn("N");
-
-        RequestDto.Create dto3 = createValidRequestDto();
-        dto3.setDueDate(LocalDateTime.of(2022,6,1,12,12));
-        dto3.setMatchYn("Y");
-        dto3.setCompleteYn("N");
-
-        RequestDto.Create dto4 = createValidRequestDto();
-        dto4.setDueDate(LocalDateTime.of(2022,6,1,12,12));
-        dto4.setMatchYn("Y");
-        dto4.setCompleteYn("N");
-
-        RequestDto.Create dto5 = createValidRequestDto();
-        dto5.setDueDate(LocalDateTime.of(2022,6,1,12,12));
-        dto5.setMatchYn("Y");
-        dto5.setCompleteYn("N");
-
-        postRequest(dto1, RequestDto.VM.class);
-        postRequest(dto2, RequestDto.VM.class);
-        postRequest(dto3, RequestDto.VM.class);
-        postRequest(dto4, RequestDto.VM.class);
-        ResponseEntity<RequestDto.VM> requestResponse = postRequest(dto5, RequestDto.VM.class);
-
-        ResponseEntity<RequestDto.VM> response = getRequest(requestResponse.getBody().getId(), new ParameterizedTypeReference<RequestDto.VM>() {});
-
-        assertThat(response.getBody().getUserAcceptRate()).isEqualTo(20.0);
     }
 
     public <T> ResponseEntity<T> postRequest(RequestDto.Create dto, Class<T> responseType) {

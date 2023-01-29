@@ -30,13 +30,11 @@ public class RequestRepositoryCustomImpl implements RequestRepositoryCustom {
         JPQLQuery<Request> query = jpaQueryFactory
                 .selectFrom(request)
                 .where(
-                        request.dueDate.after(LocalDateTime.now()),
                         request.matchYN.ne("Y"),
                         specialTyEq(search.getSpecialty()),
                         userIdEq(search.getUserId()),
                         exceptId(search.getExceptThisId()),
                         dueDateBetween(search.getFromForDueDt(), search.getToForDueDt())
-
                 )
                 .orderBy(getAllOrderSpecifiers(pageable))
                 .offset(pageable.getOffset())
@@ -49,7 +47,7 @@ public class RequestRepositoryCustomImpl implements RequestRepositoryCustom {
 
     private BooleanExpression specialTyEq(Constant.Specialty value) {
         if (ObjectUtils.isEmpty(value)) {
-            return request.specialty.eq(PEOPLE);
+            return null;
         }
 
         return request.specialty.eq(value);
@@ -73,7 +71,7 @@ public class RequestRepositoryCustomImpl implements RequestRepositoryCustom {
 
     private BooleanExpression dueDateBetween(LocalDateTime from, LocalDateTime to) {
         if (ObjectUtils.isEmpty(from) || ObjectUtils.isEmpty(to)) {
-            return null;
+            return request.dueDate.after(LocalDateTime.now());
         }
 
         return request.dueDate.between(from, to);

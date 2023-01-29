@@ -127,6 +127,7 @@ public class TestUtil {
         create.setDescription(desc);
         create.setDesiredPrice(price);
         create.setMatchYN("N");
+        create.setChatCount(0);
         return create;
     }
 

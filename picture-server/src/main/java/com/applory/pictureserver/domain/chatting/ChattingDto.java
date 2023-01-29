@@ -50,6 +50,8 @@ public class ChattingDto {
 
         private String fileName;
 
+        private UUID requestId;
+
     }
 
     @Getter

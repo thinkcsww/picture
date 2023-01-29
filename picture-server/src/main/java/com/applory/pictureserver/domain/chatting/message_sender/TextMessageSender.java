@@ -1,18 +1,19 @@
 package com.applory.pictureserver.domain.chatting.message_sender;
 
 import com.applory.pictureserver.domain.chatting.*;
+import com.applory.pictureserver.domain.request.Request;
+import com.applory.pictureserver.domain.request.RequestRepository;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserRepository;
 import com.applory.pictureserver.exception.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
+
+@RequiredArgsConstructor
 @Component
 public class TextMessageSender implements MessageSender {
 
@@ -26,13 +27,7 @@ public class TextMessageSender implements MessageSender {
 
     private final ChattingMessageRepository chattingMessageRepository;
 
-    public TextMessageSender(ChattingRoomRepository chattingRoomRepository, SimpMessagingTemplate simpMessagingTemplate, UserRepository userRepository, ChattingRoomMemberRepository chattingRoomMemberRepository, ChattingMessageRepository chattingMessageRepository) {
-        this.chattingRoomRepository = chattingRoomRepository;
-        this.simpMessagingTemplate = simpMessagingTemplate;
-        this.userRepository = userRepository;
-        this.chattingRoomMemberRepository = chattingRoomMemberRepository;
-        this.chattingMessageRepository = chattingMessageRepository;
-    }
+    private final RequestRepository requestRepository;
 
     @Override
     public void sendMessage(ChattingDto.SendMessageParams sendMessageParams) {
@@ -69,7 +64,7 @@ public class TextMessageSender implements MessageSender {
         simpMessagingTemplate.convertAndSend("/room/" + sendMessageParams.getRoomId(), stompMessageVM);
     }
 
-    ChattingRoom saveNewRoom(ChattingDto.SendMessageParams createMessage) {
+    private ChattingRoom saveNewRoom(ChattingDto.SendMessageParams createMessage) {
         ChattingRoom chattingRoom;
         chattingRoom = new ChattingRoom();
         chattingRoom.setId(createMessage.getRoomId());
@@ -80,12 +75,18 @@ public class TextMessageSender implements MessageSender {
             chattingRoom.setSellerId(createMessage.getSellerId());
         }
 
+        // Request에서 채팅 생성시 Request의 채팅카운트 ++
+        if (Objects.nonNull(createMessage.getRequestId())) {
+            Request request = requestRepository.findById(createMessage.getRequestId()).orElseThrow(() -> new NoSuchElementException("Request id: " + createMessage.getRequestId() + " not exist"));
+            request.setChatCount(request.getChatCount() + 1);
+        }
+
         ChattingRoom newChattingRoom = chattingRoomRepository.save(chattingRoom);
         newChattingRoom.setChattingRoomMembers(saveNewRoomMember(createMessage, newChattingRoom));
         return newChattingRoom;
     }
 
-    List<ChattingRoomMember> saveNewRoomMember(ChattingDto.SendMessageParams createMessage, ChattingRoom chattingRoomInDB) {
+    private List<ChattingRoomMember> saveNewRoomMember(ChattingDto.SendMessageParams createMessage, ChattingRoom chattingRoomInDB) {
         List<ChattingRoomMember> chattingRoomMembers = new ArrayList<>();
         for (UUID userId : createMessage.getUserIdList()) {
             Optional<User> userOptional = userRepository.findById(userId);
@@ -102,7 +103,7 @@ public class TextMessageSender implements MessageSender {
         return chattingRoomMemberRepository.saveAll(chattingRoomMembers);
     }
 
-    ChattingMessage saveMessage(ChattingDto.SendMessageParams sendMessage, ChattingRoom chattingRoomInDB) {
+    private ChattingMessage saveMessage(ChattingDto.SendMessageParams sendMessage, ChattingRoom chattingRoomInDB) {
         ChattingMessage chattingMessage = new ChattingMessage();
         chattingMessage.setChattingRoom(chattingRoomInDB);
         chattingMessage.setMessage(sendMessage.getMessage());

@@ -63,14 +63,18 @@ public class ChattingService {
         }
 
         if (chattingRoom != null) {
-            // 가장 최근 20개의 메세지만 조회
-            messages = chattingMessageRepository.findByChattingRoomIdOrderByCreatedDtDesc(chattingRoom.getId(), PageRequest.of(0, 20, Sort.Direction.DESC, "createdDt"))
-                    .map(ChattingDto.MessageVM::new);
-
             // 방 입장시 상대방 메세지 읽음 처리
             User currentUser = userRepository.findByUsername(SecurityUtils.getPrincipal());
-            chattingMessageRepository.findAllByChattingRoomAndReadByIsNullAndSenderNot(chattingRoom, currentUser)
+            chattingMessageRepository.findOpponentsMessage(chattingRoom, currentUser)
                     .forEach(m -> m.setReadBy(currentUser.getId().toString()));
+
+            // 가장 최근 20개의 메세지만 조회
+            ChattingMessageDto.Search search = new ChattingMessageDto.Search();
+            search.setRoomId(chattingRoom.getId());
+            search.setUserId(currentUser.getId());
+
+            messages = chattingMessageRepository.findMessageBySearchQ(search, PageRequest.of(0, 20))
+                    .map(ChattingDto.MessageVM::new);
 
 
             // 상대방 정보 조회
@@ -173,6 +177,12 @@ public class ChattingService {
     }
 
     public Page<ChattingDto.MessageVM> getMessages(UUID roomId, Pageable pageable) {
-        return chattingMessageRepository.findByChattingRoomIdOrderByCreatedDtDesc(roomId, pageable).map(ChattingDto.MessageVM::new);
+        User user = userRepository.findByUsername(SecurityUtils.getPrincipal());
+
+        ChattingMessageDto.Search search = new ChattingMessageDto.Search();
+        search.setRoomId(roomId);
+        search.setUserId(user.getId());
+
+        return chattingMessageRepository.findMessageBySearchQ(search, pageable).map(ChattingDto.MessageVM::new);
     }
 }

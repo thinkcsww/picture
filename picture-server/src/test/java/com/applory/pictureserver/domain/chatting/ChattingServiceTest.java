@@ -351,7 +351,95 @@ class ChattingServiceTest {
     @DisplayName("채팅방 입장")
     @Nested
     class EnterRoom {
+
+        @WithMockClientLogin
+        @DisplayName("채팅방 입장 - 기본")
+        @Test
+        void enterRoom_getBasicInfo() {
+            User sender = TestUtil.createSeller(TEST_SELLER_USERNAME, Constant.Specialty.BACKGROUND);
+            User receiver = TestUtil.createClient();
+            userRepository.save(sender);
+            userRepository.save(receiver);
+
+            ChattingDto.SendMessageParams sendMessageParams = new ChattingDto.SendMessageParams();
+            sendMessageParams.setMessage("HI");
+            sendMessageParams.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
+            sendMessageParams.setSenderId(sender.getId());
+            sendMessageParams.setRoomId(UUID.randomUUID());
+
+            chattingService.send(sendMessageParams);
+            sendMessageParams.setMessage("SECOND");
+            chattingService.send(sendMessageParams);
+
+
+            ChattingDto.EnterRoomParams enterRoomParams = new ChattingDto.EnterRoomParams();
+            enterRoomParams.setRoomId(sendMessageParams.getRoomId());
+            enterRoomParams.setClientId(receiver.getId());
+            enterRoomParams.setClientId(receiver.getId());
+            ChattingDto.ChattingRoomVM chattingRoomVM = chattingService.enterRoom(enterRoomParams);
+
+            assertThat(chattingRoomVM.getMessages()).isNotEmpty();
+            assertThat(chattingRoomVM.getOpponent().getId()).isEqualTo(sender.getId());
+
+
+        }
+
+        @WithMockClientLogin
+        @DisplayName("채팅방 입장 - 메세지 읽음 처리")
+        @Test
+        void enterRoom_updatedMessageRead() {
+            User sender = TestUtil.createSeller(TEST_SELLER_USERNAME, Constant.Specialty.BACKGROUND);
+            User receiver = TestUtil.createClient();
+            userRepository.save(sender);
+            userRepository.save(receiver);
+
+            ChattingDto.SendMessageParams sendMessageParams = new ChattingDto.SendMessageParams();
+            sendMessageParams.setMessage("HI");
+            sendMessageParams.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
+            sendMessageParams.setSenderId(sender.getId());
+            sendMessageParams.setRoomId(UUID.randomUUID());
+
+            chattingService.send(sendMessageParams);
+            chattingService.send(sendMessageParams);
+
+
+            ChattingDto.EnterRoomParams enterRoomParams = new ChattingDto.EnterRoomParams();
+            enterRoomParams.setRoomId(sendMessageParams.getRoomId());
+            enterRoomParams.setClientId(receiver.getId());
+            enterRoomParams.setClientId(receiver.getId());
+            ChattingDto.ChattingRoomVM chattingRoomVM = chattingService.enterRoom(enterRoomParams);
+
+            assertThat(chattingRoomVM.getMessages().getContent().get(0).getReadBy()).isNotEmpty();
+
+        }
+
+        @WithMockClientLogin
+        @DisplayName("채팅방 입장 - 채팅방을 나간 후 이전 메세지 읽을 수 없음")
+        @Test
+        void enterRoom_cannotReadMessagesAfterLeavingRoom() {
+            User sender = TestUtil.createSeller(TEST_SELLER_USERNAME, Constant.Specialty.BACKGROUND);
+            User receiver = TestUtil.createClient();
+            userRepository.save(sender);
+            userRepository.save(receiver);
+
+            ChattingDto.SendMessageParams sendMessageParams = new ChattingDto.SendMessageParams();
+            sendMessageParams.setMessage("HI");
+            sendMessageParams.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
+            sendMessageParams.setSenderId(sender.getId());
+            sendMessageParams.setRoomId(UUID.randomUUID());
+
+            chattingService.send(sendMessageParams);
+
+            chattingService.leaveRoom(sendMessageParams.getRoomId());
+
+            ChattingDto.EnterRoomParams enterRoomParams = new ChattingDto.EnterRoomParams();
+            enterRoomParams.setRoomId(sendMessageParams.getRoomId());
+            enterRoomParams.setClientId(receiver.getId());
+            enterRoomParams.setClientId(receiver.getId());
+            ChattingDto.ChattingRoomVM chattingRoomVM = chattingService.enterRoom(enterRoomParams);
+
+            assertThat(chattingRoomVM.getMessages().getTotalElements()).isEqualTo(0);
+
+        }
     }
-
-
 }

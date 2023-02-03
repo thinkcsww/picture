@@ -21,11 +21,11 @@ type SellerScreenProps = {
 
 const filterList = [
   new SelectValue('기본순', Seller.Filter.DEFAULT),
-  new SelectValue('채택률 높은순', Seller.Filter.CLOSED),
+  new SelectValue('작업 많은순', Seller.Filter.MATCHING),
   new SelectValue('별점순', Seller.Filter.RATING),
   new SelectValue('리뷰 많은순', Seller.Filter.REVIEW),
-  new SelectValue('가격 낮은순', Seller.Filter.PRICE_CHEAP),
-  new SelectValue('가격 높은순', Seller.Filter.PRICE_EXPENSIVE),
+  new SelectValue('가격 낮은순', Seller.Filter.PRICE),
+  // new SelectValue('가격 높은순', Seller.Filter.PRICE_EXPENSIVE),
 ]
 
 const SellerScreen: FC<SellerScreenProps> = ({ navigation }) => {
@@ -44,8 +44,8 @@ const SellerScreen: FC<SellerScreenProps> = ({ navigation }) => {
   | Hooks
   |-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
 
-  const getSellersQuery = useInfiniteQuery([SellerService.QueryKey.getSellers, selectedSpecialty, selectedFilter], ({ pageParam = 0 }) => {
-    return SellerService.getSellers(selectedSpecialty.value, selectedFilter.value, pageParam);
+  const getSellersQuery = useInfiniteQuery([SellerService.QueryKey.getSellers, selectedSpecialty, selectedFilter, searchText], ({ pageParam = 0 }) => {
+    return SellerService.getSellers(selectedSpecialty.value, selectedFilter.value, searchText, pageParam);
   }, {
     getNextPageParam: (lastPageData: Result<PageResult>) => {
       return lastPageData.data.last ? undefined : lastPageData.data.number + 1;

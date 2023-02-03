@@ -36,56 +36,56 @@ const SellerListItem: FC<SellerListItemProps> = ({ item }) => {
             flexDirection: "row",
           }}>
             <Icon name={"ios-star"} size={14} color={Colors.PRIMARY} />
-            <Text style={styles.infoDesc}> 4.8</Text>
+            <Text style={styles.infoDesc}>{item.rateAvg ? item.rateAvg : '0.0'}</Text>
           </View>
 
           <View style={{
             flexDirection: "row",
             alignItems: 'center'
           }}>
-            <Text style={styles.infoTitle}>채택률</Text>
-            <Text style={styles.infoDesc}> 95%</Text>
+            <Text style={styles.infoTitle}>작업건수</Text>
+            <Text style={styles.infoDesc}> {item.completeMatchingCnt}건</Text>
           </View>
 
           <View style={{
             flexDirection: "row",
           }}>
             <Text style={styles.infoTitle}>리뷰</Text>
-            <Text style={styles.infoDesc}>(13)</Text>
+            <Text style={styles.infoDesc}>({item.reviewCnt})</Text>
           </View>
         </View>
 
         <View style={styles.infoContainer}>
-          <Text style={styles.infoDesc}>2000원~ (평균 2800원)</Text>
+          <Text style={styles.infoDesc}>{item.price?.toLocaleString()}원</Text>
         </View>
 
-        <View style={{
-          flexDirection: 'row',
-          marginTop: 8
-        }}>
-          <View style={{
-            backgroundColor: '#C4C4C4',
-            marginRight: 2,
-            borderRadius: 10,
-            padding: 4,
-            flexWrap: 'wrap'
-          }}>
-            <Text style={{
-              fontSize: 10
-            }}>실시간 참여가능</Text>
-          </View>
-          <View style={{
-            backgroundColor: '#C4C4C4',
-            marginRight: 2,
-            borderRadius: 10,
-            padding: 4,
-            flexWrap: 'wrap'
-          }}>
-            <Text style={{
-              fontSize: 10
-            }}>예약 가능</Text>
-          </View>
-        </View>
+        {/*<View style={{*/}
+        {/*  flexDirection: 'row',*/}
+        {/*  marginTop: 8*/}
+        {/*}}>*/}
+        {/*  <View style={{*/}
+        {/*    backgroundColor: '#C4C4C4',*/}
+        {/*    marginRight: 2,*/}
+        {/*    borderRadius: 10,*/}
+        {/*    padding: 4,*/}
+        {/*    flexWrap: 'wrap'*/}
+        {/*  }}>*/}
+        {/*    <Text style={{*/}
+        {/*      fontSize: 10*/}
+        {/*    }}>실시간 참여가능</Text>*/}
+        {/*  </View>*/}
+        {/*  <View style={{*/}
+        {/*    backgroundColor: '#C4C4C4',*/}
+        {/*    marginRight: 2,*/}
+        {/*    borderRadius: 10,*/}
+        {/*    padding: 4,*/}
+        {/*    flexWrap: 'wrap'*/}
+        {/*  }}>*/}
+        {/*    <Text style={{*/}
+        {/*      fontSize: 10*/}
+        {/*    }}>예약 가능</Text>*/}
+        {/*  </View>*/}
+        {/*</View>*/}
       </View>
 
     </TouchableOpacity>

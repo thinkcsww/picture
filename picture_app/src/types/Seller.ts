@@ -13,20 +13,23 @@ export namespace Seller {
     sellerEnabledYn: string,
     createdDt: string,
     updatedDt: string,
-    reviewCount: number,
-    rating: number,
+    reviewCnt: number,
+    rateAvg: number,
+    price: number, // 리스트 표시용
     officialPrice: number,
     peoplePrice: number,
-    backgroundPrice: number
+    backgroundPrice: number,
+    completeMatchingCnt: number
+    matchingCountBySpecialty: any[],
   }
 
   export enum Filter {
     DEFAULT = '',
-    CLOSED = 'CLOSED',
-    RATING = 'RATING',
-    REVIEW = 'REVIEW',
-    PRICE_CHEAP = 'startPrice,asc',
-    PRICE_EXPENSIVE = 'startPrice,desc'
+    MATCHING = 'matching',
+    RATING = 'rating',
+    REVIEW = 'review',
+    PRICE = 'price',
+    // PRICE_EXPENSIVE = 'startPrice,desc'
   }
 
   export class CreateDto {

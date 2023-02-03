@@ -21,11 +21,11 @@ const SellerDetailProfile: FC<SellerDetailProfileProps> = ({ seller }) => {
             <Icon name={"ios-star"} size={18} color={Colors.PRIMARY} style={styles.star}/>
             <Icon name={"ios-star"} size={18} color={Colors.PRIMARY} style={styles.star}/>
             <Icon name={"ios-star"} size={18} color={Colors.PRIMARY} style={styles.star}/>
-            <Text style={styles.rate}>4.4</Text>
+            <Text style={styles.rate}>{ seller.rateAvg ? seller.rateAvg : '0.0'}</Text>
           </View>
 
           <View style={styles.numberOfWorkContainer}>
-            <Text style={styles.numberOfWorkText}>리뷰: { seller.reviewCount }  I  총 작업 수: 88건</Text>
+            <Text style={styles.numberOfWorkText}>리뷰: { seller.reviewCnt }  I  총 작업 수: { seller.completeMatchingCnt }건</Text>
           </View>
 
           <View style={styles.buttonContainer}>

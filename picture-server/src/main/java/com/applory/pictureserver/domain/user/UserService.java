@@ -108,17 +108,13 @@ public class UserService {
         User seller = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Seller: " + id + " not exist"));
         List<Review> reviews = reviewRepository.findBySellerOrderByCreatedDt(seller);
 
-        List<Map<Constant.Specialty, Integer>> matchingCountBySpecialty = matchingRepository.findBySellerAndCompleteYN(seller, "Y")
+        Map<Constant.Specialty, Long> matchingCountBySpecialty = matchingRepository.findBySellerAndCompleteYN(seller, "Y")
                 .stream()
-                .collect(Collectors.groupingBy(Matching::getSpecialty))
-                .entrySet().stream()
-                .map(entry -> Map.of(entry.getKey(), entry.getValue().size()))
-                .collect(Collectors.toList());
-
+                .collect(Collectors.groupingBy(Matching::getSpecialty, Collectors.counting()));
 
         UserDto.SellerVM sellerVM = new UserDto.SellerVM(seller);
         sellerVM.setLatestReview(!CollectionUtils.isEmpty(reviews) ? new ReviewDTO.ReviewVM(reviews.get(0)) : null);
-        sellerVM.setReviewCount(reviews.size());
+        sellerVM.setReviewCnt(reviews.size());
         sellerVM.setRating(reviews.stream().collect(Collectors.averagingInt(Review::getRate)).intValue());
         sellerVM.setMatchingCountBySpecialty(matchingCountBySpecialty);
 

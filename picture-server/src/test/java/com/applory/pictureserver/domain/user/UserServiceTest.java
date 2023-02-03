@@ -274,7 +274,7 @@ public class UserServiceTest {
             User sellerInDB = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
             UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId());
 
-            assertThat(sellerUser.getReviewCount()).isGreaterThan(0);
+            assertThat(sellerUser.getReviewCnt()).isGreaterThan(0);
         }
 
         @DisplayName("Seller 상세 조회 성공 - 평점 함께 조회")
@@ -286,6 +286,7 @@ public class UserServiceTest {
             assertThat(sellerUser.getRating()).isGreaterThan(0);
         }
 
+        // TODO - 매칭 타입별로 데이터 넣고 개수 확인해보기
         @DisplayName("Seller 상세 조회 성공 - 작업 타입별 완료수 조회")
         @Test
         public void getSeller_withMatchingCountBySpecialty_success() {

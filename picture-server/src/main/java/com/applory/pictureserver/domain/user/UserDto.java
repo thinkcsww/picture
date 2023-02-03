@@ -73,13 +73,13 @@ public class UserDto {
         private Integer backgroundPrice;
         private Integer officialPrice;
         private ReviewDTO.ReviewVM latestReview;
-        List<Map<Constant.Specialty, Integer>> matchingCountBySpecialty;
+        Map<Constant.Specialty, Long> matchingCountBySpecialty;
 
         private int rating;
 
         private int closingRate;
 
-        private long reviewCount;
+        private long reviewCnt;
 
         public SellerVM(User user) {
             this.id = user.getId();

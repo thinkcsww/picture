@@ -27,7 +27,7 @@ public class Result<T> {
     }
 
     static class ResultCode {
-        public static final String OK = "0001";
-        public static final String FAIL = "0002";
+        public static final String OK = "0000";
+        public static final String FAIL = "0001";
     }
 }

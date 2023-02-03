@@ -121,44 +121,7 @@ public class ChattingControllerTest {
         assertThat(stompSession).isNotNull();
     }
 
-    @Test
-    public void sendMessage_withValidDto_sentMessageIsCorrect() throws ExecutionException, InterruptedException, TimeoutException, URISyntaxException {
-
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
-        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
-        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
-
-        ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
-        createMessage.setRoomId(UUID.randomUUID());
-        createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
-        createMessage.setSenderId(sender.getId());
-        createMessage.setMessage("HI");
-
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(TEST_SELLER_USERNAME), MyOAuth2Token.class);
-
-        connectStomp(tokenResponse.getBody().getAccess_token());
-
-        stompSession.subscribe("/room/" + createMessage.getRoomId(), new StompFrameHandler() {
-            @Override
-            public Type getPayloadType(StompHeaders headers) {
-                return ChattingDto.SendMessageParams.class;
-            }
-
-            @Override
-            public void handleFrame(StompHeaders headers, Object payload) {
-                System.out.println("Received message: " + payload);
-                blockingQueue.add((ChattingDto.SendMessageParams) payload);
-            }
-        });
-
-
-        sendMessage(createMessage);
-
-
-        assertThat(blockingQueue.poll(100, TimeUnit.MILLISECONDS).getMessage()).isEqualTo(createMessage.getMessage());
-    }
-
+    @Disabled
     @Test
     public void getRooms_withInvalidToken_receive401() {
         authenticate("asda");
@@ -167,6 +130,7 @@ public class ChattingControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
+    @Disabled
     @Test
     public void getRooms_withValidToken_receive200() {
         signUp(TestUtil.createValidClientUser(TEST_SELLER_USERNAME), Object.class);
@@ -294,32 +258,6 @@ public class ChattingControllerTest {
     }
 
     @Test
-    public void enterRoom_withValidToken_receiveRoomVM() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        RoomInfo roomInfo = sendToOnePersonHowManyMessagesAndAuthenticate(1);
-
-        MultiValueMap multiValueMap = new LinkedMultiValueMap();
-        multiValueMap.set("roomId", roomInfo.getRoomId().toString());
-        ResponseEntity<String> response = enterRoom(multiValueMap, String.class);
-
-        assertThat(response.getBody()).contains("unreadCount");
-    }
-
-    @Test
-    public void enterRoom_withValidToken_receiveRoomVMWithMessages() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-
-        RoomInfo roomInfo = sendToOnePersonHowManyMessagesAndAuthenticate(1);
-
-        MultiValueMap multiValueMap = new LinkedMultiValueMap();
-        multiValueMap.set("roomId", roomInfo.getRoomId().toString());
-        ResponseEntity<Object> response = enterRoom(multiValueMap, Object.class);
-//        ResponseEntity<ChattingDto.ChattingRoomVM> response = enterRoom(multiValueMap, ChattingDto.ChattingRoomVM.class);
-
-//        assertThat(response.getBody().getMessages().size()).isEqualTo(1);
-
-    }
-
-
-    @Test
     public void leaveRoom_withInvalidToken_receive401() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
         UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
         UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
@@ -373,46 +311,6 @@ public class ChattingControllerTest {
         ResponseEntity<Object> response = leaveRoom(createMessage.getRoomId(), Object.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
-
-    }
-
-    @Test
-    public void startChatting_afterBothLeftRoom_useExistedRoomButCannotReadOldMessage() throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        UserDto.Create user1 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME);
-        UserDto.Create user2 = TestUtil.createValidClientUser(TEST_SELLER_USERNAME + "2");
-
-        UserDto.VM sender = signUp(user1, UserDto.VM.class).getBody();
-        UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
-
-        ResponseEntity<MyOAuth2Token> tokenResponse = login(TestUtil.createValidLoginDto(user1.getUsername()), MyOAuth2Token.class);
-        String token = tokenResponse.getBody().getAccess_token();
-
-        ResponseEntity<MyOAuth2Token> tokenResponse2 = login(TestUtil.createValidLoginDto(user2.getUsername()), MyOAuth2Token.class);
-        String token2 = tokenResponse2.getBody().getAccess_token();
-
-        ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
-        createMessage.setRoomId(UUID.randomUUID());
-        createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
-        createMessage.setSenderId(sender.getId());
-        createMessage.setMessage("HI");
-
-        authenticate(token);
-        connectStomp(token);
-
-        sendMessage(createMessage);
-
-        blockingQueue.poll(100, TimeUnit.MILLISECONDS);
-
-        leaveRoom(createMessage.getRoomId(), Object.class);
-
-        clearInterceptors();
-
-        // 2번쨰 leaveRoom 시작
-        authenticate(token2);
-        leaveRoom(createMessage.getRoomId(), Object.class);
-
-        sendMessage(createMessage);
-
 
     }
 

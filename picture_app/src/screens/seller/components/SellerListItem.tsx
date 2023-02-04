@@ -36,7 +36,7 @@ const SellerListItem: FC<SellerListItemProps> = ({ item }) => {
             flexDirection: "row",
           }}>
             <Icon name={"ios-star"} size={14} color={Colors.PRIMARY} />
-            <Text style={styles.infoDesc}>{item.rateAvg ? item.rateAvg : '0.0'}</Text>
+            <Text style={styles.infoDesc}>{item.rateAvg ? item.rateAvg.toFixed(1) : '0.0'}</Text>
           </View>
 
           <View style={{

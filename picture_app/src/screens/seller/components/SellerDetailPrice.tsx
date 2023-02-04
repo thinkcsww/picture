@@ -13,19 +13,19 @@ const SellerDetailPrice: FC<SellerDetailPriceProps> = ({ seller }) => {
       <View style={styles.innerContainer}>
         <Text>인물사진: { seller.peoplePrice }원~ </Text>
         <View style={styles.workTime}>
-          <Text style={styles.workTimeText}>평균 작업시간: 35분</Text>
+          {/*<Text style={styles.workTimeText}>평균 작업시간: 35분</Text>*/}
         </View>
       </View>
       <View style={styles.innerContainer}>
         <Text>배경사진: { seller.backgroundPrice }원~ </Text>
         <View style={styles.workTime}>
-          <Text style={styles.workTimeText}>평균 작업시간: 35분</Text>
+          {/*<Text style={styles.workTimeText}>평균 작업시간: 35분</Text>*/}
         </View>
       </View>
       <View style={styles.innerContainer}>
         <Text>증명사진: { seller.officialPrice }원~ </Text>
         <View style={styles.workTime}>
-          <Text style={styles.workTimeText}>평균 작업시간: 35분</Text>
+          {/*<Text style={styles.workTimeText}>평균 작업시간: 35분</Text>*/}
         </View>
       </View>
     </View>

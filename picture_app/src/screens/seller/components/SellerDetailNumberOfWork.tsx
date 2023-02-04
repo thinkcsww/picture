@@ -1,8 +1,26 @@
-import React from "react";
+import React, { FC } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../../colors";
+import { Seller } from "../../../types/Seller";
+import { Specialty } from "../../../types/Common";
 
-const SellerDetailNumberOfWork = () => {
+type SellerDetailNumberOfWorkProps = {
+  seller: Seller.Seller
+}
+const SellerDetailNumberOfWork: FC<SellerDetailNumberOfWorkProps> = ({ seller }) => {
+
+  const getProgressBarPercentage = (value?: number) => {
+    if (value) {
+      return `${((value / seller.completeMatchingCnt) * 100).toFixed(0)}%`;
+    }
+
+    return "0%";
+  }
+
+  const getCount = (value?: number) => {
+    return value ? value : 0;
+  }
+
   return (
     <View style={styles.container}>
 
@@ -10,32 +28,32 @@ const SellerDetailNumberOfWork = () => {
 
       <View style={styles.numberOfWorkContainer}>
         <View style={styles.numberOfWorkLeftContainer}>
-          <Text style={styles.numberOfWorkTotalCountText}>88<Text
-            style={styles.numberOfWorkTotalCountInnerText}>건</Text></Text>
+          <Text style={styles.numberOfWorkTotalCountText}><Text
+            style={styles.numberOfWorkTotalCountInnerText}>{ seller.completeMatchingCnt }건</Text></Text>
         </View>
         <View style={styles.progressRightContainer}>
           <View style={styles.progressRightInnerContainer}>
             <Text style={styles.progressTypeText}>인물</Text>
             <View style={styles.progressOuterBar}>
-              <View style={{ ...styles.progressInnerBar, width: "50%" }}></View>
+              <View style={{ ...styles.progressInnerBar, width: getProgressBarPercentage(seller.matchingCountBySpecialty[Specialty.PEOPLE]) }}></View>
             </View>
-            <Text style={styles.progressCountText}>44</Text>
+            <Text style={styles.progressCountText}>{ getCount(seller.matchingCountBySpecialty[Specialty.PEOPLE]) }</Text>
           </View>
 
           <View style={styles.progressRightInnerContainer}>
             <Text style={styles.progressTypeText}>배경</Text>
             <View style={styles.progressOuterBar}>
-              <View style={{ ...styles.progressInnerBar, width: "5%" }}></View>
+              <View style={{ ...styles.progressInnerBar, width: getProgressBarPercentage(seller.matchingCountBySpecialty[Specialty.BACKGROUND]) }}></View>
             </View>
-            <Text style={styles.progressCountText}>3</Text>
+            <Text style={styles.progressCountText}>{ getCount(seller.matchingCountBySpecialty[Specialty.BACKGROUND]) }</Text>
           </View>
 
           <View style={styles.progressRightInnerContainer}>
             <Text style={styles.progressTypeText}>증명 </Text>
             <View style={styles.progressOuterBar}>
-              <View style={{ ...styles.progressInnerBar, width: "30%" }}></View>
+              <View style={{ ...styles.progressInnerBar, width: getProgressBarPercentage(seller.matchingCountBySpecialty[Specialty.OFFICIAL]) }}></View>
             </View>
-            <Text style={styles.progressCountText}>12</Text>
+            <Text style={styles.progressCountText}>{ getCount(seller.matchingCountBySpecialty[Specialty.OFFICIAL]) }</Text>
           </View>
         </View>
 

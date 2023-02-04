@@ -19,6 +19,9 @@ import { RouteNames } from "../../AppNav";
 import { useAppDispatch, useAppSelector } from "../../store/config";
 import { setSignUpRedux } from "../../store/slices/signUpSlice";
 import { Chatting } from "../../types/Chatting";
+import DateUtils from "../../utils/DateUtils";
+import CommonNodata from "../../components/CommonNodata";
+import RatingStarIcons from "./components/RatingStarIcons";
 
 const SellerDetailScreen = ({ route, navigation }: any) => {
   const dispatch = useAppDispatch();
@@ -98,95 +101,95 @@ const SellerDetailScreen = ({ route, navigation }: any) => {
 
         <Divider style={{ height: 1, marginVertical: 20, marginHorizontal: 12 }} />
 
-        <SellerDetailNumberOfWork />
+        <SellerDetailNumberOfWork seller={seller} />
 
         <Divider style={{ height: 1, marginVertical: 20, marginHorizontal: 12 }} />
 
-        <SellerDetailReview />
+        <SellerDetailReview seller={seller}/>
 
         <Divider style={{ height: 1, marginVertical: 20, marginHorizontal: 12 }} />
 
-        <View style={{
-          paddingHorizontal: 12,
-          marginBottom: 30
-        }}>
-          <Text style={{
-            fontWeight: "bold",
-            color: "black",
-          }}>리뷰</Text>
-          <View style={{
-            flexDirection: 'row',
-            marginTop: 20,
-          }}>
-            <Avatar size={"small"} source={Images.profile.dummy} rounded />
-            <View style={{
-              marginLeft: 12,
-              justifyContent: 'space-between',
-              flex: 1
-            }}>
-              <Text style={{
-                fontWeight: 'bold'
-              }}>말랑겅쥬</Text>
+        {
+
+            <>
+
               <View style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
+                paddingHorizontal: 12,
+                marginBottom: 30
               }}>
-                <View style={{
-                  flexDirection: 'row',
-                  alignItems: 'center'
-                }}>
-                  <Icon name={"ios-star"} size={14} color={Colors.PRIMARY} style={{
-                    paddingLeft: 2
-                  }}/>
-                  <Icon name={"ios-star"} size={14} color={Colors.PRIMARY} style={{
-                    paddingLeft: 2
-                  }}/>
-                  <Icon name={"ios-star"} size={14} color={Colors.PRIMARY} style={{
-                    paddingLeft: 2
-                  }}/>
-                  <Icon name={"ios-star"} size={14} color={Colors.PRIMARY} style={{
-                    paddingLeft: 2
-                  }}/>
-                  <Icon name={"ios-star"} size={14} color={Colors.PRIMARY} style={{
-                    paddingLeft: 2
-                  }}/>
-                  <Text style={{
-                    marginLeft: 12,
-                    color: '#b9b9b9',
-                    fontSize: 12
-                  }}>어제</Text>
-                </View>
+                <Text style={{
+                  fontWeight: "bold",
+                  color: "black",
+                }}>리뷰</Text>
+                {
+                  seller.latestReview ? (
+                    <>
+                      <View style={{
+                        flexDirection: 'row',
+                        marginTop: 20,
+                      }}>
+                        <Avatar size={"small"} source={Images.profile.dummy} rounded />
+                        <View style={{
+                          marginLeft: 12,
+                          justifyContent: 'space-between',
+                          flex: 1
+                        }}>
+                          <Text style={{
+                            fontWeight: 'bold'
+                          }}>{ seller.latestReview?.writerNickname }</Text>
+                          <View style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                          }}>
+                            <View style={{
+                              flexDirection: 'row',
+                              alignItems: 'center'
+                            }}>
+                              <RatingStarIcons rateAvg={seller.rateAvg}/>
+                              <Text style={{
+                                marginLeft: 12,
+                                color: '#b9b9b9',
+                                fontSize: 12
+                              }}>{ DateUtils.getFormattedDate(seller.latestReview?.createdDt) }</Text>
+                            </View>
 
-                <TouchableOpacity>
-                  <Text style={{
-                    marginLeft: 12,
-                    color: '#b9b9b9',
-                    fontSize: 12
-                  }}>신고하기</Text>
-                </TouchableOpacity>
+                            <TouchableOpacity>
+                              <Text style={{
+                                marginLeft: 12,
+                                color: '#b9b9b9',
+                                fontSize: 12
+                              }}>신고하기</Text>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      </View>
+                      <View style={{
+                        paddingHorizontal: 12
+                      }}>
+
+                        <Text style={{
+                          lineHeight: 20,
+                          marginTop: 20,
+                        }}>{ seller.latestReview?.content }</Text>
+
+                        <TouchableOpacity style={{
+                          marginTop: 20,
+                        }}>
+                          <Text style={{
+                            color: '#b9b9b9',
+                            fontSize: 12
+                          }}>리뷰 더보기</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </>
+                  ) : <CommonNodata message={'리뷰가 없습니다'} height={200}/>
+                }
               </View>
-            </View>
-          </View>
-          <View style={{
-            paddingHorizontal: 12
-          }}>
+            </>
+          // )
+        }
 
-            <Text style={{
-              lineHeight: 20,
-              marginTop: 20,
-            }}>너무 자연스럽게 해주셔서 친구들이 자꾸 어떻게 보정했냐고 물어봐요! 나만 알고 싶은데 어떡해야할지 고민이네요! 다음에도 또 의뢰드드릴게 요 짱짱!!</Text>
 
-            <TouchableOpacity style={{
-              marginTop: 20,
-            }}>
-              <Text style={{
-                color: '#b9b9b9',
-                fontSize: 12
-              }}>리뷰 더보기</Text>
-            </TouchableOpacity>
-          </View>
-
-        </View>
 
         <AppButton title={'문의하기'} onPress={onClickChatting}/>
 

@@ -4,6 +4,7 @@ import Images from "../../../../assets/images";
 import Icon from "react-native-vector-icons/Ionicons";
 import { Colors } from "../../../colors";
 import { Seller } from "../../../types/Seller";
+import RatingStarIcons from "./RatingStarIcons";
 
 type SellerDetailProfileProps = {
   seller: Seller.Seller
@@ -16,12 +17,8 @@ const SellerDetailProfile: FC<SellerDetailProfileProps> = ({ seller }) => {
         <View style={styles.innerContainer}>
           <Text style={styles.name}>{ seller.nickname } 작가님 </Text>
           <View style={styles.rateRow}>
-            <Icon name={"ios-star"} size={18} color={Colors.PRIMARY} style={styles.star}/>
-            <Icon name={"ios-star"} size={18} color={Colors.PRIMARY} style={styles.star}/>
-            <Icon name={"ios-star"} size={18} color={Colors.PRIMARY} style={styles.star}/>
-            <Icon name={"ios-star"} size={18} color={Colors.PRIMARY} style={styles.star}/>
-            <Icon name={"ios-star"} size={18} color={Colors.PRIMARY} style={styles.star}/>
-            <Text style={styles.rate}>{ seller.rateAvg ? seller.rateAvg : '0.0'}</Text>
+            <RatingStarIcons rateAvg={seller.rateAvg}/>
+            <Text style={styles.rate}>{ seller.rateAvg ? seller.rateAvg.toFixed(1) : '0.0'}</Text>
           </View>
 
           <View style={styles.numberOfWorkContainer}>

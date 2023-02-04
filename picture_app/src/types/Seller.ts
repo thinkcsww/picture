@@ -1,4 +1,5 @@
 import { User } from "./User";
+import { Specialty } from "./Common";
 
 export namespace Seller {
   export interface Seller {
@@ -20,7 +21,21 @@ export namespace Seller {
     peoplePrice: number,
     backgroundPrice: number,
     completeMatchingCnt: number
-    matchingCountBySpecialty: any[],
+    latestReview: any,
+    writerNickname: string,
+    reviewCountByRating: {
+      ["1"]: number,
+      ["2"]: number,
+      ["3"]: number,
+      ["4"]: number,
+      ["5"]: number,
+    }
+    matchingCountBySpecialty: {
+      [Specialty.PEOPLE]? : number,
+      [Specialty.BACKGROUND]? : number,
+      [Specialty.OFFICIAL]? : number,
+      [Specialty.ETC]? : number,
+    },
   }
 
   export enum Filter {

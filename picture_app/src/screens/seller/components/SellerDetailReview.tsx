@@ -1,23 +1,36 @@
-import React from "react";
+import React, { FC } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { Colors } from "../../../colors";
+import { Seller } from "../../../types/Seller";
+import RatingStarIcons from "./RatingStarIcons";
+type SellerDetailNumberOfWorkProps = {
+  seller: Seller.Seller
+}
+const SellerDetailReview: FC<SellerDetailNumberOfWorkProps> = ({ seller }) => {
 
-const SellerDetailReview = () => {
+  const getProgressBarPercentage = (value?: number) => {
+    if (value) {
+      return `${((value / seller.rateAvg) * 100).toFixed(0)}%`;
+    }
+
+    return "0%";
+  }
+
+  const getCount = (value?: number) => {
+    return value ? value : 0;
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.infoTitle}>평점</Text>
       <View style={styles.rateContainer}>
         <View style={styles.rateLeftContainer}>
-          <Text style={styles.rateTotalCountText}>4.3</Text>
+          <Text style={styles.rateTotalCountText}>{ seller.rateAvg.toFixed(1) }</Text>
           <View style={{
             flexDirection: "row",
           }}>
-            <Icon name={"ios-star"} size={14} color={Colors.PRIMARY} style={styles.rateStar} />
-            <Icon name={"ios-star"} size={14} color={Colors.PRIMARY} style={styles.rateStar} />
-            <Icon name={"ios-star"} size={14} color={Colors.PRIMARY} style={styles.rateStar} />
-            <Icon name={"ios-star"} size={14} color={Colors.PRIMARY} style={styles.rateStar} />
-            <Icon name={"ios-star"} size={14} color={Colors.PRIMARY} style={styles.rateStar} />
+            <RatingStarIcons rateAvg={seller.rateAvg}/>
           </View>
 
         </View>
@@ -25,37 +38,37 @@ const SellerDetailReview = () => {
           <View style={styles.progressRightInnerContainer}>
             <Text style={styles.progressTypeText}>5점 </Text>
             <View style={styles.progressOuterBar}>
-              <View style={{ ...styles.progressInnerBar, width: "30%" }}></View>
+              <View style={{ ...styles.progressInnerBar, width: getProgressBarPercentage(seller.reviewCountByRating["1"]) }}></View>
             </View>
-            <Text style={styles.progressCountText}>12</Text>
+            <Text style={styles.progressCountText}>{ getCount(seller.reviewCountByRating["1"]) }</Text>
           </View>
           <View style={styles.progressRightInnerContainer}>
             <Text style={styles.progressTypeText}>4점 </Text>
             <View style={styles.progressOuterBar}>
-              <View style={{ ...styles.progressInnerBar, width: "30%" }}></View>
+              <View style={{ ...styles.progressInnerBar, width: getProgressBarPercentage(seller.reviewCountByRating["2"]) }}></View>
             </View>
-            <Text style={styles.progressCountText}>12</Text>
+            <Text style={styles.progressCountText}>{ getCount(seller.reviewCountByRating["2"]) }</Text>
           </View>
           <View style={styles.progressRightInnerContainer}>
             <Text style={styles.progressTypeText}>3점 </Text>
             <View style={styles.progressOuterBar}>
-              <View style={{ ...styles.progressInnerBar, width: "30%" }}></View>
+              <View style={{ ...styles.progressInnerBar, width: getProgressBarPercentage(seller.reviewCountByRating["3"]) }}></View>
             </View>
-            <Text style={styles.progressCountText}>12</Text>
+            <Text style={styles.progressCountText}>{getCount(seller.reviewCountByRating["3"])}</Text>
           </View>
           <View style={styles.progressRightInnerContainer}>
             <Text style={styles.progressTypeText}>2점 </Text>
             <View style={styles.progressOuterBar}>
-              <View style={{ ...styles.progressInnerBar, width: "30%" }}></View>
+              <View style={{ ...styles.progressInnerBar, width: getProgressBarPercentage(seller.reviewCountByRating["4"]) }}></View>
             </View>
-            <Text style={styles.progressCountText}>12</Text>
+            <Text style={styles.progressCountText}>{ getCount(seller.reviewCountByRating["4"]) }</Text>
           </View>
           <View style={styles.progressRightInnerContainer}>
             <Text style={styles.progressTypeText}>1점 </Text>
             <View style={styles.progressOuterBar}>
-              <View style={{ ...styles.progressInnerBar, width: "30%" }}></View>
+              <View style={{ ...styles.progressInnerBar, width: getProgressBarPercentage(seller.reviewCountByRating["5"]) }}></View>
             </View>
-            <Text style={styles.progressCountText}>12</Text>
+            <Text style={styles.progressCountText}>{ getCount(seller.reviewCountByRating["5"]) }</Text>
           </View>
         </View>
 

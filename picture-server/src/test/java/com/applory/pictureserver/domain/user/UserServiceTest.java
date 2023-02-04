@@ -57,9 +57,11 @@ public class UserServiceTest {
         matchingRepository.save(TestUtil.createMatching(seller1, client, Matching.Status.COMPLETE, ETC, "Y"));
         matchingRepository.save(TestUtil.createMatching(seller2, client, Matching.Status.COMPLETE, ETC, "Y"));
 
+        reviewRepository.save(TestUtil.createReview(seller1, client, 1));
+        reviewRepository.save(TestUtil.createReview(seller1, client, 2));
         reviewRepository.save(TestUtil.createReview(seller1, client, 3));
-        reviewRepository.save(TestUtil.createReview(seller1, client, 1));
-        reviewRepository.save(TestUtil.createReview(seller1, client, 1));
+        reviewRepository.save(TestUtil.createReview(seller1, client, 4));
+        reviewRepository.save(TestUtil.createReview(seller1, client, 5));
         reviewRepository.save(TestUtil.createReview(seller2, client, 5));
 
     }
@@ -283,17 +285,42 @@ public class UserServiceTest {
             User sellerInDB = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
             UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId());
 
-            assertThat(sellerUser.getRating()).isGreaterThan(0);
+            assertThat(sellerUser.getRateAvg()).isGreaterThan(0);
         }
 
-        // TODO - 매칭 타입별로 데이터 넣고 개수 확인해보기
         @DisplayName("Seller 상세 조회 성공 - 작업 타입별 완료수 조회")
         @Test
         public void getSeller_withMatchingCountBySpecialty_success() {
             User sellerInDB = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
             UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId());
 
-            assertThat(sellerUser.getMatchingCountBySpecialty()).isNotNull();
+            assertThat(sellerUser.getMatchingCountBySpecialty().get(PEOPLE)).isEqualTo(1);
+            assertThat(sellerUser.getMatchingCountBySpecialty().get(OFFICIAL)).isEqualTo(1);
+            assertThat(sellerUser.getMatchingCountBySpecialty().get(BACKGROUND)).isEqualTo(1);
+        }
+
+        @DisplayName("Seller 상세 조회 성공 - 평점별 리뷰수 조회")
+        @Test
+        public void getSeller_withReviewCountByRating_success() {
+
+            User sellerInDB = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
+            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId());
+
+            assertThat(sellerUser.getReviewCountByRating().get(1)).isEqualTo(1);
+            assertThat(sellerUser.getReviewCountByRating().get(2)).isEqualTo(1);
+            assertThat(sellerUser.getReviewCountByRating().get(3)).isEqualTo(1);
+            assertThat(sellerUser.getReviewCountByRating().get(4)).isEqualTo(1);
+            assertThat(sellerUser.getReviewCountByRating().get(5)).isEqualTo(1);
+        }
+
+        @DisplayName("Seller 상세 조회 성공 - 평균 평점 조회")
+        @Test
+        public void getSeller_withRatingAvg_success() {
+
+            User sellerInDB = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
+            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId());
+
+            assertThat(sellerUser.getRateAvg()).isGreaterThan(0);
         }
     }
 

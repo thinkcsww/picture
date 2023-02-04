@@ -126,7 +126,7 @@ public class UserService {
         UserDto.SellerVM sellerVM = new UserDto.SellerVM(seller);
         sellerVM.setLatestReview(!CollectionUtils.isEmpty(reviews) ? new ReviewDTO.ReviewVM(reviews.get(0)) : null);
         sellerVM.setReviewCnt(reviews.size());
-        sellerVM.setRating(reviews.stream().collect(Collectors.averagingInt(Review::getRate)).intValue());
+        sellerVM.setRateAvg(reviews.stream().collect(Collectors.averagingInt(Review::getRate)));
         sellerVM.setMatchingCountBySpecialty(matchingCountBySpecialty);
         sellerVM.setCompleteMatchingCnt(matchings.size());
         sellerVM.setReviewCountByRating(reviewCountByRating);

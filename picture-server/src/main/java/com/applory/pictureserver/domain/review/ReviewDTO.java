@@ -1,12 +1,13 @@
 package com.applory.pictureserver.domain.review;
 
-import com.applory.pictureserver.domain.user.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class ReviewDTO {
@@ -15,17 +16,18 @@ public class ReviewDTO {
     public static class ReviewVM {
         private UUID id;
 
-        private User seller;
-
-        private User client;
+        private String writerNickname;
 
         private String content;
 
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        private LocalDateTime createdDt;
+
         public ReviewVM(Review review) {
             this.id = review.getId();
-            this.seller = review.getSeller();
-            this.client = review.getClient();
+            this.writerNickname = review.getClient().getNickname();
             this.content = review.getContent();
+            this.createdDt = review.getCreatedDt();
         }
     }
 

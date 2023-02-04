@@ -76,7 +76,7 @@ public class UserDto {
         private Map<Constant.Specialty, Long> matchingCountBySpecialty;
         private Map<Integer, Long> reviewCountByRating;
 
-        private int rating;
+        private double rateAvg;
 
         private int closingRate;
 

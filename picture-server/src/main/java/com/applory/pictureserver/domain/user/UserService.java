@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserService {
 
     private final AppConfiguration appConfiguration;
@@ -35,7 +37,6 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final ReviewRepository reviewRepository;
-
 
     public User createUser(UserDto.Create dto) {
         User user = new User();
@@ -68,15 +69,17 @@ public class UserService {
 
         return userRepository.save(user);
     }
-
+    @Transactional(readOnly = true)
     public Page<SellerListVM> getSellerUsers(UserDto.SearchSeller search, Pageable pageable) {
         return userRepository.findSellerUserBySearch(search, pageable);
     }
 
+    @Transactional(readOnly = true)
     public Page<User> getClientUsers(UserDto.SearchClient search, Pageable pageable) {
         return userRepository.findClientUserBySearch(search, pageable);
     }
 
+    @Transactional(readOnly = true)
     public UserDto.VM getUserMe() {
         User findUser = userRepository.findByUsername(SecurityUtils.getPrincipal());
 
@@ -96,6 +99,7 @@ public class UserService {
         return vm;
     }
 
+    @Transactional(readOnly = true)
     public void checkNickname(String nickname) {
         User userInDB = userRepository.findByNickname(nickname);
 
@@ -104,19 +108,28 @@ public class UserService {
         }
     }
 
+    @Transactional(readOnly = true)
     public UserDto.SellerVM getSellerDetail(UUID id) {
         User seller = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Seller: " + id + " not exist"));
         List<Review> reviews = reviewRepository.findBySellerOrderByCreatedDt(seller);
 
-        Map<Constant.Specialty, Long> matchingCountBySpecialty = matchingRepository.findBySellerAndCompleteYN(seller, "Y")
+        List<Matching> matchings = matchingRepository.findBySellerAndCompleteYN(seller, "Y");
+
+        Map<Constant.Specialty, Long> matchingCountBySpecialty = matchings
                 .stream()
                 .collect(Collectors.groupingBy(Matching::getSpecialty, Collectors.counting()));
+
+        Map<Integer, Long> reviewCountByRating = reviews
+                .stream()
+                .collect(Collectors.groupingBy(Review::getRate, Collectors.counting()));
 
         UserDto.SellerVM sellerVM = new UserDto.SellerVM(seller);
         sellerVM.setLatestReview(!CollectionUtils.isEmpty(reviews) ? new ReviewDTO.ReviewVM(reviews.get(0)) : null);
         sellerVM.setReviewCnt(reviews.size());
         sellerVM.setRating(reviews.stream().collect(Collectors.averagingInt(Review::getRate)).intValue());
         sellerVM.setMatchingCountBySpecialty(matchingCountBySpecialty);
+        sellerVM.setCompleteMatchingCnt(matchings.size());
+        sellerVM.setReviewCountByRating(reviewCountByRating);
 
         return sellerVM;
     }

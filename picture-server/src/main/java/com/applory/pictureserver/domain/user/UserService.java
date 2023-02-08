@@ -111,7 +111,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserDto.SellerVM getSellerDetail(UUID id) {
         User seller = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Seller: " + id + " not exist"));
-        List<Review> reviews = reviewRepository.findBySellerOrderByCreatedDt(seller);
+        List<Review> reviews = reviewRepository.findBySellerOrderByCreatedDtDesc(seller);
 
         List<Matching> matchings = matchingRepository.findBySellerAndCompleteYN(seller, "Y");
 

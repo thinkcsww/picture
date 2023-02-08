@@ -17,6 +17,7 @@ import AddRequestScreen from "./screens/request/AddRequestScreen";
 import RequestDetailScreen from "./screens/request/RequestDetailScreen";
 import { setSignUpRedux } from "./store/slices/signUpSlice";
 import ChattingRoomScreen from "./screens/chatting/ChattingRoomScreen";
+import SellerReviewScreen from "./screens/seller/SellerReviewScreen";
 
 export const RouteNames = {
   SignUpClient: "SignUpClient",
@@ -27,6 +28,7 @@ export const RouteNames = {
   SellerTab: "SellerTab",
   Seller: "Seller",
   SellerDetail: "SellerDetail",
+  SellerReview: "SellerReview",
 
   RequestTab: "RequestTab",
   Request: "Request",
@@ -178,6 +180,7 @@ const AppNav = () => {
     <Stack.Navigator initialRouteName={"Tabs"} screenOptions={{ headerShown: false, cardStyle: { backgroundColor: '#fff' } }}>
       <Stack.Screen name="Tabs" component={HomeTabs} options={{ headerShown: false }} />
       <Stack.Screen name={RouteNames.SellerDetail} component={SellerDetailScreen} options={{ headerShown: false }} />
+      <Stack.Screen name={RouteNames.SellerReview} component={SellerReviewScreen} options={{ headerShown: false }} />
       <Stack.Screen name={RouteNames.RequestDetail} component={RequestDetailScreen} options={{ headerShown: false }} />
       <Stack.Screen name={RouteNames.AddRequest} component={AddRequestScreen} options={{ headerShown: false, ...TransitionPresets.ModalSlideFromBottomIOS}} />
       <Stack.Screen name={RouteNames.ChattingRoom} component={ChattingRoomScreen} options={{ headerShown: false }} />

@@ -1,27 +1,22 @@
 import React, { useState } from "react";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Image, ScrollView, View } from "react-native";
 import Images from "../../../assets/images";
 import { Divider } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import SellerDetailProfile from "./components/SellerDetailProfile";
 import SellerDetailPrice from "./components/SellerDetailPrice";
 import SellerDetailNumberOfWork from "./components/SellerDetailNumberOfWork";
-import SellerDetailReview from "./components/SellerDetailReview";
+import SellerDetailRating from "./components/SellerDetailRating";
 import DeviceInfo from "react-native-device-info";
 import { useQuery } from "react-query";
 import { SellerService } from "../../services/SellerService";
 import { Seller } from "../../types/Seller";
 import AppButton from "../../components/AppButton";
-import { Avatar } from "@rneui/themed";
-import { Colors } from "../../colors";
-import Icon from "react-native-vector-icons/Ionicons";
 import { RouteNames } from "../../AppNav";
 import { useAppDispatch, useAppSelector } from "../../store/config";
 import { setSignUpRedux } from "../../store/slices/signUpSlice";
 import { Chatting } from "../../types/Chatting";
-import DateUtils from "../../utils/DateUtils";
-import CommonNodata from "../../components/CommonNodata";
-import RatingStarIcons from "./components/RatingStarIcons";
+import SellerDetailReview from "./components/SellerDetailReview";
 
 const SellerDetailScreen = ({ route, navigation }: any) => {
   const dispatch = useAppDispatch();
@@ -93,7 +88,7 @@ const SellerDetailScreen = ({ route, navigation }: any) => {
           height: 300,
         }} />
 
-        <SellerDetailProfile seller={seller} />
+        <SellerDetailProfile onClickChatting={onClickChatting} seller={seller} />
 
         <Divider style={{ height: 1, marginVertical: 20, marginHorizontal: 12 }} />
 
@@ -105,91 +100,11 @@ const SellerDetailScreen = ({ route, navigation }: any) => {
 
         <Divider style={{ height: 1, marginVertical: 20, marginHorizontal: 12 }} />
 
-        <SellerDetailReview seller={seller}/>
+        <SellerDetailRating seller={seller}/>
 
         <Divider style={{ height: 1, marginVertical: 20, marginHorizontal: 12 }} />
 
-        {
-
-            <>
-
-              <View style={{
-                paddingHorizontal: 12,
-                marginBottom: 30
-              }}>
-                <Text style={{
-                  fontWeight: "bold",
-                  color: "black",
-                }}>리뷰</Text>
-                {
-                  seller.latestReview ? (
-                    <>
-                      <View style={{
-                        flexDirection: 'row',
-                        marginTop: 20,
-                      }}>
-                        <Avatar size={"small"} source={Images.profile.dummy} rounded />
-                        <View style={{
-                          marginLeft: 12,
-                          justifyContent: 'space-between',
-                          flex: 1
-                        }}>
-                          <Text style={{
-                            fontWeight: 'bold'
-                          }}>{ seller.latestReview?.writerNickname }</Text>
-                          <View style={{
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                          }}>
-                            <View style={{
-                              flexDirection: 'row',
-                              alignItems: 'center'
-                            }}>
-                              <RatingStarIcons rateAvg={seller.rateAvg}/>
-                              <Text style={{
-                                marginLeft: 12,
-                                color: '#b9b9b9',
-                                fontSize: 12
-                              }}>{ DateUtils.getFormattedDate(seller.latestReview?.createdDt) }</Text>
-                            </View>
-
-                            <TouchableOpacity>
-                              <Text style={{
-                                marginLeft: 12,
-                                color: '#b9b9b9',
-                                fontSize: 12
-                              }}>신고하기</Text>
-                            </TouchableOpacity>
-                          </View>
-                        </View>
-                      </View>
-                      <View style={{
-                        paddingHorizontal: 12
-                      }}>
-
-                        <Text style={{
-                          lineHeight: 20,
-                          marginTop: 20,
-                        }}>{ seller.latestReview?.content }</Text>
-
-                        <TouchableOpacity style={{
-                          marginTop: 20,
-                        }}>
-                          <Text style={{
-                            color: '#b9b9b9',
-                            fontSize: 12
-                          }}>리뷰 더보기</Text>
-                        </TouchableOpacity>
-                      </View>
-                    </>
-                  ) : <CommonNodata message={'리뷰가 없습니다'} height={200}/>
-                }
-              </View>
-            </>
-          // )
-        }
-
-
+        <SellerDetailReview review={seller.latestReview} sellerId={seller.id}/>
 
         <AppButton title={'문의하기'} onPress={onClickChatting}/>
 

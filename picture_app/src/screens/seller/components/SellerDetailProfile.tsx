@@ -7,9 +7,10 @@ import { Seller } from "../../../types/Seller";
 import RatingStarIcons from "./RatingStarIcons";
 
 type SellerDetailProfileProps = {
-  seller: Seller.Seller
+  seller: Seller.Seller,
+  onClickChatting: () => void
 }
-const SellerDetailProfile: FC<SellerDetailProfileProps> = ({ seller }) => {
+const SellerDetailProfile: FC<SellerDetailProfileProps> = ({ seller, onClickChatting }) => {
   return (
     <View>
       <View style={styles.container}>
@@ -26,7 +27,7 @@ const SellerDetailProfile: FC<SellerDetailProfileProps> = ({ seller }) => {
           </View>
 
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={onClickChatting}>
               <Icon name={"chatbubbles-outline"} size={20} color={Colors.GRAY_TEXT}/>
               <Text style={styles.buttonTitle}>채팅하기</Text>
             </TouchableOpacity>

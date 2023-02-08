@@ -1,138 +1,119 @@
 import React, { FC } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import Icon from "react-native-vector-icons/Ionicons";
-import { Colors } from "../../../colors";
-import { Seller } from "../../../types/Seller";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Avatar } from "@rneui/themed";
+import Images from "../../../../assets/images";
 import RatingStarIcons from "./RatingStarIcons";
-type SellerDetailNumberOfWorkProps = {
-  seller: Seller.Seller
+import DateUtils from "../../../utils/DateUtils";
+import CommonNodata from "../../../components/CommonNodata";
+import { useNavigation } from "@react-navigation/native";
+import { RouteNames } from "../../../AppNav";
+
+type SellerDetailReviewProps = {
+  review: any,
+  sellerId: string
 }
-const SellerDetailReview: FC<SellerDetailNumberOfWorkProps> = ({ seller }) => {
 
-  const getProgressBarPercentage = (value?: number) => {
-    if (value) {
-      return `${((value / seller.rateAvg) * 100).toFixed(0)}%`;
-    }
+const SellerDetailReview: FC<SellerDetailReviewProps> = ({ review, sellerId }) => {
 
-    return "0%";
+  const navigation = useNavigation<any>();
+
+  const onPressMore = () => {
+    navigation.navigate(RouteNames.SellerReview, { id: sellerId })
   }
 
-  const getCount = (value?: number) => {
-    return value ? value : 0;
+  const onPressReport = () => {
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.infoTitle}>평점</Text>
-      <View style={styles.rateContainer}>
-        <View style={styles.rateLeftContainer}>
-          <Text style={styles.rateTotalCountText}>{ seller.rateAvg.toFixed(1) }</Text>
-          <View style={{
-            flexDirection: "row",
-          }}>
-            <RatingStarIcons rateAvg={seller.rateAvg}/>
-          </View>
+      <Text style={styles.containerTitle}>리뷰</Text>
+      {
+        review ? (
+          <>
+            <View style={styles.innerContainer}>
+              <Avatar size={"small"} source={Images.profile.dummy} rounded />
+              <View style={styles.profileContainer}>
+                <Text style={styles.nicknameText}>{ review.writerNickname }</Text>
+                <View style={styles.ratingContainer}>
+                  <View style={styles.ratingRow}>
+                    <RatingStarIcons rateAvg={review.rate}/>
+                    <Text style={styles.dateText}>{ DateUtils.getPastFormattedDate(review.createdDt) }</Text>
+                  </View>
 
-        </View>
-        <View style={styles.progressRightContainer}>
-          <View style={styles.progressRightInnerContainer}>
-            <Text style={styles.progressTypeText}>5점 </Text>
-            <View style={styles.progressOuterBar}>
-              <View style={{ ...styles.progressInnerBar, width: getProgressBarPercentage(seller.reviewCountByRating["1"]) }}></View>
+                  <TouchableOpacity>
+                    <Text style={styles.reportText}>신고하기</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
-            <Text style={styles.progressCountText}>{ getCount(seller.reviewCountByRating["1"]) }</Text>
-          </View>
-          <View style={styles.progressRightInnerContainer}>
-            <Text style={styles.progressTypeText}>4점 </Text>
-            <View style={styles.progressOuterBar}>
-              <View style={{ ...styles.progressInnerBar, width: getProgressBarPercentage(seller.reviewCountByRating["2"]) }}></View>
-            </View>
-            <Text style={styles.progressCountText}>{ getCount(seller.reviewCountByRating["2"]) }</Text>
-          </View>
-          <View style={styles.progressRightInnerContainer}>
-            <Text style={styles.progressTypeText}>3점 </Text>
-            <View style={styles.progressOuterBar}>
-              <View style={{ ...styles.progressInnerBar, width: getProgressBarPercentage(seller.reviewCountByRating["3"]) }}></View>
-            </View>
-            <Text style={styles.progressCountText}>{getCount(seller.reviewCountByRating["3"])}</Text>
-          </View>
-          <View style={styles.progressRightInnerContainer}>
-            <Text style={styles.progressTypeText}>2점 </Text>
-            <View style={styles.progressOuterBar}>
-              <View style={{ ...styles.progressInnerBar, width: getProgressBarPercentage(seller.reviewCountByRating["4"]) }}></View>
-            </View>
-            <Text style={styles.progressCountText}>{ getCount(seller.reviewCountByRating["4"]) }</Text>
-          </View>
-          <View style={styles.progressRightInnerContainer}>
-            <Text style={styles.progressTypeText}>1점 </Text>
-            <View style={styles.progressOuterBar}>
-              <View style={{ ...styles.progressInnerBar, width: getProgressBarPercentage(seller.reviewCountByRating["5"]) }}></View>
-            </View>
-            <Text style={styles.progressCountText}>{ getCount(seller.reviewCountByRating["5"]) }</Text>
-          </View>
-        </View>
+            <View style={styles.contentContainer}>
 
+              <Text style={styles.content}>{ review.content }</Text>
 
-      </View>
+              <TouchableOpacity style={styles.moreBtn} onPress={onPressMore}>
+                <Text style={styles.moreBtnText}>리뷰 더보기</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        ) : <CommonNodata message={'리뷰가 없습니다'} height={200}/>
+      }
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 12,
+    marginBottom: 30
   },
-  infoTitle: {
+  containerTitle: {
     fontWeight: "bold",
     color: "black",
   },
-  progressRightContainer: {
-    flex: 8,
+  innerContainer: {
+    flexDirection: 'row',
+    marginTop: 20,
   },
-  progressRightInnerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 12,
+  profileContainer: {
+    marginLeft: 12,
+    justifyContent: 'space-between',
+    flex: 1
   },
-  progressTypeText: {
-    fontWeight: "bold",
-    fontSize: 12,
-    color: "black",
-    marginRight: 20,
+  nicknameText: {
+    fontWeight: 'bold'
   },
-  progressOuterBar: {
-    width: "60%",
-    backgroundColor: "#dcdbdb",
-    borderRadius: 12,
-    height: 5,
-    marginRight: 6,
+  ratingContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  progressInnerBar: {
-    backgroundColor: Colors.PRIMARY,
-    borderRadius: 12,
-    height: 5,
+  ratingRow: {
+    flexDirection: 'row',
+    alignItems: 'center'
   },
-  progressCountText: {
-    color: Colors.GRAY_TEXT,
-    fontSize: 10,
+  dateText: {
+    marginLeft: 12,
+    color: '#b9b9b9',
+    fontSize: 12
   },
-  rateContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+  reportText: {
+    marginLeft: 12,
+    color: '#b9b9b9',
+    fontSize: 12
   },
-  rateLeftContainer: {
-    flex: 4,
-    alignItems: "center",
-    justifyContent: "center",
+  contentContainer: {
+    paddingHorizontal: 12
   },
-  rateTotalCountText: {
-    fontSize: 40,
-    color: "black",
+  content: {
+    lineHeight: 20,
+    marginTop: 20,
   },
-  rateStar: {
-    paddingLeft: 2,
+  moreBtn: {
+    marginTop: 20,
   },
-});
+  moreBtnText: {
+    color: '#b9b9b9',
+    fontSize: 12
+  }
+})
 
 export default SellerDetailReview;
-

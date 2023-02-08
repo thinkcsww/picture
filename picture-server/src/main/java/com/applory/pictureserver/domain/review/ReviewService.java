@@ -3,6 +3,8 @@ package com.applory.pictureserver.domain.review;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserRepository;
 import com.applory.pictureserver.shared.SecurityUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,5 +34,10 @@ public class ReviewService {
         review.setContent(create.getContent());
 
         return reviewRepository.save(review);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ReviewDTO.ReviewVM> getReviews(ReviewDTO.Search search, Pageable pageable) {
+        return reviewRepository.findReviewBySearchQ(search, pageable).map(ReviewDTO.ReviewVM::new);
     }
 }

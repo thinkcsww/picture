@@ -20,6 +20,8 @@ public class ReviewDTO {
 
         private String content;
 
+        private int rate;
+
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
         private LocalDateTime createdDt;
 
@@ -28,6 +30,7 @@ public class ReviewDTO {
             this.writerNickname = review.getClient().getNickname();
             this.content = review.getContent();
             this.createdDt = review.getCreatedDt();
+            this.rate = review.getRate();
         }
     }
 
@@ -41,5 +44,11 @@ public class ReviewDTO {
 
         @NotNull
         private Integer rate;
+    }
+
+    @Data
+    public static class Search {
+        @NotEmpty
+        private UUID sellerId;
     }
 }

@@ -1,6 +1,7 @@
 package com.applory.pictureserver.domain.request;
 
 import com.applory.pictureserver.shared.Constant;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -47,6 +48,7 @@ public class RequestDto {
         private Constant.Specialty specialty;
         private String title;
         private Integer desiredPrice;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
         private LocalDateTime dueDate;
         private String description;
         private String matchYn;

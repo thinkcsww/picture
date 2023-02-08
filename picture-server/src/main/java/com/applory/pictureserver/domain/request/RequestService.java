@@ -18,6 +18,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+1@Transactional
 public class RequestService {
 
     private final RequestRepository requestRepository;
@@ -53,11 +54,11 @@ public class RequestService {
         return new RequestDto.VM(save);
     }
 
+    @Transactional(readOnly = true)
     public Page<RequestDto.VM> getRequests(RequestDto.Search search, Pageable pageable) {
         return requestRepository.findRequestBySearchQ(search, pageable).map(RequestDto.VM::new);
     }
 
-    @Transactional
     public RequestDto.VM getRequest(UUID id) {
         Request request = requestRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Request not exists: " + id));
         request.setReadCount(request.getReadCount() + 1);

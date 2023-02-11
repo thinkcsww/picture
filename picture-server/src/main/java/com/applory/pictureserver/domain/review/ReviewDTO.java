@@ -14,7 +14,7 @@ public class ReviewDTO {
     @Getter
     @Setter
     public static class ReviewVM {
-        private UUID id;
+        private String id;
 
         private String writerNickname;
 

@@ -6,11 +6,13 @@ import com.applory.pictureserver.domain.review.ReviewDTO;
 import com.applory.pictureserver.shared.Constant;
 import lombok.*;
 import org.springframework.lang.Nullable;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class UserDto {
@@ -33,6 +35,7 @@ public class UserDto {
         private Integer peoplePrice;
         private Integer backgroundPrice;
         private Integer officialPrice;
+        private String fileName;
 
         private Map<Matching.Status, List<MatchingDto.VM>> matchings;
 
@@ -51,6 +54,10 @@ public class UserDto {
             this.peoplePrice = user.getPeoplePrice();
             this.backgroundPrice = user.getBackgroundPrice();
             this.officialPrice = user.getOfficialPrice();
+
+            if (Objects.nonNull(user.getFile())){
+                this.fileName = user.getFile().getStoreFileName();
+            }
         }
     }
 
@@ -75,6 +82,7 @@ public class UserDto {
         private ReviewDTO.ReviewVM latestReview;
         private Map<Constant.Specialty, Long> matchingCountBySpecialty;
         private Map<Integer, Long> reviewCountByRating;
+        private String fileName;
 
         private double rateAvg;
 
@@ -99,6 +107,10 @@ public class UserDto {
             this.peoplePrice = user.getPeoplePrice();
             this.backgroundPrice = user.getBackgroundPrice();
             this.officialPrice = user.getOfficialPrice();
+
+            if (Objects.nonNull(user.getFile())) {
+                this.fileName = user.getFile().getStoreFileName();
+            }
         }
     }
 
@@ -140,6 +152,11 @@ public class UserDto {
     @Setter
     public static class SearchClient {
 
+    }
+
+    @Data
+    public static class UpdateProfileImage {
+        private MultipartFile attachFile;
     }
 
     @Getter

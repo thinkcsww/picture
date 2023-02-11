@@ -28,12 +28,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring()
                 .antMatchers(HttpMethod.GET, "/api/v1/requests")
                 .antMatchers(HttpMethod.GET, "/api/v1/users/seller")
+                .antMatchers(HttpMethod.GET, "/api/v1/reviews")
                 .antMatchers(HttpMethod.GET, "/api/v1/users/seller/{id}")
                 .antMatchers(HttpMethod.POST, "/api/v1/auth/token/refresh")
                 .antMatchers(HttpMethod.GET, "/swagger-ui/**")
-                .antMatchers(HttpMethod.GET, "/v3/api-docs")
+                .antMatchers(HttpMethod.GET, "/v3/api-docs/**")
                 .antMatchers(HttpMethod.POST, "/api/v1/users")
-                .antMatchers(HttpMethod.POST, "/api/v1/chattings/images/**");
+                .antMatchers(HttpMethod.POST, "/api/v1/files/images/**");
     }
 
     /**

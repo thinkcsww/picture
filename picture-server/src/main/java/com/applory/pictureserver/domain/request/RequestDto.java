@@ -10,6 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class RequestDto {
@@ -43,6 +44,7 @@ public class RequestDto {
     public static class VM {
         private UUID id;
         private UUID userId;
+        private String userProfileFileName;
         private String userNickname;
         private Double userAcceptRate;
         private Constant.Specialty specialty;
@@ -68,6 +70,10 @@ public class RequestDto {
             this.readCount = request.getReadCount();
             this.matchYn = request.getMatchYN();
             this.chatCount = request.getChatCount();
+
+            if (Objects.nonNull(request.getUser().getFile())) {
+                this.userProfileFileName = request.getUser().getFile().getStoreFileName();
+            }
         }
     }
 

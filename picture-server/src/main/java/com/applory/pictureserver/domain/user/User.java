@@ -1,5 +1,6 @@
 package com.applory.pictureserver.domain.user;
 
+import com.applory.pictureserver.domain.file.File;
 import com.applory.pictureserver.shared.BaseTimeEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -111,7 +112,8 @@ public class User extends BaseTimeEntity implements UserDetails {
     private Integer officialPrice;
 
 
-//    @Column(name = "profileFileGroupId")
-//    private String profileFileGroupId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PROFILE_IMAGE_FILE_ID")
+    private File file;
 
 }

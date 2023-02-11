@@ -1,6 +1,8 @@
 package com.applory.pictureserver.domain.user;
 
 import com.applory.pictureserver.config.AppConfiguration;
+import com.applory.pictureserver.domain.file.File;
+import com.applory.pictureserver.domain.file.FileService;
 import com.applory.pictureserver.domain.matching.Matching;
 import com.applory.pictureserver.domain.matching.MatchingDto;
 import com.applory.pictureserver.domain.matching.MatchingRepository;
@@ -15,12 +17,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,6 +38,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final ReviewRepository reviewRepository;
+
+    private final FileService fileService;
 
     public User createUser(UserDto.Create dto) {
         User user = new User();
@@ -132,5 +135,21 @@ public class UserService {
         sellerVM.setReviewCountByRating(reviewCountByRating);
 
         return sellerVM;
+    }
+
+    public void updateProfileImage(UUID userId, UserDto.UpdateProfileImage dto) {
+        User userInDB = userRepository.getById(userId);
+
+        // 기존 파일 삭제
+        if (Objects.nonNull(userInDB.getFile())) {
+            fileService.deleteFile(userInDB.getFile().getId());
+        }
+
+        try {
+            File fileInDB = fileService.storeFile(dto.getAttachFile());
+            userInDB.setFile(fileInDB);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

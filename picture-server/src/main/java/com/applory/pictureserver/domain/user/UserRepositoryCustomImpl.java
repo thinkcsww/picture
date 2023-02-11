@@ -19,6 +19,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.Objects;
 
+import static com.applory.pictureserver.domain.file.QFile.file;
 import static com.applory.pictureserver.domain.matching.QMatching.matching;
 import static com.applory.pictureserver.domain.review.QReview.review;
 import static com.applory.pictureserver.domain.user.QUser.user;
@@ -50,12 +51,14 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
                                 review.rate.avg(),
                                 review.id.countDistinct(),
                                 getPrice(search.getSpecialty()),
-                                matching.id.countDistinct()
+                                matching.id.countDistinct(),
+                                user.file().storeFileName
                         )
                 )
                 .from(user)
                 .leftJoin(review).on(user.id.eq(review.seller().id))
                 .leftJoin(matching).on(user.id.eq(matching.seller().id).and(matching.completeYN.eq("Y")))
+                .leftJoin(user.file, file)
                 .where(
                         user.sellerEnabledYn.eq("Y"),
                         specialtyContains(search.getSpecialty()),

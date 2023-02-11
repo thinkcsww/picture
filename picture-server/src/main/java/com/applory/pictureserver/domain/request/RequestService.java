@@ -18,7 +18,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-1@Transactional
+@Transactional
 public class RequestService {
 
     private final RequestRepository requestRepository;

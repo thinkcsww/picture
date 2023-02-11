@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Component
@@ -38,6 +39,16 @@ public class FileService {
         return storeFileResult;
     }
 
+    public void deleteFile(UUID fileId) {
+        File fileInDB = fileRepository.findById(fileId).orElseThrow(() -> new NoSuchElementException("Can't find file id: " + fileId));
+        java.io.File realFile = new java.io.File(getFullPath(fileInDB.getStoreFileName()));
+        if (realFile.exists()) {
+            realFile.delete();
+
+            fileRepository.delete(fileInDB);
+        }
+    }
+
     public File storeFile(MultipartFile multipartFile) throws IOException {
         if (multipartFile.isEmpty()) {
             return null;
@@ -54,6 +65,7 @@ public class FileService {
 
         return fileRepository.save(file);
     }
+
 
     private String createStoreFileName(String originalFilename) {
         String ext = extractExt(originalFilename);

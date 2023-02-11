@@ -3,6 +3,8 @@ package com.applory.pictureserver.domain.request;
 import com.applory.pictureserver.TestConstants;
 import com.applory.pictureserver.TestUtil;
 import com.applory.pictureserver.config.WithMockClientLogin;
+import com.applory.pictureserver.domain.file.File;
+import com.applory.pictureserver.domain.file.FileRepository;
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,10 +39,20 @@ public class RequestServiceTest {
     @Autowired
     private RequestService requestService;
 
+    @Autowired
+    private FileRepository fileRepository;
+
     @BeforeEach
     public void setUp() {
-        userRepository.save(TestUtil.createSeller(TestConstants.TEST_SELLER_NICKNAME, PEOPLE));
-        userRepository.save(TestUtil.createClient());
+        User seller = userRepository.save(TestUtil.createSeller(TestConstants.TEST_SELLER_NICKNAME, PEOPLE));
+        User client = userRepository.save(TestUtil.createClient());
+
+        File file = File.builder()
+                .originFileName("originalName")
+                .storeFileName("storFileName")
+                .build();
+        fileRepository.save(file);
+        client.setFile(file);
     }
 
     @DisplayName("Request 생성 - 성공")
@@ -85,6 +97,17 @@ public class RequestServiceTest {
             assertThat(requestInDB.getReadCount()).isEqualTo(1);
             assertThat(requestInDB.getDueDate()).isEqualTo(create.getDueDate());
             assertThat(requestInDB.getChatCount()).isNotNull();
+        }
+
+        @DisplayName("Request 상세 조회 - 프로필 이미지 파일 함께 조회")
+        @WithMockClientLogin
+        @Test
+        void getRequest_withProfileImageFile() {
+            RequestDto.Create create = TestUtil.createRequestDto(LocalDateTime.now().plusHours(10), "title", "desc", PEOPLE, 1000);
+            RequestDto.VM newRequest = requestService.createRequest(create);
+
+            RequestDto.VM requestInDB = requestService.getRequest(newRequest.getId());
+            assertThat(requestInDB.getUserProfileFileName()).isNotEmpty();
         }
 
         @DisplayName("Request 상세 조회 - 게시자의 또 다른 요청 리스트 함께 조회")

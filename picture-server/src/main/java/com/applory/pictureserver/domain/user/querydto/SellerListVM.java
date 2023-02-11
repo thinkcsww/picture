@@ -15,4 +15,5 @@ public class SellerListVM {
     private Long reviewCnt;
     private Integer price;
     private Long completeMatchingCnt;
+    private String fileName;
 }

@@ -49,4 +49,10 @@ public class UserController {
     public UserDto.SellerVM getSellerUser(@PathVariable UUID id) {
         return userService.getSellerDetail(id);
     }
+
+    @PostMapping("/{id}/profile-image")
+    public Result<Object> updateProfileImage(@PathVariable("id") UUID userId, UserDto.UpdateProfileImage dto) {
+        userService.updateProfileImage(userId, dto);
+        return Result.success();
+    }
 }

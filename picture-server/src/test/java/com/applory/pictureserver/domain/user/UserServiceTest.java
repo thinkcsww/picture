@@ -4,6 +4,8 @@ import com.applory.pictureserver.TestConstants;
 import com.applory.pictureserver.TestUtil;
 import com.applory.pictureserver.config.WithMockClientLogin;
 import com.applory.pictureserver.config.WithMockSellerLogin;
+import com.applory.pictureserver.domain.file.File;
+import com.applory.pictureserver.domain.file.FileRepository;
 import com.applory.pictureserver.domain.matching.Matching;
 import com.applory.pictureserver.domain.matching.MatchingRepository;
 import com.applory.pictureserver.domain.review.ReviewRepository;
@@ -41,9 +43,20 @@ public class UserServiceTest {
     @Autowired
     private ReviewRepository reviewRepository;
 
+    @Autowired
+    private FileRepository fileRepository;
+
     @BeforeEach
     public void setUp() {
         User seller1 = userRepository.save(TestUtil.createSeller(TestConstants.TEST_SELLER_NICKNAME, PEOPLE));
+
+        File file = File.builder()
+                .originFileName("originalName")
+                .storeFileName("storFileName")
+                .build();
+        fileRepository.save(file);
+        seller1.setFile(file);
+
         User seller2 = TestUtil.createSeller("nick2", PEOPLE);
         seller2.setUsername("seller2");
         seller2.setSpecialty(PEOPLE.toString());
@@ -141,6 +154,15 @@ public class UserServiceTest {
             assertThat(userMe.getMatchings().get(Matching.Status.REQUEST)).isNotEmpty();
         }
 
+        @DisplayName("Seller User Me 조회 - 프로필 이미지 파일 이름 함께 조회")
+        @WithMockSellerLogin
+        @Test
+        public void getUserMe_withProfileImageFileName() {
+            UserDto.VM userMe = userService.getUserMe();
+
+            assertThat(userMe.getFileName()).isNotNull();
+        }
+
         @DisplayName("Client User Me 조회 - 기본 정보 조회")
         @WithMockClientLogin
         @Test
@@ -179,6 +201,15 @@ public class UserServiceTest {
             assertThat(sellerUsers.getContent().get(0).getNickname()).isNotNull();
             assertThat(sellerUsers.getContent().get(0).getDescription()).isNotNull();
             assertThat(sellerUsers.getContent().get(1).getCompleteMatchingCnt()).isGreaterThan(0);
+        }
+
+        @DisplayName("Seller 리스트 조회 - 프로필 이미지 파일 함께 ")
+        @Test
+        void getSeller_withProfileImageFileName() {
+            UserDto.SearchSeller searchSeller = new UserDto.SearchSeller();
+            Page<SellerListVM> sellerUsers = userService.getSellerUsers(searchSeller, PageRequest.of(0, 20));
+
+            assertThat(sellerUsers.getContent().get(0).getRateAvg()).isGreaterThan(0);
         }
 
         @DisplayName("Seller 리스트 조회 - 리뷰 많은 순")
@@ -321,6 +352,17 @@ public class UserServiceTest {
             UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId());
 
             assertThat(sellerUser.getRateAvg()).isGreaterThan(0);
+        }
+
+        @DisplayName("Seller 상세 조회 성공 - 프로필 이미지 파일 이름 조회")
+        @Test
+        public void getSeller_withProfileImageFileName() {
+
+            User sellerInDB = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
+
+            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId());
+
+            assertThat(sellerUser.getFileName()).isNotEmpty();
         }
     }
 

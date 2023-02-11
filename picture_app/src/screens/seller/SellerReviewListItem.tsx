@@ -6,11 +6,11 @@ import DateUtils from "../../utils/DateUtils";
 import RatingStarIcons from "./components/RatingStarIcons";
 import Images from "../../../assets/images";
 
-type SellerListItemProps = {
+type SellerReviewListItemProps = {
   item: Review.Review
 }
 
-const SellerListItem: FC<SellerListItemProps> = ({ item }) => {
+const SellerReviewListItem: FC<SellerReviewListItemProps> = ({ item }) => {
 
   return (
     <View style={styles.container}>
@@ -81,4 +81,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SellerListItem;
+export default SellerReviewListItem;

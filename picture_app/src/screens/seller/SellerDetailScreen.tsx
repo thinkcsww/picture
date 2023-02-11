@@ -18,6 +18,7 @@ import { setSignUpRedux } from "../../store/slices/signUpSlice";
 import { Chatting } from "../../types/Chatting";
 import SellerDetailReview from "./components/SellerDetailReview";
 import { Env } from "../../constants/Env";
+import ImageWithPH from "../../components/ImageWithPH";
 
 const SellerDetailScreen = ({ route, navigation }: any) => {
   const dispatch = useAppDispatch();
@@ -42,21 +43,26 @@ const SellerDetailScreen = ({ route, navigation }: any) => {
 
   const onClickChatting = () => {
     if (!user) {
-      dispatch(setSignUpRedux( { destination : { key: RouteNames.SellerDetail, params: { id: id } }}))
-      navigation.navigate(RouteNames.SignUpGuide)
+      dispatch(setSignUpRedux({ destination: { key: RouteNames.SellerDetail, params: { id: id } } }));
+      navigation.navigate(RouteNames.SignUpGuide);
     } else {
-      navigation.navigate(RouteNames.ChattingRoom, { targetUserId: seller.id, sellerId: seller.id, clientId: user.id, roomType: Chatting.RoomType.PRIVATE });
+      navigation.navigate(RouteNames.ChattingRoom, {
+        targetUserId: seller.id,
+        sellerId: seller.id,
+        clientId: user.id,
+        roomType: Chatting.RoomType.PRIVATE,
+      });
     }
 
-  }
+  };
 
   const getSellerDetailQuery = useQuery(SellerService.QueryKey.getSeller, () => {
     return SellerService.getSeller(id);
   }, {
     onSuccess: (result: Seller.Seller) => {
-      console.log('==== Seller 상세 조회 성공 ====');
+      console.log("==== Seller 상세 조회 성공 ====");
       console.log(result);
-    }
+    },
   });
 
   if (getSellerDetailQuery.isLoading || !getSellerDetailQuery.data) {
@@ -69,14 +75,15 @@ const SellerDetailScreen = ({ route, navigation }: any) => {
     <View style={{ flex: 1 }}>
       <View style={{
         position: "absolute",
-        backgroundColor: show ? 'white' : "#00000000",
+        backgroundColor: show ? "white" : "#00000000",
         paddingTop: DeviceInfo.hasNotch() ? 50 : 10,
         height: DeviceInfo.hasNotch() ? 85 : 50,
         width: "100%",
         paddingHorizontal: 20,
         zIndex: 100,
       }}>
-        <MaterialCommunityIcons name={"arrow-left"} color={show ? "black" : 'white'} size={24} onPress={() => navigation.goBack()} />
+        <MaterialCommunityIcons name={"arrow-left"} color={show ? "black" : "white"} size={24}
+                                onPress={() => navigation.goBack()} />
       </View>
       <ScrollView
         scrollEventThrottle={16}
@@ -85,15 +92,15 @@ const SellerDetailScreen = ({ route, navigation }: any) => {
         contentContainerStyle={{
           paddingBottom: 50,
         }}>
-        <Image source={{ uri: `${Env.host}/api/v1/files/images/${seller.fileName}` }} defaultSource={Images.profile.dummy} style={{
+        <ImageWithPH fileName={seller.fileName} styles={{
           height: 300,
-        }} />
+        }}/>
 
         <SellerDetailProfile onClickChatting={onClickChatting} seller={seller} />
 
         <Divider style={{ height: 1, marginVertical: 20, marginHorizontal: 12 }} />
 
-        <SellerDetailPrice seller={seller}/>
+        <SellerDetailPrice seller={seller} />
 
         <Divider style={{ height: 1, marginVertical: 20, marginHorizontal: 12 }} />
 
@@ -101,13 +108,13 @@ const SellerDetailScreen = ({ route, navigation }: any) => {
 
         <Divider style={{ height: 1, marginVertical: 20, marginHorizontal: 12 }} />
 
-        <SellerDetailRating seller={seller}/>
+        <SellerDetailRating seller={seller} />
 
         <Divider style={{ height: 1, marginVertical: 20, marginHorizontal: 12 }} />
 
-        <SellerDetailReview review={seller.latestReview} sellerId={seller.id}/>
+        <SellerDetailReview review={seller.latestReview} sellerId={seller.id} />
 
-        <AppButton title={'문의하기'} onPress={onClickChatting}/>
+        <AppButton title={"문의하기"} onPress={onClickChatting} />
 
       </ScrollView>
     </View>

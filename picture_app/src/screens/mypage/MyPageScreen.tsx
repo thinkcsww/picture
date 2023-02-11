@@ -13,13 +13,12 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { launchImageLibrary } from "react-native-image-picker";
 import { instance } from "../../hooks/useAxiosLoader";
 import { Env } from "../../constants/Env";
+import ImageWithPH from "../../components/ImageWithPH";
 
 const MyPageScreen = () => {
   const dispatch = useAppDispatch();
 
-  const [userDetail, setUserDetail] = useState<any>({
-
-  });
+  const [userDetail, setUserDetail] = useState<any>();
 
   useEffect(() => {
     getUserMe().then();
@@ -72,11 +71,13 @@ const MyPageScreen = () => {
     })
   };
 
+  if (!userDetail) return null;
 
   const logout = async () => {
     await AsyncStorageService.removeData(AsyncStorageService.Keys.TokenInfo);
     dispatch(setUser(undefined));
   };
+
 
   return <SafeAreaView style={styles.container}>
     <ScrollView>
@@ -88,12 +89,7 @@ const MyPageScreen = () => {
           marginTop: 24,
           flexDirection: "row",
         }}>
-          <Image
-              source={{ uri: `${Env.host}/api/v1/files/images/${userDetail.fileName}` }}
-              defaultSource={Images.profile.dummy}
-              loadingIndicatorSource={Images.profile.dummy}
-              style={styles.profileImage}
-            />
+          <ImageWithPH fileName={userDetail.fileName} styles={styles.profileImage}/>
 
           <View style={{
             justifyContent: "center",

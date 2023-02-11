@@ -7,6 +7,7 @@ import { Colors } from "../../../colors";
 import { useNavigation } from "@react-navigation/native";
 import { RouteNames } from "../../../AppNav";
 import { Env } from "../../../constants/Env";
+import ImageWithPH from "../../../components/ImageWithPH";
 
 type SellerListItemProps = {
   item: Seller.Seller
@@ -19,11 +20,7 @@ const SellerListItem: FC<SellerListItemProps> = ({ item }) => {
   }
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
-      <Image
-        source={{ uri: item.fileName ? `${Env.host}/api/v1/files/images/${item.fileName}` : `` }}
-        defaultSource={Images.profile.dummy}
-        style={styles.profileImage}
-      />
+      <ImageWithPH fileName={item.fileName} styles={styles.profileImage}/>
       <View>
         <View style={styles.infoContainer}>
           <Text style={styles.name}>{item.nickname} 작가님</Text>

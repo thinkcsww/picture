@@ -14,6 +14,7 @@ export namespace Request {
     matchYn: string,
     readCount: number,
     chatCount: number,
+    userProfileFileName: string,
     anotherRequests: Request.Request[],
   }
 

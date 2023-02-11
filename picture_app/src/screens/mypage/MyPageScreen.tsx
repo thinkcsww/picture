@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import AsyncStorageService from "../../services/AsyncStorageService";
 import UserService from "../../services/UserService";
 import { useAppDispatch } from "../../store/config";
@@ -10,49 +10,97 @@ import Images from "../../../assets/images";
 import { Colors } from "../../colors";
 import DateUtils from "../../utils/DateUtils";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { launchImageLibrary } from "react-native-image-picker";
+import { instance } from "../../hooks/useAxiosLoader";
+import { Env } from "../../constants/Env";
 
 const MyPageScreen = () => {
   const dispatch = useAppDispatch();
 
-  const [state, setState] = useState<any>();
+  const [userDetail, setUserDetail] = useState<any>({
+
+  });
 
   useEffect(() => {
+    getUserMe().then();
+  }, []);
+
+  const getUserMe = async () => {
     UserService.getUserMe().then((res: any) => {
-      console.log('==== 마이페이지 getUserMe ====')
+      console.log("==== 마이페이지 getUserMe ====");
       console.log(res);
-      setState(res.data);
+      setUserDetail(res.data);
       // dispatch(setUser(res))
     });
-  }, [])
+  }
 
+  const onPressEditProfileImage = () => {
+    launchImageLibrary({
+      includeBase64: true,
+      mediaType: 'photo'
+    }).then((res) => {
+      if (!res.didCancel) {
+        if (res!.assets!.length > 0) {
+          const image = res.assets![0];
+          const formData = new FormData();
+          formData.append('attachFile', {
+            name: image.fileName,
+            type: image.type,
+            uri:
+              Platform.OS === 'android'
+                ? image.uri!
+                : image.uri!.replace('file://', ''),
+          });
+
+          instance.post(`${Env.host}/api/v1/users/${userDetail.id}/profile-image`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          })
+            .then((response) => {
+              console.log('=== 성공 ===')
+              console.log(response.data);
+              getUserMe().then();
+            })
+            .catch((error) => {
+              console.log('=== 에러 ===')
+              console.log(error);
+            });
+        }
+      }
+
+    })
+  };
 
 
   const logout = async () => {
     await AsyncStorageService.removeData(AsyncStorageService.Keys.TokenInfo);
     dispatch(setUser(undefined));
-  }
+  };
 
   return <SafeAreaView style={styles.container}>
     <ScrollView>
-      <TabListHeaderWithOptions title={'마이페이지'} noOptions/>
+      <TabListHeaderWithOptions title={"마이페이지"} noOptions />
       <View style={{
         paddingHorizontal: 20,
       }}>
-        <View style={{
+        <TouchableOpacity onPress={onPressEditProfileImage} style={{
           marginTop: 24,
-          flexDirection: 'row',
+          flexDirection: "row",
         }}>
           <Image
-            source={{ uri: 'asd' }}
-            defaultSource={Images.profile.dummy}
-            style={styles.profileImage}
-          />
+              source={{ uri: `${Env.host}/api/v1/files/images/${userDetail.fileName}` }}
+              defaultSource={Images.profile.dummy}
+              loadingIndicatorSource={Images.profile.dummy}
+              style={styles.profileImage}
+            />
+
           <View style={{
-            justifyContent: 'center'
+            justifyContent: "center",
           }}>
             <Text style={{
-              fontSize: 22
-            }}>{ state?.nickname }</Text>
+              fontSize: 22,
+            }}>{userDetail?.nickname}</Text>
             {/*<View style={{*/}
             {/*  flexDirection: 'row'*/}
             {/*}}>*/}
@@ -60,11 +108,11 @@ const MyPageScreen = () => {
             {/*  <Text>4.1</Text>*/}
             {/*</View>*/}
           </View>
-        </View>
+        </TouchableOpacity>
         <View style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginVertical: 12
+          flexDirection: "row",
+          justifyContent: "space-between",
+          marginVertical: 12,
         }}>
           <TouchableOpacity style={styles.profileBtn}>
             <Text>비고</Text>
@@ -74,43 +122,43 @@ const MyPageScreen = () => {
           </TouchableOpacity>
         </View>
       </View>
-      <Divider style={{ height: 10, backgroundColor: '#f1f1f1'}}/>
+      <Divider style={{ height: 10, backgroundColor: "#f1f1f1" }} />
       <View style={{
         paddingHorizontal: 20,
       }}>
         <View style={{
-          marginTop: 12
+          marginTop: 12,
         }}>
           <Text style={{
             fontSize: 18,
-            fontWeight: '500',
-            marginBottom: 6
+            fontWeight: "500",
+            marginBottom: 6,
           }}>의뢰중인 작업</Text>
 
           {
-            state?.matchings.ACCEPT && state?.matchings.ACCEPT.length > 0 ? (
+            userDetail?.matchings?.ACCEPT && userDetail?.matchings?.ACCEPT.length > 0 ? (
               <View style={{
-                backgroundColor: '#f1f1f1',
+                backgroundColor: "#f1f1f1",
                 height: 100,
                 borderRadius: 8,
-                justifyContent: 'center',
-                alignItems: 'center'
+                justifyContent: "center",
+                alignItems: "center",
               }}>
-                <Text>{ state?.matchings.COMPLETE[0]?.opponentNickname } 작가님과의 작업이 진행중이에요!! </Text>
-                <Text>마감기한: { DateUtils.getRemainTime(state?.matchings.COMPLETE[0]?.dueDate) }</Text>
-                <Text>작업내용: {state?.matchings.COMPLETE[0]?.comment}</Text>
+                <Text>{userDetail?.matchings?.COMPLETE[0]?.opponentNickname} 작가님과의 작업이 진행중이에요!! </Text>
+                <Text>마감기한: {DateUtils.getRemainTime(userDetail?.matchings?.COMPLETE[0]?.dueDate)}</Text>
+                <Text>작업내용: {userDetail?.matchings?.COMPLETE[0]?.comment}</Text>
 
               </View>
             ) : (
               <View style={{
-                backgroundColor: '#f1f1f1',
+                backgroundColor: "#f1f1f1",
                 height: 100,
                 borderRadius: 8,
-                justifyContent: 'center',
-                alignItems: 'center'
+                justifyContent: "center",
+                alignItems: "center",
               }}>
                 <Text>진행중인 의뢰가 없어요!</Text>
-                <Text>의뢰하러 가기 <MaterialCommunityIcons name={'clock'}/></Text>
+                <Text>의뢰하러 가기 <MaterialCommunityIcons name={"clock"} /></Text>
 
               </View>
             )
@@ -118,43 +166,43 @@ const MyPageScreen = () => {
         </View>
       </View>
 
-      <Divider style={{ height: 10, backgroundColor: '#f1f1f1'}}/>
+      <Divider style={{ height: 10, backgroundColor: "#f1f1f1" }} />
       <View style={{
         paddingHorizontal: 20,
       }}>
         <View style={{
-          marginTop: 12
+          marginTop: 12,
         }}>
           <Text style={{
             fontSize: 18,
-            fontWeight: '500',
-            marginBottom: 6
+            fontWeight: "500",
+            marginBottom: 6,
           }}>완료된 작업</Text>
 
           {
-            state?.matchings.COMPLETE && state?.matchings.COMPLETE.length > 0 ? (
+            userDetail?.matchings?.COMPLETE && userDetail?.matchings?.COMPLETE.length > 0 ? (
               <View style={{
-                backgroundColor: '#f1f1f1',
+                backgroundColor: "#f1f1f1",
                 height: 100,
                 borderRadius: 8,
-                justifyContent: 'center',
-                alignItems: 'center'
+                justifyContent: "center",
+                alignItems: "center",
               }}>
-                <Text>{ state?.matchings.COMPLETE[0]?.opponentNickname } 작가님과의 작업 </Text>
-                <Text>완료일: { DateUtils.getFormattedDate(state?.matchings.COMPLETE[0]?.completeDt) }</Text>
-                <Text>작업내용: {state?.matchings.COMPLETE[0]?.comment}</Text>
+                <Text>{userDetail?.matchings?.COMPLETE[0]?.opponentNickname} 작가님과의 작업 </Text>
+                <Text>완료일: {DateUtils.getFormattedDate(userDetail?.matchings?.COMPLETE[0]?.completeDt)}</Text>
+                <Text>작업내용: {userDetail?.matchings?.COMPLETE[0]?.comment}</Text>
 
               </View>
             ) : (
               <View style={{
-                backgroundColor: '#f1f1f1',
+                backgroundColor: "#f1f1f1",
                 height: 100,
                 borderRadius: 8,
-                justifyContent: 'center',
-                alignItems: 'center'
+                justifyContent: "center",
+                alignItems: "center",
               }}>
                 <Text>진행중인 의뢰가 없어요!</Text>
-                <Text>의뢰하러 가기 <MaterialCommunityIcons name={'clock'}/></Text>
+                <Text>의뢰하러 가기 <MaterialCommunityIcons name={"clock"} /></Text>
 
               </View>
             )
@@ -162,12 +210,12 @@ const MyPageScreen = () => {
         </View>
       </View>
     </ScrollView>
-  </SafeAreaView>
-}
+  </SafeAreaView>;
+};
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   profileImage: {
     width: 80,
@@ -178,13 +226,13 @@ const styles = StyleSheet.create({
   },
   profileBtn: {
     backgroundColor: Colors.GRAY_TEXT,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     height: 40,
     flex: 1,
     borderRadius: 8,
-    marginHorizontal: 4
-  }
-})
+    marginHorizontal: 4,
+  },
+});
 
 export default MyPageScreen;

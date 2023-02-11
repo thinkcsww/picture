@@ -1,11 +1,12 @@
 import React, { FC } from "react";
 import { Seller } from "../../../types/Seller";
-import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Images from "../../../../assets/images";
 import Icon from "react-native-vector-icons/Ionicons";
 import { Colors } from "../../../colors";
 import { useNavigation } from "@react-navigation/native";
 import { RouteNames } from "../../../AppNav";
+import { Env } from "../../../constants/Env";
 
 type SellerListItemProps = {
   item: Seller.Seller
@@ -19,7 +20,7 @@ const SellerListItem: FC<SellerListItemProps> = ({ item }) => {
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
       <Image
-        source={{ uri: 'asd' }}
+        source={{ uri: item.fileName ? `${Env.host}/api/v1/files/images/${item.fileName}` : `` }}
         defaultSource={Images.profile.dummy}
         style={styles.profileImage}
       />

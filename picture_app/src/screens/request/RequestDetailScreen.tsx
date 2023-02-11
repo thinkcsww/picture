@@ -12,8 +12,9 @@ import { useQuery } from "react-query";
 import { RequestService } from "../../services/RequestService";
 import CommonUtils from "../../utils/CommonUtils";
 import AnotherRequestList from "./components/AnotherRequestList";
+import { Env } from "../../constants/Env";
 
-const RequestDetailScreen = ({ route }) => {
+const RequestDetailScreen = ({ route }: any) => {
   const { id } = route.params;
   const navigation = useNavigation<any>();
 
@@ -52,7 +53,7 @@ const RequestDetailScreen = ({ route }) => {
             flexDirection: "row",
             alignItems: "center",
           }}>
-            <Avatar size={"large"} source={Images.profile.dummy} rounded />
+            <Avatar size={"large"}  source={{ uri: `${Env.host}/api/v1/files/images/${request.userProfileFileName}` }} rounded />
             <Text style={{
               marginLeft: 12,
               fontWeight: "bold",

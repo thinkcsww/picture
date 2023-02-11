@@ -17,6 +17,7 @@ import { useAppDispatch, useAppSelector } from "../../store/config";
 import { setSignUpRedux } from "../../store/slices/signUpSlice";
 import { Chatting } from "../../types/Chatting";
 import SellerDetailReview from "./components/SellerDetailReview";
+import { Env } from "../../constants/Env";
 
 const SellerDetailScreen = ({ route, navigation }: any) => {
   const dispatch = useAppDispatch();
@@ -75,7 +76,7 @@ const SellerDetailScreen = ({ route, navigation }: any) => {
         paddingHorizontal: 20,
         zIndex: 100,
       }}>
-        <MaterialCommunityIcons name={"arrow-left"} color={"black"} size={24} onPress={() => navigation.goBack()} />
+        <MaterialCommunityIcons name={"arrow-left"} color={show ? "black" : 'white'} size={24} onPress={() => navigation.goBack()} />
       </View>
       <ScrollView
         scrollEventThrottle={16}
@@ -84,7 +85,7 @@ const SellerDetailScreen = ({ route, navigation }: any) => {
         contentContainerStyle={{
           paddingBottom: 50,
         }}>
-        <Image source={{ uri: "" }} defaultSource={Images.profile.dummy} style={{
+        <Image source={{ uri: `${Env.host}/api/v1/files/images/${seller.fileName}` }} defaultSource={Images.profile.dummy} style={{
           height: 300,
         }} />
 

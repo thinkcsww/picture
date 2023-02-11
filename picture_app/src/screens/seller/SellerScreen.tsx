@@ -10,7 +10,6 @@ import { AxiosError } from "axios";
 import TabListHeaderWithOptions from "../../components/tab-list/TabListHeaderWithOptions";
 import TabListFilter from "../../components/tab-list/TabListFilter";
 import { Specialty } from "../../types/Common";
-import { PageResult, Result } from "../../types/Page";
 import { Divider } from "react-native-paper";
 import CommonNodata from "../../components/CommonNodata";
 import SellerListItem from "./components/SellerListItem";
@@ -47,7 +46,7 @@ const SellerScreen: FC<SellerScreenProps> = ({ navigation }) => {
   const getSellersQuery = useInfiniteQuery([SellerService.QueryKey.getSellers, selectedSpecialty, selectedFilter, searchText], ({ pageParam = 0 }) => {
     return SellerService.getSellers(selectedSpecialty.value, selectedFilter.value, searchText, pageParam);
   }, {
-    getNextPageParam: (lastPageData: Result<PageResult>) => {
+    getNextPageParam: (lastPageData: any) => {
       return lastPageData.data.last ? undefined : lastPageData.data.number + 1;
     },
     onSuccess: (result: any) => {
@@ -57,7 +56,7 @@ const SellerScreen: FC<SellerScreenProps> = ({ navigation }) => {
     onError: (err: AxiosError) => {
       console.log(err.message);
     },
-    keepPreviousData: true,
+    keepPreviousData: true
   })
 
   /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -107,7 +106,7 @@ const SellerScreen: FC<SellerScreenProps> = ({ navigation }) => {
     <TabListHeaderWithOptions onChangeSearchText={onChangeSearchText} searchText={searchText} selectedSpecialty={selectedSpecialty} onClickSelector={onClickSelector}/>
     <TabListFilter list={filterList} onPress={onSelectFilter} selectedFilter={selectedFilter}/>
     <FlatList
-      data={getSellersQuery.data?.pages.map((page: Result<PageResult>) => page.data.content).flat()}
+      data={getSellersQuery.data?.pages.map((page: any) => page.data.content).flat()}
       onRefresh={onRefresh}
       refreshing={isFetching}
       ItemSeparatorComponent={() => <Divider style={{ height: 1, marginVertical: 20 }} />}

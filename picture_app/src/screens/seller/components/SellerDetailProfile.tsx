@@ -5,6 +5,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { Colors } from "../../../colors";
 import { Seller } from "../../../types/Seller";
 import RatingStarIcons from "./RatingStarIcons";
+import { Env } from "../../../constants/Env";
 
 type SellerDetailProfileProps = {
   seller: Seller.Seller,
@@ -14,7 +15,7 @@ const SellerDetailProfile: FC<SellerDetailProfileProps> = ({ seller, onClickChat
   return (
     <View>
       <View style={styles.container}>
-        <Image source={{ uri: "" }} defaultSource={Images.profile.dummy} style={styles.profileImage} />
+        <Image source={{ uri: `${Env.host}/api/v1/files/images/${seller.fileName}` }} defaultSource={Images.profile.dummy} style={styles.profileImage} />
         <View style={styles.innerContainer}>
           <Text style={styles.name}>{ seller.nickname } 작가님 </Text>
           <View style={styles.rateRow}>

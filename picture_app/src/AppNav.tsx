@@ -180,7 +180,7 @@ const AppNav = () => {
     <Stack.Navigator initialRouteName={"Tabs"} screenOptions={{ headerShown: false, cardStyle: { backgroundColor: '#fff' } }}>
       <Stack.Screen name="Tabs" component={HomeTabs} options={{ headerShown: false }} />
       <Stack.Screen name={RouteNames.SellerDetail} component={SellerDetailScreen} options={{ headerShown: false }} />
-      <Stack.Screen name={RouteNames.SellerReview} component={SellerReviewScreen} options={{ headerShown: false }} />
+      <Stack.Screen name={RouteNames.SellerReview} component={SellerReviewScreen} options={{ headerShown: true, headerTitleAlign: 'center', headerTitle: '리뷰', headerLeft: () => <MaterialCommunityIcons name={"arrow-left"} color={"black"} size={24} style={{marginLeft: 12}} onPress={() => navigation.goBack()} /> }} />
       <Stack.Screen name={RouteNames.RequestDetail} component={RequestDetailScreen} options={{ headerShown: false }} />
       <Stack.Screen name={RouteNames.AddRequest} component={AddRequestScreen} options={{ headerShown: false, ...TransitionPresets.ModalSlideFromBottomIOS}} />
       <Stack.Screen name={RouteNames.ChattingRoom} component={ChattingRoomScreen} options={{ headerShown: false }} />

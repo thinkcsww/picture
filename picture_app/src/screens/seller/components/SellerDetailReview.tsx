@@ -7,9 +7,10 @@ import DateUtils from "../../../utils/DateUtils";
 import CommonNodata from "../../../components/CommonNodata";
 import { useNavigation } from "@react-navigation/native";
 import { RouteNames } from "../../../AppNav";
+import { Review } from "../../../types/Review";
 
 type SellerDetailReviewProps = {
-  review: any,
+  review: Review.Review,
   sellerId: string
 }
 
@@ -36,7 +37,7 @@ const SellerDetailReview: FC<SellerDetailReviewProps> = ({ review, sellerId }) =
                 <Text style={styles.nicknameText}>{ review.writerNickname }</Text>
                 <View style={styles.ratingContainer}>
                   <View style={styles.ratingRow}>
-                    <RatingStarIcons rateAvg={review.rate}/>
+                    <RatingStarIcons rateAvg={review.rate!}/>
                     <Text style={styles.dateText}>{ DateUtils.getPastFormattedDate(review.createdDt) }</Text>
                   </View>
 

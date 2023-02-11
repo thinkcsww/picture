@@ -9,7 +9,6 @@ export const SellerService = {
   QueryKey: {
     getSellers: 'getSellers',
     getSeller: 'getSeller',
-    getSellerReview: 'getSellerReview',
   },
 
   getSellers: async (selectedFilter: Specialty, filter: Seller.Filter, searchText: string, pageNum: any) => {

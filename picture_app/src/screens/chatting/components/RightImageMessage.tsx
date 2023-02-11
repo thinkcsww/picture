@@ -58,7 +58,7 @@ const RightImageMessage = ({ message }: RightTextMessageProps) => {
             width: 200,
             height: 150
           }}
-          source={{ uri: `${Env.host}/api/v1/chattings/images/${message.fileName}` }}
+          source={{ uri: `${Env.host}/api/v1/files/images/${message.fileName}` }}
         />
       </View>
     </View>

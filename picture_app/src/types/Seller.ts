@@ -23,6 +23,7 @@ export namespace Seller {
     completeMatchingCnt: number
     latestReview: any,
     writerNickname: string,
+    fileName: string,
     reviewCountByRating: {
       ["1"]: number,
       ["2"]: number,

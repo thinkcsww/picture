@@ -53,6 +53,7 @@ public class TextMessageSender implements MessageSender {
         sendMessageParams.setMessageId(chattingMessage.getId());
 
         ChattingDto.StompMessageVM stompMessageVM = ChattingDto.StompMessageVM.builder()
+                .roomId(sendMessageParams.getRoomId())
                 .senderId(sendMessageParams.getSenderId())
                 .roomType(sendMessageParams.getRoomType())
                 .messageType(chattingMessage.getMessageType())
@@ -62,6 +63,8 @@ public class TextMessageSender implements MessageSender {
 
 
         simpMessagingTemplate.convertAndSend("/room/" + sendMessageParams.getRoomId(), stompMessageVM);
+        String targetUserId = targetChattingRoom.getClientId().equals(sendMessageParams.getSenderId()) ? targetChattingRoom.getSellerId().toString() : targetChattingRoom.getClientId().toString();
+        simpMessagingTemplate.convertAndSend("/chat-list/" + targetUserId, stompMessageVM);
     }
 
     private ChattingRoom saveNewRoom(ChattingDto.SendMessageParams createMessage) {

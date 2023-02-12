@@ -1,7 +1,6 @@
 package com.applory.pictureserver.domain.chatting;
 
 import com.applory.pictureserver.shared.Result;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,8 +30,8 @@ public class ChattingController {
     }
 
     @GetMapping("")
-    public List<ChattingDto.ChattingRoomVM> getRooms() {
-        return chattingService.getRooms();
+    public Result<List<ChattingDto.ChattingRoomVM>> getRooms() {
+        return Result.success(chattingService.getRooms());
     }
 
     @GetMapping("/room/enter")

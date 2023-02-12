@@ -23,7 +23,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/room");
+        registry.enableSimpleBroker("/room", "/chat-list");
 
         registry.setApplicationDestinationPrefixes("/api/v1/chat");
     }

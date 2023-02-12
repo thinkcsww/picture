@@ -5,5 +5,6 @@ export namespace Review {
     rate?: number
     createdDt?: string
     content?: string
+    writerProfileImageFileName?: string
   }
 }

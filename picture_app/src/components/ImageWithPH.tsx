@@ -1,9 +1,13 @@
 import { Image, View } from "react-native";
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
 import { Env } from "../constants/Env";
 import Images from "../../assets/images";
 
-const ImageWithPH = ({ styles, fileName }: any) => {
+type ImageWithPHProps = {
+  styles: any,
+  fileName?: string
+}
+const ImageWithPH: FC<ImageWithPHProps> = ({ styles, fileName }) => {
   return (
     <Image
       source={{ uri: fileName ? `${Env.host}/api/v1/files/images/${fileName}` : `` }}

@@ -8,6 +8,7 @@ import CommonNodata from "../../../components/CommonNodata";
 import { useNavigation } from "@react-navigation/native";
 import { RouteNames } from "../../../AppNav";
 import { Review } from "../../../types/Review";
+import ImageWithPH from "../../../components/ImageWithPH";
 
 type SellerDetailReviewProps = {
   review: Review.Review,
@@ -32,7 +33,12 @@ const SellerDetailReview: FC<SellerDetailReviewProps> = ({ review, sellerId }) =
         review ? (
           <>
             <View style={styles.innerContainer}>
-              <Avatar size={"small"} source={Images.profile.dummy} rounded />
+              <ImageWithPH styles={{
+                width: 30,
+                height: 30,
+                borderRadius: 15
+              }} fileName={review.writerProfileImageFileName}/>
+              {/*<Avatar size={"small"} source={Images.profile.dummy} rounded />*/}
               <View style={styles.profileContainer}>
                 <Text style={styles.nicknameText}>{ review.writerNickname }</Text>
                 <View style={styles.ratingContainer}>

@@ -5,6 +5,7 @@ import { Review } from "../../types/Review";
 import DateUtils from "../../utils/DateUtils";
 import RatingStarIcons from "./components/RatingStarIcons";
 import Images from "../../../assets/images";
+import ImageWithPH from "../../components/ImageWithPH";
 
 type SellerReviewListItemProps = {
   item: Review.Review
@@ -15,7 +16,11 @@ const SellerReviewListItem: FC<SellerReviewListItemProps> = ({ item }) => {
   return (
     <View style={styles.container}>
       <View style={styles.innerContainer}>
-        <Avatar size={"small"} source={Images.profile.dummy} rounded />
+        <ImageWithPH styles={{
+          width: 30,
+          height: 30,
+          borderRadius: 15
+        }} fileName={item.writerProfileImageFileName}/>
         <View style={styles.profileContainer}>
           <Text style={styles.nicknameText}>{item.writerNickname}</Text>
           <View style={styles.ratingContainer}>

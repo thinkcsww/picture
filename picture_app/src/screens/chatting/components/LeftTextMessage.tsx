@@ -5,13 +5,15 @@ import Images from "../../../../assets/images";
 import { Colors } from "../../../colors";
 import DateUtils from "../../../utils/DateUtils";
 import { Chatting } from "../../../types/Chatting";
+import ImageWithPH from "../../../components/ImageWithPH";
 
 type LeftTextMessageProps = {
   message: Chatting.ChattingMessage,
-  onClickProfile: () => void
+  onClickProfile: () => void,
+  roomInfo: Chatting.ChattingRoom,
 };
 
-const LeftTextMessage = ({ message, onClickProfile }: LeftTextMessageProps) => {
+const LeftTextMessage = ({ message, onClickProfile, roomInfo }: LeftTextMessageProps) => {
   return (
     <View style={{
       flexDirection: "row",
@@ -19,7 +21,11 @@ const LeftTextMessage = ({ message, onClickProfile }: LeftTextMessageProps) => {
       maxWidth: "70%",
     }}>
       <TouchableOpacity onPress={onClickProfile}>
-        <Avatar size={"small"} source={Images.profile.dummy} rounded />
+        <ImageWithPH styles={{
+          width: 36,
+          height: 36,
+          borderRadius: 18
+        }} fileName={roomInfo.opponent.fileName}/>
       </TouchableOpacity>
 
       <View style={{

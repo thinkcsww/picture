@@ -6,6 +6,10 @@ import { Badge } from "@rneui/base";
 import React from "react";
 import { RouteNames } from "../../../AppNav";
 import { Chatting } from "../../../types/Chatting";
+import { Colors } from "../../../colors";
+import CommonUtils from "../../../utils/CommonUtils";
+import DateUtils from "../../../utils/DateUtils";
+import ImageWithPH from "../../../components/ImageWithPH";
 
 type ChattingRoomListItemProps = {
   item: Chatting.ChattingRoom
@@ -47,7 +51,11 @@ const ChattingRoomListItem = ({ item }: ChattingRoomListItemProps) => {
         flexDirection: 'row',
         width: '45%',
       }}>
-        <Avatar size={"medium"} source={Images.profile.dummy} rounded />
+        <ImageWithPH styles={{
+          width: 50,
+          height: 50,
+          borderRadius: 25
+        }} fileName={item.opponent.fileName}/>
         <View style={{
           marginLeft: 12
         }}>
@@ -63,31 +71,18 @@ const ChattingRoomListItem = ({ item }: ChattingRoomListItemProps) => {
                 }}>{ getMessage()  }</Text>
         </View>
       </View>
-      {/*<View style={{*/}
-      {/*  flexDirection: 'row',*/}
-      {/*  alignItems: 'center',*/}
-      {/*  justifyContent: 'flex-end',*/}
-      {/*  backgroundColor: '#c9c9c9',*/}
-      {/*  padding: 8,*/}
-      {/*  borderRadius: 8*/}
-      {/*}}>*/}
-      {/*  <View style={{*/}
-      {/*    alignItems: 'center',*/}
-      {/*    marginRight: 8,*/}
-      {/*    marginLeft: 8*/}
-      {/*  }}>*/}
-      {/*    <Text style={{*/}
-      {/*      fontSize: 16,*/}
-      {/*      fontWeight: '500',*/}
-      {/*      marginBottom: 4*/}
-      {/*    }}>작업중</Text>*/}
-      {/*    <Text style={{*/}
-      {/*      color: '#595959',*/}
-      {/*      fontSize: 10*/}
-      {/*    }}>마감: 6일전</Text>*/}
-      {/*  </View>*/}
-      {/*  <Avatar avatarStyle={{ borderRadius: 8 }} size={50} source={Images.profile.dummy} />*/}
-      {/*</View>*/}
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        padding: 8,
+        borderRadius: 8
+      }}>
+        <Text style={{
+          color: Colors.GRAY_TEXT,
+          fontSize: 12
+        }}>{DateUtils.getFormattedMessageDate(item.lastMessage.createdDt)}</Text>
+      </View>
       <Badge value={10} status={'error'} containerStyle={{
         position: 'absolute',
         top: -5,

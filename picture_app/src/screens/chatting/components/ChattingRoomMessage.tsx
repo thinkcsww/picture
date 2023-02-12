@@ -37,7 +37,7 @@ const ChattingRoomMessage = ({item, sendMessage, roomInfo, roomType}: ChattingRo
       return <LeftAcceptMatchingMessage message={item} onClickProfile={onClickProfile}/>
     }
 
-    return <LeftTextMessage message={item} onClickProfile={onClickProfile}/>
+    return <LeftTextMessage roomInfo={roomInfo} message={item} onClickProfile={onClickProfile}/>
 
   } else {
     if (item.messageType === Chatting.MessageType.REQUEST_MATCHING) {

@@ -19,6 +19,7 @@ export namespace User {
     peoplePrice: number;
     backgroundPrice: number;
     officialPrice: number;
+    fileName: string;
   }
 
   export class CreateDto {

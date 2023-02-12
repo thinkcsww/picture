@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Image, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import AsyncStorageService from "../../services/AsyncStorageService";
 import UserService from "../../services/UserService";
 import { useAppDispatch } from "../../store/config";
 import { setUser } from "../../store/slices/commonSlice";
 import TabListHeaderWithOptions from "../../components/tab-list/TabListHeaderWithOptions";
 import { Divider } from "react-native-paper";
-import Images from "../../../assets/images";
 import { Colors } from "../../colors";
 import DateUtils from "../../utils/DateUtils";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -88,6 +87,7 @@ const MyPageScreen = () => {
         <TouchableOpacity onPress={onPressEditProfileImage} style={{
           marginTop: 24,
           flexDirection: "row",
+          marginVertical: 12
         }}>
           <ImageWithPH fileName={userDetail.fileName} styles={styles.profileImage}/>
 
@@ -105,22 +105,23 @@ const MyPageScreen = () => {
             {/*</View>*/}
           </View>
         </TouchableOpacity>
-        <View style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          marginVertical: 12,
-        }}>
-          <TouchableOpacity style={styles.profileBtn}>
-            <Text>비고</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.profileBtn}>
-            <Text>전문가 전환하기</Text>
-          </TouchableOpacity>
-        </View>
+        {/*<View style={{*/}
+        {/*  flexDirection: "row",*/}
+        {/*  justifyContent: "space-between",*/}
+        {/*  marginVertical: 12,*/}
+        {/*}}>*/}
+        {/*  <TouchableOpacity style={styles.profileBtn}>*/}
+        {/*    <Text>비고</Text>*/}
+        {/*  </TouchableOpacity>*/}
+        {/*  <TouchableOpacity style={styles.profileBtn}>*/}
+        {/*    <Text>전문가 전환하기</Text>*/}
+        {/*  </TouchableOpacity>*/}
+        {/*</View>*/}
       </View>
-      <Divider style={{ height: 10, backgroundColor: "#f1f1f1" }} />
+      <Divider style={{ height: 8, backgroundColor: Colors.DIMMED }} />
       <View style={{
         paddingHorizontal: 20,
+        marginVertical: 12
       }}>
         <View style={{
           marginTop: 12,
@@ -134,7 +135,7 @@ const MyPageScreen = () => {
           {
             userDetail?.matchings?.ACCEPT && userDetail?.matchings?.ACCEPT.length > 0 ? (
               <View style={{
-                backgroundColor: "#f1f1f1",
+                backgroundColor: Colors.DIMMED,
                 height: 100,
                 borderRadius: 8,
                 justifyContent: "center",
@@ -147,14 +148,25 @@ const MyPageScreen = () => {
               </View>
             ) : (
               <View style={{
-                backgroundColor: "#f1f1f1",
+                backgroundColor: Colors.DIMMED,
                 height: 100,
                 borderRadius: 8,
                 justifyContent: "center",
                 alignItems: "center",
               }}>
-                <Text>진행중인 의뢰가 없어요!</Text>
-                <Text>의뢰하러 가기 <MaterialCommunityIcons name={"clock"} /></Text>
+                <Text style={{color: Colors.GRAY_TEXT}}>진행중인 의뢰가 없어요!</Text>
+                <TouchableOpacity style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  backgroundColor: '#dad8d8',
+                  borderRadius: 8,
+                  paddingHorizontal: 8,
+                  marginTop: 8
+                }}>
+                  <Text>의뢰하러 가기</Text>
+                  <MaterialCommunityIcons style={{ color: 'white' }} size={24} name={"arrow-right"} />
+                </TouchableOpacity>
+
 
               </View>
             )
@@ -162,7 +174,7 @@ const MyPageScreen = () => {
         </View>
       </View>
 
-      <Divider style={{ height: 10, backgroundColor: "#f1f1f1" }} />
+      <Divider style={{ height: 8, backgroundColor: Colors.DIMMED }} />
       <View style={{
         paddingHorizontal: 20,
       }}>
@@ -178,7 +190,7 @@ const MyPageScreen = () => {
           {
             userDetail?.matchings?.COMPLETE && userDetail?.matchings?.COMPLETE.length > 0 ? (
               <View style={{
-                backgroundColor: "#f1f1f1",
+                backgroundColor: Colors.DIMMED,
                 height: 100,
                 borderRadius: 8,
                 justifyContent: "center",
@@ -191,15 +203,13 @@ const MyPageScreen = () => {
               </View>
             ) : (
               <View style={{
-                backgroundColor: "#f1f1f1",
+                backgroundColor: Colors.DIMMED,
                 height: 100,
                 borderRadius: 8,
                 justifyContent: "center",
                 alignItems: "center",
               }}>
-                <Text>진행중인 의뢰가 없어요!</Text>
-                <Text>의뢰하러 가기 <MaterialCommunityIcons name={"clock"} /></Text>
-
+                <Text>완료된 작업이 없습니다.</Text>
               </View>
             )
           }
@@ -221,7 +231,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   profileBtn: {
-    backgroundColor: Colors.GRAY_TEXT,
+    backgroundColor: Colors.DIMMED,
     justifyContent: "center",
     alignItems: "center",
     height: 40,

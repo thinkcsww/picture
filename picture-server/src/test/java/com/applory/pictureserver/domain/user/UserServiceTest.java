@@ -64,6 +64,7 @@ public class UserServiceTest {
         userRepository.save(seller2);
 
         User client = userRepository.save(TestUtil.createClient());
+        client.setFile(file);
         matchingRepository.save(TestUtil.createMatching(seller1, client, Matching.Status.COMPLETE, BACKGROUND, "Y"));
         matchingRepository.save(TestUtil.createMatching(seller1, client, Matching.Status.COMPLETE, PEOPLE, "Y"));
         matchingRepository.save(TestUtil.createMatching(seller1, client, Matching.Status.COMPLETE, OFFICIAL, "Y"));
@@ -290,6 +291,7 @@ public class UserServiceTest {
             UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId());
 
             assertThat(sellerUser.getLatestReview()).isNotNull();
+            assertThat(sellerUser.getLatestReview().getWriterProfileImageFileName()).isNotNull();
         }
 
         @DisplayName("Seller 상세 조회 성공 - 비밀번호는 빼고 조회")

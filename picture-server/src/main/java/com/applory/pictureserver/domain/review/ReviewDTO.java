@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 public class ReviewDTO {
@@ -22,6 +23,8 @@ public class ReviewDTO {
 
         private int rate;
 
+        private String writerProfileImageFileName;
+
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
         private LocalDateTime createdDt;
 
@@ -31,6 +34,10 @@ public class ReviewDTO {
             this.content = review.getContent();
             this.createdDt = review.getCreatedDt();
             this.rate = review.getRate();
+
+            if (Objects.nonNull(review.getClient().getFile())) {
+                this.writerProfileImageFileName = review.getClient().getFile().getStoreFileName();
+            }
         }
     }
 

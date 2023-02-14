@@ -1,12 +1,15 @@
 package com.applory.pictureserver.domain.user;
 
 import com.applory.pictureserver.config.AppConfiguration;
+import com.applory.pictureserver.domain.favorite.FavoriteRepository;
 import com.applory.pictureserver.domain.file.File;
 import com.applory.pictureserver.domain.file.FileService;
 import com.applory.pictureserver.domain.matching.Matching;
 import com.applory.pictureserver.domain.matching.MatchingDto;
 import com.applory.pictureserver.domain.matching.MatchingRepository;
-import com.applory.pictureserver.domain.review.*;
+import com.applory.pictureserver.domain.review.Review;
+import com.applory.pictureserver.domain.review.ReviewDTO;
+import com.applory.pictureserver.domain.review.ReviewRepository;
 import com.applory.pictureserver.domain.user.querydto.SellerListVM;
 import com.applory.pictureserver.shared.Constant;
 import com.applory.pictureserver.shared.SecurityUtils;
@@ -17,7 +20,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -38,6 +40,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final ReviewRepository reviewRepository;
+
+    private final FavoriteRepository favoriteRepository;
 
     private final FileService fileService;
 
@@ -125,6 +129,8 @@ public class UserService {
         Map<Integer, Long> reviewCountByRating = reviews
                 .stream()
                 .collect(Collectors.groupingBy(Review::getRate, Collectors.counting()));
+
+
 
         UserDto.SellerVM sellerVM = new UserDto.SellerVM(seller);
         sellerVM.setLatestReview(!CollectionUtils.isEmpty(reviews) ? new ReviewDTO.ReviewVM(reviews.get(0)) : null);

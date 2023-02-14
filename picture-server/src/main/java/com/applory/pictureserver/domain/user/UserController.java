@@ -1,5 +1,6 @@
 package com.applory.pictureserver.domain.user;
 
+import com.applory.pictureserver.domain.favorite.FavoriteService;
 import com.applory.pictureserver.domain.user.querydto.SellerListVM;
 import com.applory.pictureserver.shared.Result;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,8 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+
+    private final FavoriteService favoriteService;
 
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
@@ -51,8 +54,14 @@ public class UserController {
     }
 
     @PostMapping("/{id}/profile-image")
-    public Result<Object> updateProfileImage(@PathVariable("id") UUID userId, UserDto.UpdateProfileImage dto) {
+    public Result<Void> updateProfileImage(@PathVariable("id") UUID userId, UserDto.UpdateProfileImage dto) {
         userService.updateProfileImage(userId, dto);
+        return Result.success();
+    }
+
+    @PostMapping("/{id}/favorites")
+    public Result<Void> toggleFavorite(@PathVariable("id") UUID targetUserId) {
+        favoriteService.toggleFavorite(targetUserId);
         return Result.success();
     }
 }

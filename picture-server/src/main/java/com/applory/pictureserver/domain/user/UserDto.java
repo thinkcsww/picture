@@ -83,6 +83,7 @@ public class UserDto {
         private Map<Constant.Specialty, Long> matchingCountBySpecialty;
         private Map<Integer, Long> reviewCountByRating;
         private String fileName;
+        private boolean isFavorite;
 
         private double rateAvg;
 

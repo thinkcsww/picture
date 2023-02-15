@@ -8,7 +8,7 @@ import SellerDetailPrice from "./components/SellerDetailPrice";
 import SellerDetailNumberOfWork from "./components/SellerDetailNumberOfWork";
 import SellerDetailRating from "./components/SellerDetailRating";
 import DeviceInfo from "react-native-device-info";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { SellerService } from "../../services/SellerService";
 import { Seller } from "../../types/Seller";
 import AppButton from "../../components/AppButton";
@@ -19,6 +19,10 @@ import { Chatting } from "../../types/Chatting";
 import SellerDetailReview from "./components/SellerDetailReview";
 import { Env } from "../../constants/Env";
 import ImageWithPH from "../../components/ImageWithPH";
+import UserService from "../../services/UserService";
+import { RequestService } from "../../services/RequestService";
+import { Request } from "../../types/Request";
+import { AxiosError } from "axios";
 
 const SellerDetailScreen = ({ route, navigation }: any) => {
   const dispatch = useAppDispatch();
@@ -26,6 +30,7 @@ const SellerDetailScreen = ({ route, navigation }: any) => {
   const { id } = route.params;
   const [show, setShow] = useState(false);
   const { user } = useAppSelector(state => state.common);
+  const queryClient = useQueryClient();
 
   const onScroll = (event: any) => {
     const scrollY = event.nativeEvent.contentOffset.y;
@@ -53,8 +58,30 @@ const SellerDetailScreen = ({ route, navigation }: any) => {
         roomType: Chatting.RoomType.PRIVATE,
       });
     }
-
   };
+
+  const onClickFavorite = async () => {
+    if (!user) {
+      dispatch(setSignUpRedux({ destination: { key: RouteNames.SellerDetail, params: { id: id } } }));
+      navigation.navigate(RouteNames.SignUpGuide);
+    } else {
+      toggleFavoriteMutation.mutate();
+    }
+  }
+
+  const toggleFavoriteMutation = useMutation(UserService.QueryKey.toggleFavorite, () => {
+    return UserService.toggleFavorite(user.id, seller.id);
+  }, {
+    onSuccess: (result) => {
+      console.log('==== 단골 toggle 성공 ====');
+      console.log(result);
+      queryClient.invalidateQueries(SellerService.QueryKey.getSeller).then();
+    },
+    onError: (e: AxiosError) => {
+      console.log('==== 단골 toggle 실패 ====');
+      console.log(e.message);
+    }
+  });
 
   const getSellerDetailQuery = useQuery(SellerService.QueryKey.getSeller, () => {
     return SellerService.getSeller(id);
@@ -96,7 +123,7 @@ const SellerDetailScreen = ({ route, navigation }: any) => {
           height: 300,
         }}/>
 
-        <SellerDetailProfile onClickChatting={onClickChatting} seller={seller} />
+        <SellerDetailProfile onClickChatting={onClickChatting} onClickFavorite={onClickFavorite} seller={seller} />
 
         <Divider style={{ height: 1, marginVertical: 20, marginHorizontal: 12 }} />
 

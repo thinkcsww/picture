@@ -10,9 +10,10 @@ import ImageWithPH from "../../../components/ImageWithPH";
 
 type SellerDetailProfileProps = {
   seller: Seller.Seller,
-  onClickChatting: () => void
+  onClickChatting: () => void,
+  onClickFavorite: () => void
 }
-const SellerDetailProfile: FC<SellerDetailProfileProps> = ({ seller, onClickChatting }) => {
+const SellerDetailProfile: FC<SellerDetailProfileProps> = ({ seller, onClickChatting, onClickFavorite }) => {
   return (
     <View>
       <View style={styles.container}>
@@ -36,8 +37,8 @@ const SellerDetailProfile: FC<SellerDetailProfileProps> = ({ seller, onClickChat
 
             <View style={styles.buttonDivider}/>
 
-            <TouchableOpacity style={styles.button}>
-              <Icon name={"heart-outline"} size={20} color={Colors.GRAY_TEXT}/>
+            <TouchableOpacity style={styles.button} onPress={onClickFavorite}>
+              <Icon name={seller.favorite ? "heart" : "heart-outline"} size={20} color={Colors.GRAY_TEXT}/>
               <Text style={styles.buttonTitle}>단골하기</Text>
             </TouchableOpacity>
 

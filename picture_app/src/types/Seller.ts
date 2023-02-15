@@ -24,6 +24,7 @@ export namespace Seller {
     latestReview: any,
     writerNickname: string,
     fileName: string,
+    favorite: boolean,
     reviewCountByRating: {
       ["1"]: number,
       ["2"]: number,

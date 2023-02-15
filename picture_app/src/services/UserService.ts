@@ -7,6 +7,7 @@ const UserService = {
   QueryKey: {
     createUser: 'createUser',
     checkNickname: 'checkNickname',
+    toggleFavorite: 'toggleFavorite'
   },
   checkNickname: async (nickname: string) => {
     let url = `${USER_API_URL}/check-nickname?nickname=${nickname}`;
@@ -35,7 +36,15 @@ const UserService = {
     });
 
     return data;
-  }
+  },
+  toggleFavorite: async (id: string, targetUserId: string) => {
+    let url = `${USER_API_URL}/favorites`;
+    const {data} = await instance.post(url, {
+      userId: id,
+      targetUserId: targetUserId
+    });
+    return data;
+  },
 }
 
 export default UserService;

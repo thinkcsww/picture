@@ -16,7 +16,7 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @GetMapping("")
-    public Result<Page<ReviewDTO.ReviewVM>> getReviews(ReviewDTO.Search search, Pageable pageable) {
+    public Result getReviews(ReviewDTO.Search search, Pageable pageable) {
         return Result.success(reviewService.getReviews(search, pageable));
     }
 }

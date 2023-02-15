@@ -312,6 +312,16 @@ public class UserServiceTest {
             assertThat(sellerUser.getReviewCnt()).isGreaterThan(0);
         }
 
+        @WithMockClientLogin
+        @DisplayName("Seller 상세 조회 성공 - 단골 여부 함께 조회")
+        @Test
+        public void getSeller_withFavorite_success() {
+            User sellerInDB = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
+            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId());
+
+            assertThat(sellerUser.isFavorite()).isNotNull();
+        }
+
         @DisplayName("Seller 상세 조회 성공 - 평점 함께 조회")
         @Test
         public void getSeller_withRating_success() {

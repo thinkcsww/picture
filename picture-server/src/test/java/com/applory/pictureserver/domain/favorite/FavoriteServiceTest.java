@@ -41,18 +41,23 @@ public class FavoriteServiceTest {
     @WithMockClientLogin
     public void toggleFavorite_save() {
         User seller = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
-        favoriteService.toggleFavorite(seller.getId());
+        FavoriteDTO.Toggle body = new FavoriteDTO.Toggle();
+        body.setUserId(userRepository.findByUsername(TestConstants.TEST_CLIENT_USERNAME).getId());
+        body.setTargetUserId(seller.getId());
+        favoriteService.toggleFavorite(body);
 
         assertThat(favoriteRepository.findAll().size()).isEqualTo(1);
     }
 
     @DisplayName("Toggle Favorite - 단골 취소할 때")
     @Test
-    @WithMockClientLogin
     public void toggleFavorite_delete() {
         User seller = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
-        favoriteService.toggleFavorite(seller.getId());
-        favoriteService.toggleFavorite(seller.getId());
+        FavoriteDTO.Toggle body = new FavoriteDTO.Toggle();
+        body.setUserId(userRepository.findByUsername(TestConstants.TEST_CLIENT_USERNAME).getId());
+        body.setTargetUserId(seller.getId());
+        favoriteService.toggleFavorite(body);
+        favoriteService.toggleFavorite(body);
 
         assertThat(favoriteRepository.findAll().size()).isEqualTo(0);
     }

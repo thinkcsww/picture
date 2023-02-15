@@ -1,6 +1,7 @@
 package com.applory.pictureserver.domain.user;
 
 import com.applory.pictureserver.config.AppConfiguration;
+import com.applory.pictureserver.domain.favorite.Favorite;
 import com.applory.pictureserver.domain.favorite.FavoriteRepository;
 import com.applory.pictureserver.domain.file.File;
 import com.applory.pictureserver.domain.file.FileService;
@@ -131,7 +132,6 @@ public class UserService {
                 .collect(Collectors.groupingBy(Review::getRate, Collectors.counting()));
 
 
-
         UserDto.SellerVM sellerVM = new UserDto.SellerVM(seller);
         sellerVM.setLatestReview(!CollectionUtils.isEmpty(reviews) ? new ReviewDTO.ReviewVM(reviews.get(0)) : null);
         sellerVM.setReviewCnt(reviews.size());
@@ -139,6 +139,12 @@ public class UserService {
         sellerVM.setMatchingCountBySpecialty(matchingCountBySpecialty);
         sellerVM.setCompleteMatchingCnt(matchings.size());
         sellerVM.setReviewCountByRating(reviewCountByRating);
+
+        String username = SecurityUtils.getPrincipal();
+        if (Objects.nonNull(username)) {
+            Optional<Favorite> favoriteOptional = favoriteRepository.findByUser_IdAndTargetUser_id(userRepository.findByUsername(username).getId(), id);
+            sellerVM.setFavorite(favoriteOptional.isPresent());
+        }
 
         return sellerVM;
     }

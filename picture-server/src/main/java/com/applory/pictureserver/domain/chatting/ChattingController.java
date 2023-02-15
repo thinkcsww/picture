@@ -30,7 +30,7 @@ public class ChattingController {
     }
 
     @GetMapping("")
-    public Result<List<ChattingDto.ChattingRoomVM>> getRooms() {
+    public Result getRooms() {
         return Result.success(chattingService.getRooms());
     }
 
@@ -45,7 +45,7 @@ public class ChattingController {
     }
 
     @PostMapping("/{roomId}/photo")
-    public Result<Object> sendPhoto(@Valid ChattingDto.SendMessageParams createMessage) {
+    public Result sendPhoto(@Valid ChattingDto.SendMessageParams createMessage) {
         chattingService.send(createMessage);
         return Result.success();
     }

@@ -1,5 +1,7 @@
 package com.applory.pictureserver.domain.user;
 
+import com.applory.pictureserver.domain.favorite.Favorite;
+import com.applory.pictureserver.domain.favorite.FavoriteDTO;
 import com.applory.pictureserver.domain.favorite.FavoriteService;
 import com.applory.pictureserver.domain.user.querydto.SellerListVM;
 import com.applory.pictureserver.shared.Result;
@@ -34,12 +36,12 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public Result<UserDto.VM> getUserMe() {
+    public Result getUserMe() {
         return Result.success(userService.getUserMe());
     }
 
     @GetMapping("/seller")
-    public Result<Page<SellerListVM>> getSellerUsers(@Valid UserDto.SearchSeller search, Pageable pageable) {
+    public Result getSellerUsers(@Valid UserDto.SearchSeller search, Pageable pageable) {
         return Result.success(userService.getSellerUsers(search, pageable));
     }
 
@@ -54,14 +56,14 @@ public class UserController {
     }
 
     @PostMapping("/{id}/profile-image")
-    public Result<Void> updateProfileImage(@PathVariable("id") UUID userId, UserDto.UpdateProfileImage dto) {
+    public Result updateProfileImage(@PathVariable("id") UUID userId, UserDto.UpdateProfileImage dto) {
         userService.updateProfileImage(userId, dto);
         return Result.success();
     }
 
-    @PostMapping("/{id}/favorites")
-    public Result<Void> toggleFavorite(@PathVariable("id") UUID targetUserId) {
-        favoriteService.toggleFavorite(targetUserId);
+    @PostMapping("/favorites")
+    public Result toggleFavorite(@RequestBody FavoriteDTO.Toggle body) {
+        favoriteService.toggleFavorite(body);
         return Result.success();
     }
 }

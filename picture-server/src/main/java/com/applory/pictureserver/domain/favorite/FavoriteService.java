@@ -2,13 +2,13 @@ package com.applory.pictureserver.domain.favorite;
 
 import com.applory.pictureserver.domain.user.User;
 import com.applory.pictureserver.domain.user.UserRepository;
-import com.applory.pictureserver.shared.SecurityUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
+@Transactional
 public class FavoriteService {
 
     private final FavoriteRepository favoriteRepository;
@@ -20,18 +20,17 @@ public class FavoriteService {
         this.userRepository = userRepository;
     }
 
-    public void toggleFavorite(UUID targetUserId) {
-        String username = SecurityUtils.getPrincipal();
-        User currentUser = userRepository.findByUsername(username);
+    public void toggleFavorite(FavoriteDTO.Toggle body) {
+        User currentUser = userRepository.getById(body.getUserId());
 
-        Optional<Favorite> optionalFavorite = favoriteRepository.findByUser_IdAndTargetUser_id(currentUser.getId(), targetUserId);
+        Optional<Favorite> optionalFavorite = favoriteRepository.findByUser_IdAndTargetUser_id(body.getUserId(), body.getTargetUserId());
 
         if (optionalFavorite.isPresent()) {
             favoriteRepository.delete(optionalFavorite.get());
         } else {
             Favorite newFavorite = Favorite.builder()
                     .user(currentUser)
-                    .targetUser(userRepository.getById(targetUserId))
+                    .targetUser(userRepository.getById(body.getTargetUserId()))
                     .build();
 
             favoriteRepository.save(newFavorite);

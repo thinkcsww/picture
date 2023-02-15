@@ -5,19 +5,19 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Getter
-public class Result<T> {
+public class Result {
     public String code;
-    public T data;
+    public Object data;
     public String message;
 
-    public static <T> Result<T> success() {
-        return new Result<>(ResultCode.OK);
+    public static Result success() {
+        return new Result(ResultCode.OK);
     }
-    public static <T> Result<T> success(T data) {
-        return new Result<>(ResultCode.OK, data);
+    public static Result success(Object data) {
+        return new Result(ResultCode.OK, data);
     }
 
-    public Result(String code, T data) {
+    public Result(String code, Object data) {
         this.code = code;
         this.data = data;
     }

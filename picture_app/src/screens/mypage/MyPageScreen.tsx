@@ -84,6 +84,10 @@ const MyPageScreen = () => {
     navigation.navigate(RouteNames.SellerDetail, { id: id })
   }
 
+  const onClickGoToRequest = () => {
+    navigation.navigate(RouteNames.AddRequest);
+  }
+
 
   return <SafeAreaView style={styles.container}>
     <ScrollView>
@@ -162,7 +166,7 @@ const MyPageScreen = () => {
                 alignItems: "center",
               }}>
                 <Text style={{ color: Colors.GRAY_TEXT }}>진행중인 의뢰가 없어요!</Text>
-                <TouchableOpacity style={{
+                <TouchableOpacity onPress={onClickGoToRequest} style={{
                   flexDirection: "row",
                   alignItems: "center",
                   backgroundColor: "#dad8d8",

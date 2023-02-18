@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { FlatList, SafeAreaView, Text, View } from "react-native";
+import { FlatList, SafeAreaView, View } from "react-native";
 import CommonNodata from "../../components/CommonNodata";
 import ChattingRoomListItem from "./components/ChattingRoomListItem";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import { ChattingService } from "../../services/ChattingService";
 import { AxiosError } from "axios";
 import { Chatting } from "../../types/Chatting";
@@ -13,12 +13,15 @@ import { Env } from "../../constants/Env";
 import SockJS from "sockjs-client";
 import { Client, IMessage } from "@stomp/stompjs";
 import { useAppSelector } from "../../store/config";
+import { RouteNames } from "../../AppNav";
+import { useNavigation } from "@react-navigation/native";
 
 const ChattingScreen = () => {
   const stompClient = useRef<Client>(new Client());
   const { user } = useAppSelector(state => state.common);
   const [rooms, setRooms] = useState<Chatting.ChattingRoom[]>([]);
   const [newMessage, setNewMessage] = useState<any>();
+  const navigation = useNavigation<any>();
 
   useEffect(() => {
     initWebSocket().then();
@@ -31,6 +34,10 @@ const ChattingScreen = () => {
       if (roomIndex > -1) {
         const newRooms = [...rooms];
         newRooms[roomIndex].lastMessage = newMessage;
+        newRooms[roomIndex].unreadCount++;
+        newRooms.sort((a, b) => {
+          return new Date(b.lastMessageDt).getTime() - new Date(a.lastMessageDt).getTime()
+        })
         setRooms(newRooms);
       }
     }
@@ -102,6 +109,17 @@ const ChattingScreen = () => {
     stompClient.current.activate();
   }
 
+  const onClickItem = (roomId: string) => {
+    let roomIndex = rooms.findIndex(room => room.id === newMessage.roomId);
+
+    if (roomIndex > -1) {
+      const newRooms = [...rooms];
+      newRooms[roomIndex].unreadCount = 0;
+      setRooms(newRooms);
+    }
+    navigation.navigate(RouteNames.ChattingRoom, { roomId: roomId });
+  }
+
   return (
     <SafeAreaView style={{
       flex: 1,
@@ -113,7 +131,7 @@ const ChattingScreen = () => {
         data={rooms}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => {
-          return <ChattingRoomListItem item={item} />;
+          return <ChattingRoomListItem item={item} onClickItem={onClickItem} />;
         }}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={() => <CommonNodata />}

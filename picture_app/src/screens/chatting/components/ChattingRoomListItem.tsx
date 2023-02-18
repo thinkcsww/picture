@@ -1,26 +1,17 @@
-import { useNavigation } from "@react-navigation/native";
 import { Text, TouchableOpacity, View } from "react-native";
-import { Avatar } from "@rneui/themed";
-import Images from "../../../../assets/images";
 import { Badge } from "@rneui/base";
 import React from "react";
-import { RouteNames } from "../../../AppNav";
 import { Chatting } from "../../../types/Chatting";
 import { Colors } from "../../../colors";
-import CommonUtils from "../../../utils/CommonUtils";
 import DateUtils from "../../../utils/DateUtils";
 import ImageWithPH from "../../../components/ImageWithPH";
 
 type ChattingRoomListItemProps = {
-  item: Chatting.ChattingRoom
+  item: Chatting.ChattingRoom,
+  onClickItem: (roomId: string) => void,
 }
 
-const ChattingRoomListItem = ({ item }: ChattingRoomListItemProps) => {
-  const navigation = useNavigation<any>();
-
-  const onPress = () => {
-    navigation.navigate(RouteNames.ChattingRoom, { roomId: item.id });
-  }
+const ChattingRoomListItem = ({ item, onClickItem }: ChattingRoomListItemProps) => {
 
   const getMessage = () => {
     if (item.lastMessage.messageType === Chatting.MessageType.REQUEST_MATCHING) {
@@ -46,7 +37,7 @@ const ChattingRoomListItem = ({ item }: ChattingRoomListItemProps) => {
       borderRadius: 8,
       alignItems: 'center',
       justifyContent: 'space-between'
-    }} onPress={onPress}>
+    }} onPress={() => onClickItem(item.id)}>
       <View style={{
         flexDirection: 'row',
         width: '45%',
@@ -83,11 +74,13 @@ const ChattingRoomListItem = ({ item }: ChattingRoomListItemProps) => {
           fontSize: 12
         }}>{DateUtils.getFormattedMessageDate(item.lastMessage.createdDt)}</Text>
       </View>
-      <Badge value={10} status={'error'} containerStyle={{
-        position: 'absolute',
-        top: -5,
-        left: -5
-      }} />
+      {
+        item.unreadCount > 0 && <Badge value={item.unreadCount} status={'error'} containerStyle={{
+          position: 'absolute',
+          top: -5,
+          left: -5
+        }} />
+      }
     </TouchableOpacity>
   )
 }

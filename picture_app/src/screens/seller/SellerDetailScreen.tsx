@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Image, ScrollView, View } from "react-native";
-import Images from "../../../assets/images";
+import { ScrollView, View } from "react-native";
 import { Divider } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import SellerDetailProfile from "./components/SellerDetailProfile";
@@ -17,11 +16,8 @@ import { useAppDispatch, useAppSelector } from "../../store/config";
 import { setSignUpRedux } from "../../store/slices/signUpSlice";
 import { Chatting } from "../../types/Chatting";
 import SellerDetailReview from "./components/SellerDetailReview";
-import { Env } from "../../constants/Env";
 import ImageWithPH from "../../components/ImageWithPH";
 import UserService from "../../services/UserService";
-import { RequestService } from "../../services/RequestService";
-import { Request } from "../../types/Request";
 import { AxiosError } from "axios";
 
 const SellerDetailScreen = ({ route, navigation }: any) => {
@@ -84,7 +80,7 @@ const SellerDetailScreen = ({ route, navigation }: any) => {
   });
 
   const getSellerDetailQuery = useQuery(SellerService.QueryKey.getSeller, () => {
-    return SellerService.getSeller(id);
+    return SellerService.getSeller(id, user?.id);
   }, {
     onSuccess: (result: Seller.Seller) => {
       console.log("==== Seller 상세 조회 성공 ====");

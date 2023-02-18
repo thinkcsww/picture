@@ -24,12 +24,15 @@ export const SellerService = {
     return data;
   },
 
-  getSeller: async (id: string) => {
+  getSeller: async (id: string, requesterId?: string) => {
     let url = `${USER_API_URL}/seller/${id}`;
     console.log(url);
     const {data} = await instance.get<PageResult<Seller.Seller>>(url, {
       headers: {
         PermitAll: true
+      },
+      params: {
+        requesterId
       }
     });
 

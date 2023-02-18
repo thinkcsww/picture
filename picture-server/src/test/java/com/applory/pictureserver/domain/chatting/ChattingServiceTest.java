@@ -68,6 +68,8 @@ class ChattingServiceTest {
             sendMessageParams.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
             sendMessageParams.setSenderId(sender.getId());
             sendMessageParams.setRoomId(UUID.randomUUID());
+            sendMessageParams.setSellerId(sender.getId());
+            sendMessageParams.setClientId(receiver.getId());
 
             chattingService.send(sendMessageParams);
 
@@ -87,6 +89,8 @@ class ChattingServiceTest {
             sendMessageParams.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
             sendMessageParams.setSenderId(sender.getId());
             sendMessageParams.setRoomId(UUID.randomUUID());
+            sendMessageParams.setSellerId(sender.getId());
+            sendMessageParams.setClientId(receiver.getId());
 
             chattingService.send(sendMessageParams);
 
@@ -113,6 +117,8 @@ class ChattingServiceTest {
             sendMessageParams.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
             sendMessageParams.setSenderId(sender.getId());
             sendMessageParams.setRoomId(UUID.randomUUID());
+            sendMessageParams.setSellerId(sender.getId());
+            sendMessageParams.setClientId(receiver.getId());
 
             chattingService.send(sendMessageParams);
 
@@ -138,6 +144,8 @@ class ChattingServiceTest {
             sendMessageParams.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
             sendMessageParams.setSenderId(sender.getId());
             sendMessageParams.setRoomId(UUID.randomUUID());
+            sendMessageParams.setSellerId(sender.getId());
+            sendMessageParams.setClientId(receiver.getId());
 
             chattingService.send(sendMessageParams);
 
@@ -172,6 +180,8 @@ class ChattingServiceTest {
             sendMessageParams.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
             sendMessageParams.setSenderId(sender.getId());
             sendMessageParams.setRoomId(UUID.randomUUID());
+            sendMessageParams.setSellerId(sender.getId());
+            sendMessageParams.setClientId(receiver.getId());
 
             chattingService.send(sendMessageParams);
 
@@ -213,6 +223,8 @@ class ChattingServiceTest {
             sendMessageParams.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
             sendMessageParams.setSenderId(sender.getId());
             sendMessageParams.setRoomId(UUID.randomUUID());
+            sendMessageParams.setSellerId(sender.getId());
+            sendMessageParams.setClientId(receiver.getId());
             sendMessageParams.setRequestId(request.getId());
 
             chattingService.send(sendMessageParams);
@@ -241,6 +253,8 @@ class ChattingServiceTest {
             sendMessageParams.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
             sendMessageParams.setSenderId(sender.getId());
             sendMessageParams.setRoomId(UUID.randomUUID());
+            sendMessageParams.setSellerId(sender.getId());
+            sendMessageParams.setClientId(receiver.getId());
 
             chattingService.send(sendMessageParams);
 
@@ -271,6 +285,8 @@ class ChattingServiceTest {
             sendMessageParams.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
             sendMessageParams.setSenderId(sender.getId());
             sendMessageParams.setRoomId(UUID.randomUUID());
+            sendMessageParams.setSellerId(sender.getId());
+            sendMessageParams.setClientId(receiver.getId());
 
             chattingService.send(sendMessageParams);
 
@@ -297,6 +313,8 @@ class ChattingServiceTest {
             sendMessageParams.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
             sendMessageParams.setSenderId(sender.getId());
             sendMessageParams.setRoomId(UUID.randomUUID());
+            sendMessageParams.setSellerId(sender.getId());
+            sendMessageParams.setClientId(receiver.getId());
 
             chattingService.send(sendMessageParams);
 
@@ -332,6 +350,8 @@ class ChattingServiceTest {
             sendMessageParams.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
             sendMessageParams.setSenderId(sender.getId());
             sendMessageParams.setRoomId(UUID.randomUUID());
+            sendMessageParams.setSellerId(sender.getId());
+            sendMessageParams.setClientId(receiver.getId());
 
             chattingService.send(sendMessageParams);
 
@@ -366,6 +386,8 @@ class ChattingServiceTest {
             sendMessageParams.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
             sendMessageParams.setSenderId(sender.getId());
             sendMessageParams.setRoomId(UUID.randomUUID());
+            sendMessageParams.setSellerId(sender.getId());
+            sendMessageParams.setClientId(receiver.getId());
 
             chattingService.send(sendMessageParams);
             sendMessageParams.setMessage("SECOND");
@@ -398,6 +420,8 @@ class ChattingServiceTest {
             sendMessageParams.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
             sendMessageParams.setSenderId(sender.getId());
             sendMessageParams.setRoomId(UUID.randomUUID());
+            sendMessageParams.setSellerId(sender.getId());
+            sendMessageParams.setClientId(receiver.getId());
 
             chattingService.send(sendMessageParams);
             chattingService.send(sendMessageParams);
@@ -427,6 +451,8 @@ class ChattingServiceTest {
             sendMessageParams.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
             sendMessageParams.setSenderId(sender.getId());
             sendMessageParams.setRoomId(UUID.randomUUID());
+            sendMessageParams.setSellerId(sender.getId());
+            sendMessageParams.setClientId(receiver.getId());
 
             chattingService.send(sendMessageParams);
 

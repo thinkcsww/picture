@@ -386,6 +386,8 @@ public class ChattingControllerTest {
             createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
             createMessage.setSenderId(sender.getId());
             createMessage.setRoomId(roomId);
+            createMessage.setClientId(sender.getId());
+            createMessage.setSellerId(receiver.getId());
 
             sendMessage(createMessage);
 

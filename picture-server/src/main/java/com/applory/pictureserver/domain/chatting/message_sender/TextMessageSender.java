@@ -72,11 +72,8 @@ public class TextMessageSender implements MessageSender {
         chattingRoom = new ChattingRoom();
         chattingRoom.setId(createMessage.getRoomId());
         chattingRoom.setType(createMessage.getRoomType());
-
-        if (ChattingRoom.Type.PRIVATE.equals(createMessage.getRoomType())) {
-            chattingRoom.setClientId(createMessage.getClientId());
-            chattingRoom.setSellerId(createMessage.getSellerId());
-        }
+        chattingRoom.setClientId(createMessage.getClientId());
+        chattingRoom.setSellerId(createMessage.getSellerId());
 
         // Request에서 채팅 생성시 Request의 채팅카운트 ++
         if (Objects.nonNull(createMessage.getRequestId())) {

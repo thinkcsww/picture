@@ -51,8 +51,8 @@ public class UserController {
     }
 
     @GetMapping("/seller/{id}")
-    public UserDto.SellerVM getSellerUser(@PathVariable UUID id) {
-        return userService.getSellerDetail(id);
+    public UserDto.SellerVM getSellerUser(@PathVariable UUID id, @RequestParam(required = false) UUID requesterId) {
+        return userService.getSellerDetail(id, requesterId);
     }
 
     @PostMapping("/{id}/profile-image")

@@ -2,6 +2,7 @@ package com.applory.pictureserver.domain.user;
 
 import com.applory.pictureserver.config.AppConfiguration;
 import com.applory.pictureserver.domain.favorite.Favorite;
+import com.applory.pictureserver.domain.favorite.FavoriteDTO;
 import com.applory.pictureserver.domain.favorite.FavoriteRepository;
 import com.applory.pictureserver.domain.file.File;
 import com.applory.pictureserver.domain.file.FileService;
@@ -89,20 +90,25 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserDto.VM getUserMe() {
-        User findUser = userRepository.findByUsername(SecurityUtils.getPrincipal());
+        User loggedInUser = userRepository.findByUsername(SecurityUtils.getPrincipal());
 
         MatchingDto.Search matchingSearch = MatchingDto.Search.builder()
-                .userId(findUser.getId())
-                .sellerEnabledYn(findUser.getSellerEnabledYn())
+                .userId(loggedInUser.getId())
+                .sellerEnabledYn(loggedInUser.getSellerEnabledYn())
                 .build();
 
         Map<Matching.Status, List<MatchingDto.VM>> matchings = matchingRepository.findBySearch(matchingSearch)
                 .stream()
-                .map((matching) -> new MatchingDto.VM(matching, findUser.getSellerEnabledYn()))
+                .map((matching) -> new MatchingDto.VM(matching, loggedInUser.getSellerEnabledYn()))
                 .collect(Collectors.groupingBy(MatchingDto.VM::getStatus));
 
-        UserDto.VM vm = new UserDto.VM(findUser);
+        List<FavoriteDTO.VM> favoriteUsers = favoriteRepository.findByUser(loggedInUser).stream()
+                .map(FavoriteDTO.VM::new)
+                .collect(Collectors.toList());
+
+        UserDto.VM vm = new UserDto.VM(loggedInUser);
         vm.setMatchings(matchings);
+        vm.setFavoriteUsers(favoriteUsers);
 
         return vm;
     }
@@ -117,7 +123,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserDto.SellerVM getSellerDetail(UUID id) {
+    public UserDto.SellerVM getSellerDetail(UUID id, UUID requesterId) {
         User seller = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Seller: " + id + " not exist"));
         List<Review> reviews = reviewRepository.findBySellerOrderByCreatedDtDesc(seller);
 
@@ -140,9 +146,8 @@ public class UserService {
         sellerVM.setCompleteMatchingCnt(matchings.size());
         sellerVM.setReviewCountByRating(reviewCountByRating);
 
-        String username = SecurityUtils.getPrincipal();
-        if (Objects.nonNull(username)) {
-            Optional<Favorite> favoriteOptional = favoriteRepository.findByUser_IdAndTargetUser_id(userRepository.findByUsername(username).getId(), id);
+        if (Objects.nonNull(requesterId)) {
+            Optional<Favorite> favoriteOptional = favoriteRepository.findByUser_IdAndTargetUser_id(requesterId, id);
             sellerVM.setFavorite(favoriteOptional.isPresent());
         }
 

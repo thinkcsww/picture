@@ -1,5 +1,6 @@
 package com.applory.pictureserver.domain.user;
 
+import com.applory.pictureserver.domain.favorite.FavoriteDTO;
 import com.applory.pictureserver.domain.matching.Matching;
 import com.applory.pictureserver.domain.matching.MatchingDto;
 import com.applory.pictureserver.domain.review.ReviewDTO;
@@ -38,6 +39,7 @@ public class UserDto {
         private String fileName;
 
         private Map<Matching.Status, List<MatchingDto.VM>> matchings;
+        private List<FavoriteDTO.VM> favoriteUsers;
 
         public VM(User user) {
             this.id = user.getId();

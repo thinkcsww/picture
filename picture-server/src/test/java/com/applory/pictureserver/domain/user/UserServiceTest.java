@@ -4,6 +4,8 @@ import com.applory.pictureserver.TestConstants;
 import com.applory.pictureserver.TestUtil;
 import com.applory.pictureserver.config.WithMockClientLogin;
 import com.applory.pictureserver.config.WithMockSellerLogin;
+import com.applory.pictureserver.domain.favorite.Favorite;
+import com.applory.pictureserver.domain.favorite.FavoriteRepository;
 import com.applory.pictureserver.domain.file.File;
 import com.applory.pictureserver.domain.file.FileRepository;
 import com.applory.pictureserver.domain.matching.Matching;
@@ -45,6 +47,9 @@ public class UserServiceTest {
 
     @Autowired
     private FileRepository fileRepository;
+
+    @Autowired
+    private FavoriteRepository favoriteRepository;
 
     @BeforeEach
     public void setUp() {
@@ -185,6 +190,23 @@ public class UserServiceTest {
             UserDto.VM userMe = userService.getUserMe();
             assertThat(userMe.getMatchings().get(Matching.Status.REQUEST)).isNotEmpty();
         }
+
+        @DisplayName("Client User Me 조회 - 단골 리스트 함께 조회")
+        @WithMockClientLogin
+        @Test
+        public void getUserMe_clientInfoWithFavoriteList() {
+            User seller = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
+            User client = userRepository.findByUsername(TestConstants.TEST_CLIENT_USERNAME);
+
+            Favorite newFavorite = Favorite.builder()
+                    .user(client)
+                    .targetUser(seller)
+                    .build();
+            favoriteRepository.save(newFavorite);
+
+            UserDto.VM userMe = userService.getUserMe();
+            assertThat(userMe.getFavoriteUsers()).isNotEmpty();
+        }
     }
 
     @DisplayName("Seller 리스트")
@@ -261,7 +283,7 @@ public class UserServiceTest {
             searchSeller.setNickname("nick3");
             Page<SellerListVM> sellerUsers = userService.getSellerUsers(searchSeller, PageRequest.of(0, 20));
 
-            for (SellerListVM sellerListVM: sellerUsers.getContent()) {
+            for (SellerListVM sellerListVM : sellerUsers.getContent()) {
                 assertThat(sellerListVM.getNickname()).contains("nick3");
             }
         }
@@ -288,7 +310,7 @@ public class UserServiceTest {
         @Test
         public void getSeller_withLatestReview_success() {
             User sellerInDB = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
-            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId());
+            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId(), null);
 
             assertThat(sellerUser.getLatestReview()).isNotNull();
             assertThat(sellerUser.getLatestReview().getWriterProfileImageFileName()).isNotNull();
@@ -298,7 +320,7 @@ public class UserServiceTest {
         @Test
         public void getSeller_withoutPassword_success() {
             User sellerInDB = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
-            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId());
+            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId(), null);
 
             assertThat(sellerUser.toString()).doesNotContain("password");
         }
@@ -307,7 +329,7 @@ public class UserServiceTest {
         @Test
         public void getSeller_withReviewCnt_success() {
             User sellerInDB = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
-            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId());
+            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId(), null);
 
             assertThat(sellerUser.getReviewCnt()).isGreaterThan(0);
         }
@@ -317,7 +339,7 @@ public class UserServiceTest {
         @Test
         public void getSeller_withFavorite_success() {
             User sellerInDB = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
-            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId());
+            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId(), null);
 
             assertThat(sellerUser.isFavorite()).isNotNull();
         }
@@ -326,7 +348,7 @@ public class UserServiceTest {
         @Test
         public void getSeller_withRating_success() {
             User sellerInDB = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
-            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId());
+            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId(), null);
 
             assertThat(sellerUser.getRateAvg()).isGreaterThan(0);
         }
@@ -335,7 +357,7 @@ public class UserServiceTest {
         @Test
         public void getSeller_withMatchingCountBySpecialty_success() {
             User sellerInDB = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
-            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId());
+            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId(), null);
 
             assertThat(sellerUser.getMatchingCountBySpecialty().get(PEOPLE)).isEqualTo(1);
             assertThat(sellerUser.getMatchingCountBySpecialty().get(OFFICIAL)).isEqualTo(1);
@@ -347,7 +369,7 @@ public class UserServiceTest {
         public void getSeller_withReviewCountByRating_success() {
 
             User sellerInDB = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
-            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId());
+            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId(), null);
 
             assertThat(sellerUser.getReviewCountByRating().get(1)).isEqualTo(1);
             assertThat(sellerUser.getReviewCountByRating().get(2)).isEqualTo(1);
@@ -361,7 +383,7 @@ public class UserServiceTest {
         public void getSeller_withRatingAvg_success() {
 
             User sellerInDB = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
-            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId());
+            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId(), null);
 
             assertThat(sellerUser.getRateAvg()).isGreaterThan(0);
         }
@@ -372,7 +394,7 @@ public class UserServiceTest {
 
             User sellerInDB = userRepository.findByUsername(TestConstants.TEST_SELLER_USERNAME);
 
-            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId());
+            UserDto.SellerVM sellerUser = userService.getSellerDetail(sellerInDB.getId(), null);
 
             assertThat(sellerUser.getFileName()).isNotEmpty();
         }

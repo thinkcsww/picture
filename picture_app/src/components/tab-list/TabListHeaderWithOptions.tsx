@@ -24,7 +24,7 @@ const TabListHeaderSelector: FC<TabListHeaderSelectorProps> = ({ onPress, select
 type TabListHeaderSearchProps = {
   searchText: string,
   onChangeSearchText: (text: string) => void,
-  onClickSearch: () => void
+  onClickSearch?: () => void
 }
 
 const TabListHeaderSearch: FC<TabListHeaderSearchProps> = ({ searchText, onChangeSearchText, onClickSearch }) => {
@@ -53,10 +53,10 @@ type TabListHeaderProps = {
   onClickSelector?: () => void,
   selectedSpecialty?: SelectValue<Specialty>,
   onChangeSearchText?: (text: string) => void,
-  searchText: string,
+  searchText?: string,
   noOptions?: boolean,
   title?: string,
-  onClickSearch: () => void
+  onClickSearch?: () => void
 }
 
 const TabListHeaderWithOptions: FC<TabListHeaderProps> = ({
@@ -71,7 +71,7 @@ const TabListHeaderWithOptions: FC<TabListHeaderProps> = ({
   return (
     <View style={styles.header}>
       {onClickSelector && <TabListHeaderSelector onPress={onClickSelector} selectedSpecialty={selectedSpecialty!} />}
-      {onChangeSearchText && <TabListHeaderSearch onClickSearch={onClickSearch} searchText={searchText}
+      {onChangeSearchText && <TabListHeaderSearch onClickSearch={onClickSearch} searchText={searchText!}
                                                   onChangeSearchText={onChangeSearchText} />}
       {noOptions && <TabListHeaderTitle title={title!} />}
     </View>

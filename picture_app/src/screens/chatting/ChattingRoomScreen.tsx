@@ -291,14 +291,13 @@ const ChattingRoomScreen = ({ route }: any) => {
       <AppHeader title={roomInfo?.opponent?.nickname!} iconName={"arrow-left"} />
       <FlatList
         ref={listRef}
-        onContentSizeChange={() => listRef.current!.scrollToOffset({animated: true, offset: SCROLL_OFFSET})}
         contentContainerStyle={{
           flexGrow: 1,
           paddingVertical: 12,
           justifyContent: 'flex-end'
         }}
         onEndReached={getMessages}
-        inverted
+        inverted={pagedMessageList?.content?.length > 0}
         scrollEventThrottle={1000}
         data={pagedMessageList ? pagedMessageList.content : []}
         keyExtractor={(item, index) => index.toString()}

@@ -110,7 +110,7 @@ const ChattingScreen = () => {
   }
 
   const onClickItem = (roomId: string) => {
-    let roomIndex = rooms.findIndex(room => room.id === newMessage.roomId);
+    let roomIndex = rooms.findIndex(room => room.id === roomId);
 
     if (roomIndex > -1) {
       const newRooms = [...rooms];

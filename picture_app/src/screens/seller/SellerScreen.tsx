@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react";
-import { FlatList, SafeAreaView, StyleSheet, View } from "react-native";
+import { FlatList, Modal, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import TabListSpecialtySelectModal from "./components/TabListSpecialtySelectModal";
 import { Seller } from "../../types/Seller";
@@ -13,6 +13,7 @@ import { Specialty } from "../../types/Common";
 import { Divider } from "react-native-paper";
 import CommonNodata from "../../components/CommonNodata";
 import SellerListItem from "./components/SellerListItem";
+import SellerSearchModal from "./components/SellerSearchModal";
 
 type SellerScreenProps = {
   navigation: NavigationProp<any>
@@ -34,6 +35,7 @@ const SellerScreen: FC<SellerScreenProps> = ({ navigation }) => {
   |-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
 
   const [showSelector, setShowSelector] = useState(false);
+  const [showSearchModal, setShowSearchModal] = useState(false);
   const [selectedSpecialty, setSelectedSpecialty] = useState(new SelectValue<Specialty>('인물 사진', Specialty.PEOPLE));
   const [selectedFilter, setSelectedFilter] = useState(new SelectValue<Seller.Filter>('기본순', Seller.Filter.DEFAULT));
   const [searchText, setSearchText] = useState('');
@@ -102,8 +104,8 @@ const SellerScreen: FC<SellerScreenProps> = ({ navigation }) => {
 
   return <SafeAreaView style={styles.container}>
     { showSelector && <TabListSpecialtySelectModal selectedSpecialty={selectedSpecialty.value} close={onCloseSelector} onSelect={onSelectSelectorItem}/> }
-
-    <TabListHeaderWithOptions onChangeSearchText={onChangeSearchText} searchText={searchText} selectedSpecialty={selectedSpecialty} onClickSelector={onClickSelector}/>
+    { showSearchModal && <SellerSearchModal onChangeSearchText={onChangeSearchText} close={() => setShowSearchModal(false)}/> }
+    <TabListHeaderWithOptions onClickSearch={() => setShowSearchModal(true)} onChangeSearchText={onChangeSearchText} searchText={searchText} selectedSpecialty={selectedSpecialty} onClickSelector={onClickSelector}/>
     <TabListFilter list={filterList} onPress={onSelectFilter} selectedFilter={selectedFilter}/>
     <FlatList
       data={getSellersQuery.data?.pages.map((page: any) => page.data.content).flat()}

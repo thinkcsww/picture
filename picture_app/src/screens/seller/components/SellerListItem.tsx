@@ -1,12 +1,10 @@
 import React, { FC } from "react";
 import { Seller } from "../../../types/Seller";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Images from "../../../../assets/images";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { Colors } from "../../../colors";
 import { useNavigation } from "@react-navigation/native";
 import { RouteNames } from "../../../AppNav";
-import { Env } from "../../../constants/Env";
 import ImageWithPH from "../../../components/ImageWithPH";
 
 type SellerListItemProps = {

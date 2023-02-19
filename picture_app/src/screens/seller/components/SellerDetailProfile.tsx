@@ -7,6 +7,7 @@ import { Seller } from "../../../types/Seller";
 import RatingStarIcons from "./RatingStarIcons";
 import { Env } from "../../../constants/Env";
 import ImageWithPH from "../../../components/ImageWithPH";
+import { useAppSelector } from "../../../store/config";
 
 type SellerDetailProfileProps = {
   seller: Seller.Seller,
@@ -14,6 +15,11 @@ type SellerDetailProfileProps = {
   onClickFavorite: () => void
 }
 const SellerDetailProfile: FC<SellerDetailProfileProps> = ({ seller, onClickChatting, onClickFavorite }) => {
+  const { user } = useAppSelector(state => state.common);
+
+  const isNotMe = () => {
+    return user.id !== seller.id;
+  }
   return (
     <View>
       <View style={styles.container}>
@@ -29,20 +35,24 @@ const SellerDetailProfile: FC<SellerDetailProfileProps> = ({ seller, onClickChat
             <Text style={styles.numberOfWorkText}>리뷰: { seller.reviewCnt }  I  총 작업 수: { seller.completeMatchingCnt }건</Text>
           </View>
 
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={onClickChatting}>
-              <Icon name={"chatbubbles-outline"} size={20} color={Colors.GRAY_TEXT}/>
-              <Text style={styles.buttonTitle}>채팅하기</Text>
-            </TouchableOpacity>
+          {
+            isNotMe() && (
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity style={styles.button} onPress={onClickChatting}>
+                  <Icon name={"chatbubbles-outline"} size={20} color={Colors.GRAY_TEXT}/>
+                  <Text style={styles.buttonTitle}>채팅하기</Text>
+                </TouchableOpacity>
 
-            <View style={styles.buttonDivider}/>
+                <View style={styles.buttonDivider}/>
 
-            <TouchableOpacity style={styles.button} onPress={onClickFavorite}>
-              <Icon name={seller.favorite ? "heart" : "heart-outline"} size={20} color={Colors.GRAY_TEXT}/>
-              <Text style={styles.buttonTitle}>단골하기</Text>
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={onClickFavorite}>
+                  <Icon name={seller.favorite ? "heart" : "heart-outline"} size={20} color={Colors.GRAY_TEXT}/>
+                  <Text style={styles.buttonTitle}>단골하기</Text>
+                </TouchableOpacity>
 
-          </View>
+              </View>
+            )
+          }
 
         </View>
       </View>

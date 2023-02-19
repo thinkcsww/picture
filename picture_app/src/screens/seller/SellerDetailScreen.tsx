@@ -65,6 +65,10 @@ const SellerDetailScreen = ({ route, navigation }: any) => {
     }
   }
 
+  const isNotMe = () => {
+    return user.id !== seller.id;
+  }
+
   const toggleFavoriteMutation = useMutation(UserService.QueryKey.toggleFavorite, () => {
     return UserService.toggleFavorite(user.id, seller.id);
   }, {
@@ -137,7 +141,11 @@ const SellerDetailScreen = ({ route, navigation }: any) => {
 
         <SellerDetailReview review={seller.latestReview} sellerId={seller.id} />
 
-        <AppButton title={"문의하기"} onPress={onClickChatting} />
+
+        {
+          isNotMe() && <AppButton title={"문의하기"} onPress={onClickChatting} />
+        }
+
 
       </ScrollView>
     </View>

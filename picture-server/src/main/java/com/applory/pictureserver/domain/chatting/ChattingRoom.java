@@ -20,8 +20,8 @@ public class ChattingRoom extends BaseTimeEntity {
     }
 
     @Id
-    @Column(name = "ID", columnDefinition = "BINARY(16)")
-    private UUID id;
+    @Column(name = "ID", columnDefinition = "VARCHAR(100)")
+    private String id;
 
     @OneToMany(mappedBy = "chattingRoom", fetch = FetchType.LAZY)
     private List<ChattingRoomMember> chattingRoomMembers;

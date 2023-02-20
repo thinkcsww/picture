@@ -20,7 +20,7 @@ public class ChattingMessageRepositoryCustomImpl implements ChattingMessageRepos
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public int countUnreadMessageOfRoom(UUID roomId, UUID userId) {
+    public int countUnreadMessageOfRoom(String roomId, UUID userId) {
         JPQLQuery<ChattingMessage> query = jpaQueryFactory
                 .selectFrom(chattingMessage)
                 .where(roomEq(roomId)
@@ -56,7 +56,7 @@ public class ChattingMessageRepositoryCustomImpl implements ChattingMessageRepos
         return query.fetch();
     }
 
-    private BooleanExpression roomEq(UUID roomId) {
+    private BooleanExpression roomEq(String roomId) {
         return chattingMessage.chattingRoom.id.eq(roomId);
     }
 }

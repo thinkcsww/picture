@@ -59,7 +59,7 @@ public class RequestService {
         return requestRepository.findRequestBySearchQ(search, pageable).map(RequestDto.VM::new);
     }
 
-    public RequestDto.VM getRequest(UUID id) {
+    public RequestDto.VM getRequest(String id) {
         Request request = requestRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Request not exists: " + id));
         request.setReadCount(request.getReadCount() + 1);
 
@@ -97,7 +97,7 @@ public class RequestService {
         }
     }
 
-    private void setAnotherRequest(UUID id, RequestDto.VM requestVM) {
+    private void setAnotherRequest(String id, RequestDto.VM requestVM) {
         RequestDto.Search search = new RequestDto.Search();
         search.setUserId(requestVM.getUserId());
         search.setExceptThisId(id);

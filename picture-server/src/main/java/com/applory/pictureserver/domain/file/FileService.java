@@ -39,7 +39,7 @@ public class FileService {
         return storeFileResult;
     }
 
-    public void deleteFile(UUID fileId) {
+    public void deleteFile(String fileId) {
         File fileInDB = fileRepository.findById(fileId).orElseThrow(() -> new NoSuchElementException("Can't find file id: " + fileId));
         java.io.File realFile = new java.io.File(getFullPath(fileInDB.getStoreFileName()));
         if (realFile.exists()) {

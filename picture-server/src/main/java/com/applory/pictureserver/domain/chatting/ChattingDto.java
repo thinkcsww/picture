@@ -19,7 +19,7 @@ public class ChattingDto {
     @NoArgsConstructor
     public static class SendMessageParams {
         @NotNull
-        private UUID roomId;
+        private String roomId;
 
         @NotNull
         private UUID senderId;
@@ -36,7 +36,7 @@ public class ChattingDto {
 
         private ChattingMessage.Type messageType;
 
-        private UUID messageId;
+        private String messageId;
 
         private Constant.Specialty specialty;
 
@@ -50,14 +50,14 @@ public class ChattingDto {
 
         private String fileName;
 
-        private UUID requestId;
+        private String requestId;
 
     }
 
     @Getter
     @Setter
     public static class EnterRoomParams {
-        private UUID roomId;
+        private String roomId;
 
         private UUID targetUserId;
 
@@ -94,7 +94,7 @@ public class ChattingDto {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class StompMessageVM {
         @NotNull
-        private UUID roomId;
+        private String roomId;
 
         @NotNull
         private UUID senderId;
@@ -109,12 +109,12 @@ public class ChattingDto {
 
         private ChattingMessage.Type messageType;
 
-        private UUID id;
+        private String id;
 
         private String fileName;
 
         @Builder
-        public StompMessageVM(UUID roomId, UUID senderId, UUID sellerId, UUID clientId, String message, ChattingRoom.Type roomType, ChattingMessage.Type messageType, UUID id, String fileName) {
+        public StompMessageVM(String roomId, UUID senderId, UUID sellerId, UUID clientId, String message, ChattingRoom.Type roomType, ChattingMessage.Type messageType, String id, String fileName) {
             this.roomId = roomId;
             this.senderId = senderId;
             this.sellerId = sellerId;
@@ -131,7 +131,7 @@ public class ChattingDto {
     @Setter
     @Builder
     public static class ChattingRoomVM {
-        private UUID id;
+        private String id;
 
         private UserDto.VM opponent;
 

@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface ChattingMessageRepository extends JpaRepository<ChattingMessage, UUID>, ChattingMessageRepositoryCustom {
-    List<ChattingMessage> findByChattingRoom_Id(UUID roomId);
+public interface ChattingMessageRepository extends JpaRepository<ChattingMessage, String>, ChattingMessageRepositoryCustom {
+    List<ChattingMessage> findByChattingRoom_Id(String roomId);
 
     ChattingMessage findTopByChattingRoomOrderByCreatedDtDesc(ChattingRoom chattingRoom);
 
-    ChattingMessage findTopByChattingRoomIdAndMessageTypeOrderByCreatedDtDesc(UUID roomId, ChattingMessage.Type type);
+    ChattingMessage findTopByChattingRoomIdAndMessageTypeOrderByCreatedDtDesc(String roomId, ChattingMessage.Type type);
 
 }

@@ -61,7 +61,7 @@ public class RequestRepositoryCustomImpl implements RequestRepositoryCustom {
         return request.user.id.eq(value);
     }
 
-    private BooleanExpression exceptId(UUID value) {
+    private BooleanExpression exceptId(String value) {
         if (ObjectUtils.isEmpty(value)) {
             return null;
         }

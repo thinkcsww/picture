@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface ChattingRoomRepository extends JpaRepository<ChattingRoom, UUID>, ChattingRoomRepositoryCustom {
+public interface ChattingRoomRepository extends JpaRepository<ChattingRoom, String>, ChattingRoomRepositoryCustom {
     Page<ChattingRoom> findAllByChattingRoomMembers_User(User user, Pageable pageable);
 
     Optional<ChattingRoom> findBySellerIdAndClientId(UUID sellerId, UUID clientId);

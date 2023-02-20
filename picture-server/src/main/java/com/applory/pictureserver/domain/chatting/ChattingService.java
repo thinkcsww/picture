@@ -95,7 +95,7 @@ public class ChattingService {
         }
 
         return ChattingDto.ChattingRoomVM.builder()
-                .id(chattingRoom == null ? UUID.randomUUID() : chattingRoom.getId())
+                .id(chattingRoom == null ? UUID.randomUUID().toString() : chattingRoom.getId())
                 .opponent(new UserDto.VM(opponent))
                 .messages(messages)
                 .newRoom(chattingRoom == null)
@@ -111,7 +111,7 @@ public class ChattingService {
     }
 
     @Transactional
-    public void leaveRoom(UUID roomId) {
+    public void leaveRoom(String roomId) {
         String username = SecurityUtils.getPrincipal();
 
         User user = userRepository.findByUsername(username);
@@ -146,7 +146,7 @@ public class ChattingService {
         // 2번 나눠서 쿼리 날려야하나?
         // room을 sellerId or clientId로 전체 조회
         // roomId list로 만들고
-        List<UUID> roomIds = chattingRoomRepository.findAllByUser(user).stream()
+        List<String> roomIds = chattingRoomRepository.findAllByUser(user).stream()
                 .map(ChattingRoom::getId)
                 .collect(Collectors.toList());
 
@@ -176,7 +176,7 @@ public class ChattingService {
                 .collect(Collectors.toList());
     }
 
-    public Page<ChattingDto.MessageVM> getMessages(UUID roomId, Pageable pageable) {
+    public Page<ChattingDto.MessageVM> getMessages(String roomId, Pageable pageable) {
         User user = userRepository.findByUsername(SecurityUtils.getPrincipal());
 
         ChattingMessageDto.Search search = new ChattingMessageDto.Search();

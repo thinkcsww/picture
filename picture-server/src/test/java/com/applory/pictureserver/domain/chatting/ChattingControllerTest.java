@@ -171,7 +171,7 @@ public class ChattingControllerTest {
         createMessage.setMessage("HI");
         createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage.setSenderId(sender.getId());
-        createMessage.setRoomId(UUID.randomUUID());
+        createMessage.setRoomId(UUID.randomUUID().toString());
 
         sendMessage(createMessage);
 
@@ -181,7 +181,7 @@ public class ChattingControllerTest {
         createMessage2.setMessage("HI");
         createMessage2.setUserIdList(Arrays.asList(sender.getId(), receiver2.getId()));
         createMessage2.setSenderId(sender.getId());
-        createMessage2.setRoomId(UUID.randomUUID());
+        createMessage2.setRoomId(UUID.randomUUID().toString());
 
         sendMessage(createMessage2);
 
@@ -240,7 +240,7 @@ public class ChattingControllerTest {
         authenticate("asda");
 
         MultiValueMap multiValueMap = new LinkedMultiValueMap();
-        multiValueMap.set("roomId", UUID.randomUUID().toString());
+        multiValueMap.set("roomId", UUID.randomUUID().toString().toString());
         ResponseEntity<Object> response = enterRoom(multiValueMap, Object.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
@@ -265,7 +265,7 @@ public class ChattingControllerTest {
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
         ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
-        createMessage.setRoomId(UUID.randomUUID());
+        createMessage.setRoomId(UUID.randomUUID().toString());
         createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage.setSenderId(sender.getId());
         createMessage.setMessage("HI");
@@ -296,7 +296,7 @@ public class ChattingControllerTest {
         UserDto.VM receiver = signUp(user2, UserDto.VM.class).getBody();
 
         ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
-        createMessage.setRoomId(UUID.randomUUID());
+        createMessage.setRoomId(UUID.randomUUID().toString());
         createMessage.setUserIdList(Arrays.asList(sender.getId(), receiver.getId()));
         createMessage.setSenderId(sender.getId());
         createMessage.setMessage("HI");
@@ -331,7 +331,7 @@ public class ChattingControllerTest {
         return testRestTemplate.exchange(url, HttpMethod.GET, null, responseType);
     }
 
-    private <T> ResponseEntity<T> leaveRoom (UUID roomId, Class<T> responseType) {
+    private <T> ResponseEntity<T> leaveRoom (String roomId, Class<T> responseType) {
         return testRestTemplate.exchange(API_V_1_CHATTINGS + "/" + roomId, HttpMethod.DELETE, null, responseType);
     }
 
@@ -379,7 +379,7 @@ public class ChattingControllerTest {
 
         connectStomp(tokenResponse.getBody().getAccess_token());
 
-        UUID roomId = UUID.randomUUID();
+        String roomId = UUID.randomUUID().toString();
         for (int i = 1; i <= howManyMessages; i++) {
             ChattingDto.SendMessageParams createMessage = new ChattingDto.SendMessageParams();
             createMessage.setMessage("HI" + i);
@@ -404,5 +404,5 @@ public class ChattingControllerTest {
 @Setter
 @Builder
 class RoomInfo {
-    private UUID roomId;
+    private String roomId;
 }

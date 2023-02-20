@@ -25,7 +25,7 @@ public class ChattingController {
 
     @DeleteMapping("/{roomId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void leaveRoom(@PathVariable UUID roomId) {
+    public void leaveRoom(@PathVariable String roomId) {
         chattingService.leaveRoom(roomId);
     }
 
@@ -40,7 +40,7 @@ public class ChattingController {
     }
 
     @GetMapping("/messages")
-    public Page<ChattingDto.MessageVM> getMessages(@RequestParam UUID roomId, Pageable pageable) {
+    public Page<ChattingDto.MessageVM> getMessages(@RequestParam String roomId, Pageable pageable) {
         return chattingService.getMessages(roomId, pageable);
     }
 

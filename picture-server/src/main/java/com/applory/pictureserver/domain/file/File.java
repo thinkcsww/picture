@@ -19,8 +19,8 @@ public class File extends BaseTimeEntity {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(name = "ID", columnDefinition = "BINARY(16)")
-    private UUID id;
+    @Column(name = "ID", columnDefinition = "VARCHAR(100)")
+    private String id;
 
     @Column(name = "ORIGIN_FILE_NAME")
     private String originFileName;

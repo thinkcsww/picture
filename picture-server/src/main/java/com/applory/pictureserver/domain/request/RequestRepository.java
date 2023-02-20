@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface RequestRepository extends JpaRepository<Request, UUID>, RequestRepositoryCustom {
+public interface RequestRepository extends JpaRepository<Request, String>, RequestRepositoryCustom {
     List<Request> findByUser_Id(UUID id);
 }

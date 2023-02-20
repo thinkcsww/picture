@@ -28,7 +28,7 @@ public class RequestController {
     }
 
     @GetMapping("/{id}")
-    public RequestDto.VM getRequests(@PathVariable UUID id) {
+    public RequestDto.VM getRequests(@PathVariable String id) {
         return requestService.getRequest(id);
     }
 }

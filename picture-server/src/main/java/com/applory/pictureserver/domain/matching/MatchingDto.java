@@ -24,7 +24,7 @@ public class MatchingDto {
     public static class VM {
         String opponentNickname;
         String comment;
-        UUID matchingId;
+        String matchingId;
 
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
         LocalDateTime dueDate;

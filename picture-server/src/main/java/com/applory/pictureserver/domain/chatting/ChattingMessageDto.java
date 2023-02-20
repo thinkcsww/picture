@@ -10,7 +10,7 @@ public class ChattingMessageDto {
     @Getter
     @Setter
     public static class Search {
-        private UUID roomId;
+        private String roomId;
         private UUID userId;
         private String readBy;
     }

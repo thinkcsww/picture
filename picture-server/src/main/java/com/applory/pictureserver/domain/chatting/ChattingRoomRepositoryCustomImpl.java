@@ -26,7 +26,7 @@ public class ChattingRoomRepositoryCustomImpl implements ChattingRoomRepositoryC
     }
 
     @Override
-    public List<ChattingRoom> findAllByRoomIds(List<UUID> roomIds) {
+    public List<ChattingRoom> findAllByRoomIds(List<String> roomIds) {
         return jpaQueryFactory.select(chattingRoom)
                 .from(chattingRoom)
                 .join(chattingRoom.chattingRoomMembers, chattingRoomMember).fetchJoin()

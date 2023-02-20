@@ -8,5 +8,5 @@ import java.util.UUID;
 public interface ChattingRoomRepositoryCustom {
     List<ChattingRoom> findAllByUser(User user);
 
-    List<ChattingRoom> findAllByRoomIds(List<UUID> roomIds);
+    List<ChattingRoom> findAllByRoomIds(List<String> roomIds);
 }

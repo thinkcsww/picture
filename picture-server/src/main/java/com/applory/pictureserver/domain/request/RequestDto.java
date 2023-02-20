@@ -42,7 +42,7 @@ public class RequestDto {
     @Setter
     @NoArgsConstructor
     public static class VM {
-        private UUID id;
+        private String id;
         private UUID userId;
         private String userProfileFileName;
         private String userNickname;
@@ -91,7 +91,7 @@ public class RequestDto {
 
         private UUID userId;
 
-        private UUID exceptThisId;
+        private String exceptThisId;
 
     }
 

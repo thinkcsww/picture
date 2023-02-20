@@ -146,7 +146,7 @@ public class UserControllerTest {
     @Test
     public void getSellerUser_withUnExistId_receive404() {
         ResponseEntity<UserDto.VM> userResponse = signUp(TestUtil.createValidSellerUser("123123"), UserDto.VM.class);
-        ResponseEntity<Object> response = getSellerUser(new ParameterizedTypeReference<Object>() {}, UUID.randomUUID());
+        ResponseEntity<Object> response = getSellerUser(new ParameterizedTypeReference<Object>() {}, UUID.randomUUID().toString());
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
@@ -186,7 +186,7 @@ public class UserControllerTest {
         return testRestTemplate.exchange(url, HttpMethod.GET, null, responseType);
     }
 
-    public <T> ResponseEntity<T> getSellerUser(ParameterizedTypeReference<T> responseType, UUID id) {
+    public <T> ResponseEntity<T> getSellerUser(ParameterizedTypeReference<T> responseType, String id) {
         String url = API_V_1_USERS_SELLER + "/" + id;
         return testRestTemplate.exchange(url, HttpMethod.GET, null, responseType);
     }

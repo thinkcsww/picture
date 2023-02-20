@@ -22,7 +22,7 @@ public class UserDto {
     @Setter
     @NoArgsConstructor
     public static class VM {
-        private UUID id;
+        private String id;
         private String username;
         private String nickname;
         private User.SnsType snsType;
@@ -67,7 +67,7 @@ public class UserDto {
     @Setter
     @NoArgsConstructor
     public static class SellerVM {
-        private UUID id;
+        private String id;
         private String username;
         private String nickname;
         private User.SnsType snsType;
@@ -167,7 +167,7 @@ public class UserDto {
     @Builder
     public static class Search {
         public String sellerEnabledYn;
-        public UUID userId;
+        public String userId;
         public String completeYn;
     }
 

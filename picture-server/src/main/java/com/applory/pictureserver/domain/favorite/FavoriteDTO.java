@@ -8,13 +8,13 @@ import java.util.UUID;
 public class FavoriteDTO {
     @Data
     public static class Toggle {
-        private UUID userId;
-        private UUID targetUserId;
+        private String userId;
+        private String targetUserId;
     }
 
     @Data
     public static class VM {
-        private UUID userId;
+        private String userId;
         private String nickname;
         private String fileName;
         private String id;

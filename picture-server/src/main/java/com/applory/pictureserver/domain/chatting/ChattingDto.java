@@ -22,13 +22,13 @@ public class ChattingDto {
         private String roomId;
 
         @NotNull
-        private UUID senderId;
+        private String senderId;
 
-        private List<UUID> userIdList;
+        private List<String> userIdList;
 
-        private UUID sellerId;
+        private String sellerId;
 
-        private UUID clientId;
+        private String clientId;
 
         private String message;
 
@@ -59,18 +59,18 @@ public class ChattingDto {
     public static class EnterRoomParams {
         private String roomId;
 
-        private UUID targetUserId;
+        private String targetUserId;
 
-        private UUID sellerId;
+        private String sellerId;
 
-        private UUID clientId;
+        private String clientId;
     }
 
     @Getter
     @Setter
     @NoArgsConstructor
     public static class MessageVM {
-        private UUID senderId;
+        private String senderId;
         private String message;
         private String createdDt;
         private String readBy;
@@ -97,11 +97,11 @@ public class ChattingDto {
         private String roomId;
 
         @NotNull
-        private UUID senderId;
+        private String senderId;
 
-        private UUID sellerId;
+        private String sellerId;
 
-        private UUID clientId;
+        private String clientId;
 
         private String message;
 
@@ -114,7 +114,7 @@ public class ChattingDto {
         private String fileName;
 
         @Builder
-        public StompMessageVM(String roomId, UUID senderId, UUID sellerId, UUID clientId, String message, ChattingRoom.Type roomType, ChattingMessage.Type messageType, String id, String fileName) {
+        public StompMessageVM(String roomId, String senderId, String sellerId, String clientId, String message, ChattingRoom.Type roomType, ChattingMessage.Type messageType, String id, String fileName) {
             this.roomId = roomId;
             this.senderId = senderId;
             this.sellerId = sellerId;

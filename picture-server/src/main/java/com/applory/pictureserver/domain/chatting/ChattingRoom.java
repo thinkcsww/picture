@@ -32,8 +32,8 @@ public class ChattingRoom extends BaseTimeEntity {
     private Type type;
 
     @Column(name = "SELLER_ID", columnDefinition = "BINARY(16)")
-    private UUID sellerId;
+    private String sellerId;
 
     @Column(name = "CLIENT_ID", columnDefinition = "BINARY(16)")
-    private UUID clientId;
+    private String clientId;
 }

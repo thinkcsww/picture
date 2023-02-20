@@ -113,7 +113,7 @@ public class RequestControllerTest {
     void getRequest_withInValidToken_receive401() {
         authenticate("invalid_token");
 
-        ResponseEntity<Object> response = getRequest(UUID.randomUUID(), new ParameterizedTypeReference<Object>() {});
+        ResponseEntity<Object> response = getRequest(UUID.randomUUID().toString(), new ParameterizedTypeReference<Object>() {});
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
@@ -127,7 +127,7 @@ public class RequestControllerTest {
         authenticate(tokenResponse.getBody().getAccess_token());
 
         postRequest(createValidRequestDto(), Object.class);
-        ResponseEntity<Object> response = getRequest(UUID.randomUUID(), new ParameterizedTypeReference<Object>() {});
+        ResponseEntity<Object> response = getRequest(UUID.randomUUID().toString(), new ParameterizedTypeReference<Object>() {});
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
@@ -167,7 +167,7 @@ public class RequestControllerTest {
         return testRestTemplate.exchange(url, HttpMethod.GET, null, responseType);
     }
 
-    public <T> ResponseEntity<T> getRequest(UUID id, ParameterizedTypeReference<T> responseType) {
+    public <T> ResponseEntity<T> getRequest(String id, ParameterizedTypeReference<T> responseType) {
         String url = API_V_1_REQUESTS + "/" + id;
         return testRestTemplate.exchange(url, HttpMethod.GET, null, responseType);
     }

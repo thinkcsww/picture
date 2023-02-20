@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Repository
 public interface FavoriteRepository extends JpaRepository<Favorite, String> {
-    Optional<Favorite> findByUser_IdAndTargetUser_id(UUID userId, UUID targetUserId);
+    Optional<Favorite> findByUser_IdAndTargetUser_id(String userId, String targetUserId);
 
     List<Favorite> findByUser(User user);
 }

@@ -25,7 +25,7 @@ public class MatchingRepositoryCustomImpl implements MatchingRepositoryCustom {
                 .fetch();
     }
 
-    private BooleanExpression userIdEq(String sellerEnabledYn, UUID userId) {
+    private BooleanExpression userIdEq(String sellerEnabledYn, String userId) {
         if (!StringUtils.hasText(sellerEnabledYn)) {
             return null;
         }

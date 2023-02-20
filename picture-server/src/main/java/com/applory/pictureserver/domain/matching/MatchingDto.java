@@ -15,7 +15,7 @@ public class MatchingDto {
     @Builder
     public static class Search {
         public String sellerEnabledYn;
-        public UUID userId;
+        public String userId;
         public String completeYn;
     }
 

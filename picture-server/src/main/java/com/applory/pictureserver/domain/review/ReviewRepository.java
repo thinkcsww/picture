@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface ReviewRepository extends JpaRepository<Review, UUID>, ReviewRepositoryCustom {
+public interface ReviewRepository extends JpaRepository<Review, String>, ReviewRepositoryCustom {
 
     List<Review> findBySellerOrderByCreatedDtDesc(User seller);
 

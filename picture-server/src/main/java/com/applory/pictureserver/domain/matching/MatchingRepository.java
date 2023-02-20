@@ -9,9 +9,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface MatchingRepository extends JpaRepository<Matching, UUID>, MatchingRepositoryCustom {
+public interface MatchingRepository extends JpaRepository<Matching, String>, MatchingRepositoryCustom {
     Optional<Matching> findBySellerAndClientAndCompleteYN(User seller, User client, String completeYN);
-    Optional<Matching> findBySeller_IdAndClient_IdAndCompleteYN(UUID sellerId, UUID clientId, String completeYN);
+    Optional<Matching> findBySeller_IdAndClient_IdAndCompleteYN(String sellerId, String clientId, String completeYN);
 
     List<Matching> findBySellerAndCompleteYN(User seller, String y);
 }

@@ -43,7 +43,7 @@ public class RequestDto {
     @NoArgsConstructor
     public static class VM {
         private String id;
-        private UUID userId;
+        private String userId;
         private String userProfileFileName;
         private String userNickname;
         private Double userAcceptRate;
@@ -89,7 +89,7 @@ public class RequestDto {
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         private LocalDateTime toForDueDt;
 
-        private UUID userId;
+        private String userId;
 
         private String exceptThisId;
 

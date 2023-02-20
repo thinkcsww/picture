@@ -11,7 +11,7 @@ public class ChattingMessageDto {
     @Setter
     public static class Search {
         private String roomId;
-        private UUID userId;
+        private String userId;
         private String readBy;
     }
 }

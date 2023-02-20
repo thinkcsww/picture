@@ -118,7 +118,7 @@ public class ChattingService {
 
         List<ChattingRoomMember> roomMembers = chattingRoomMemberRepository.findByChattingRoom_IdAndUseYN(roomId, "Y");
 
-        UUID leftUserId = null;
+        String leftUserId = null;
 
         for (ChattingRoomMember roomMember : roomMembers) {
             if (roomMember.getUser().getId().equals(user.getId())) {

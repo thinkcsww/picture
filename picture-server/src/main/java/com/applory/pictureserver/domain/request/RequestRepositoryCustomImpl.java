@@ -53,7 +53,7 @@ public class RequestRepositoryCustomImpl implements RequestRepositoryCustom {
         return request.specialty.eq(value);
     }
 
-    private BooleanExpression userIdEq(UUID value) {
+    private BooleanExpression userIdEq(String value) {
         if (ObjectUtils.isEmpty(value)) {
             return null;
         }

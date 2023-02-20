@@ -88,7 +88,7 @@ public class TextMessageSender implements MessageSender {
 
     private List<ChattingRoomMember> saveNewRoomMember(ChattingDto.SendMessageParams createMessage, ChattingRoom chattingRoomInDB) {
         List<ChattingRoomMember> chattingRoomMembers = new ArrayList<>();
-        for (UUID userId : createMessage.getUserIdList()) {
+        for (String userId : createMessage.getUserIdList()) {
             Optional<User> userOptional = userRepository.findById(userId);
             if (!userOptional.isPresent()) {
                 throw new NotFoundException("Send Message: " + userId + " is not exist");

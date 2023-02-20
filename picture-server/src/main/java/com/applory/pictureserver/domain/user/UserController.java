@@ -51,12 +51,12 @@ public class UserController {
     }
 
     @GetMapping("/seller/{id}")
-    public UserDto.SellerVM getSellerUser(@PathVariable UUID id, @RequestParam(required = false) UUID requesterId) {
+    public UserDto.SellerVM getSellerUser(@PathVariable String id, @RequestParam(required = false) String requesterId) {
         return userService.getSellerDetail(id, requesterId);
     }
 
     @PostMapping("/{id}/profile-image")
-    public Result updateProfileImage(@PathVariable("id") UUID userId, UserDto.UpdateProfileImage dto) {
+    public Result updateProfileImage(@PathVariable("id") String userId, UserDto.UpdateProfileImage dto) {
         userService.updateProfileImage(userId, dto);
         return Result.success();
     }

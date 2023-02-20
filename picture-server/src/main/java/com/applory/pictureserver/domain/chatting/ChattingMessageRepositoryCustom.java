@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface ChattingMessageRepositoryCustom {
 
-    int countUnreadMessageOfRoom(String roomId, UUID userId);
+    int countUnreadMessageOfRoom(String roomId, String userId);
 
     Page<ChattingMessage> findMessageBySearchQ(ChattingMessageDto.Search search, Pageable pageable);
 

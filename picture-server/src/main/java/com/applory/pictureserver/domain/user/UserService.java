@@ -123,7 +123,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserDto.SellerVM getSellerDetail(UUID id, UUID requesterId) {
+    public UserDto.SellerVM getSellerDetail(String id, String requesterId) {
         User seller = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Seller: " + id + " not exist"));
         List<Review> reviews = reviewRepository.findBySellerOrderByCreatedDtDesc(seller);
 
@@ -154,7 +154,7 @@ public class UserService {
         return sellerVM;
     }
 
-    public void updateProfileImage(UUID userId, UserDto.UpdateProfileImage dto) {
+    public void updateProfileImage(String userId, UserDto.UpdateProfileImage dto) {
         User userInDB = userRepository.getById(userId);
 
         // 기존 파일 삭제

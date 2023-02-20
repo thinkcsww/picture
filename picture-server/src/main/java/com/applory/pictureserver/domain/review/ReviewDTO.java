@@ -44,7 +44,7 @@ public class ReviewDTO {
     @Data
     public static class Create {
         @NotEmpty
-        private UUID sellerId;
+        private String sellerId;
 
         @NotEmpty
         private String content;
@@ -56,6 +56,6 @@ public class ReviewDTO {
     @Data
     public static class Search {
         @NotEmpty
-        private UUID sellerId;
+        private String sellerId;
     }
 }

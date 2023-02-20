@@ -55,8 +55,8 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(name = "ID", columnDefinition = "BINARY(16)")
-    private UUID id;
+    @Column(name = "ID", columnDefinition = "VARCHAR(100)")
+    private String id;
 
     @NotEmpty
     @Column(name = "USERNAME")

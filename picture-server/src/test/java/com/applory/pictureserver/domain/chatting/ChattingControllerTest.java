@@ -39,6 +39,7 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
 import java.util.UUID;
 import java.util.concurrent.*;
 
@@ -251,7 +252,7 @@ public class ChattingControllerTest {
         RoomInfo roomInfo = sendToOnePersonHowManyMessagesAndAuthenticate(1);
 
         MultiValueMap multiValueMap = new LinkedMultiValueMap();
-        multiValueMap.set("roomId", roomInfo.getRoomId().toString());
+        multiValueMap.set("roomId", roomInfo.getRoomId());
         ResponseEntity<Object> response = enterRoom(multiValueMap, Object.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

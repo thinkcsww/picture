@@ -3,7 +3,6 @@ package com.applory.pictureserver.domain.chatting;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.UUID;
 
 public class ChattingMessageDto {
 

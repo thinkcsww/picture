@@ -5,20 +5,22 @@ import com.applory.pictureserver.domain.chatting.message_sender.MessageSenderMap
 import com.applory.pictureserver.domain.matching.Matching;
 import com.applory.pictureserver.domain.matching.MatchingDto;
 import com.applory.pictureserver.domain.matching.MatchingRepository;
-import com.applory.pictureserver.domain.user.UserDto;
-import com.applory.pictureserver.shared.SecurityUtils;
 import com.applory.pictureserver.domain.user.User;
+import com.applory.pictureserver.domain.user.UserDto;
 import com.applory.pictureserver.domain.user.UserRepository;
 import com.applory.pictureserver.exception.NotFoundException;
+import com.applory.pictureserver.shared.SecurityUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service

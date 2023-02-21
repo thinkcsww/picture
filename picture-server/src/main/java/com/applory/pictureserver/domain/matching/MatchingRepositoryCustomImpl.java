@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
-import java.util.UUID;
+
 
 import static com.applory.pictureserver.domain.matching.QMatching.matching;
 

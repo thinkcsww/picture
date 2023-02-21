@@ -3,7 +3,7 @@ package com.applory.pictureserver.domain.favorite;
 import lombok.Data;
 
 import java.util.Objects;
-import java.util.UUID;
+
 
 public class FavoriteDTO {
     @Data

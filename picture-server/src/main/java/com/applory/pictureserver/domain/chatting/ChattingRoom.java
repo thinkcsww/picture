@@ -7,7 +7,6 @@ import lombok.Setter;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -31,9 +30,9 @@ public class ChattingRoom extends BaseTimeEntity {
     @Column(name = "TYPE")
     private Type type;
 
-    @Column(name = "SELLER_ID", columnDefinition = "BINARY(16)")
+    @Column(name = "SELLER_ID", columnDefinition = "VARCHAR(100)")
     private String sellerId;
 
-    @Column(name = "CLIENT_ID", columnDefinition = "BINARY(16)")
+    @Column(name = "CLIENT_ID", columnDefinition = "VARCHAR(100)")
     private String clientId;
 }

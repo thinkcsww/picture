@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 public class ChattingDto {
 

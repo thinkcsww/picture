@@ -5,7 +5,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
-import java.util.UUID;
 
 import static com.applory.pictureserver.domain.chatting.QChattingRoom.chattingRoom;
 import static com.applory.pictureserver.domain.chatting.QChattingRoomMember.chattingRoomMember;

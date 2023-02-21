@@ -10,7 +10,7 @@ type AppButtonProps = {
 
 const AppButton: FC<AppButtonProps> = ({ title, disabled, onPress }) => {
   return (
-    <TouchableOpacity onPress={onPress} style={disabled ? styles.disabledContainer : styles.container}>
+    <TouchableOpacity disabled={disabled} onPress={onPress} style={disabled ? styles.disabledContainer : styles.container}>
       <Text style={disabled ? styles.disabledText : styles.text}>{title}</Text>
     </TouchableOpacity>
   )

@@ -63,13 +63,12 @@ public class TextMessageSender implements MessageSender {
 
 
         simpMessagingTemplate.convertAndSend("/room/" + sendMessageParams.getRoomId(), stompMessageVM);
-        String targetUserId = targetChattingRoom.getClientId().equals(sendMessageParams.getSenderId()) ? targetChattingRoom.getSellerId().toString() : targetChattingRoom.getClientId().toString();
+        String targetUserId = targetChattingRoom.getClientId().equals(sendMessageParams.getSenderId()) ? targetChattingRoom.getSellerId() : targetChattingRoom.getClientId();
         simpMessagingTemplate.convertAndSend("/chat-list/" + targetUserId, stompMessageVM);
     }
 
     private ChattingRoom saveNewRoom(ChattingDto.SendMessageParams createMessage) {
-        ChattingRoom chattingRoom;
-        chattingRoom = new ChattingRoom();
+        ChattingRoom chattingRoom = new ChattingRoom();
         chattingRoom.setId(createMessage.getRoomId());
         chattingRoom.setType(createMessage.getRoomType());
         chattingRoom.setClientId(createMessage.getClientId());

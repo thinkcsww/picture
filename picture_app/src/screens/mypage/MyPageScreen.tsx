@@ -195,43 +195,41 @@ const MyPageScreen = () => {
           fontWeight: "500",
           marginBottom: 6,
         }}>단골 전문가 리스트</Text>
-        <FlatList
-          ListEmptyComponent={() => {
-            return (
-              <View style={{
-                backgroundColor: Colors.DIMMED,
+        {
+          userDetail?.favoriteUsers?.length === 0 ? <View style={{
+            backgroundColor: Colors.DIMMED,
+            height: 100,
+            borderRadius: 8,
+            justifyContent: "center",
+            alignItems: "center",
+          }}>
+            <Text>단골 전문가가 없습니다.</Text>
+          </View> : <FlatList
+            showsHorizontalScrollIndicator={false}
+            horizontal
+            data={userDetail?.favoriteUsers}
+            renderItem={({item}) => {
+              return <TouchableOpacity onPress={() => onClickFavoriteUser(item.userId)} key={item.id} style={{
+                width: 100,
                 height: 100,
+                backgroundColor: Colors.DIMMED,
+                marginRight: 8,
                 borderRadius: 8,
-                justifyContent: "center",
                 alignItems: "center",
               }}>
-                <Text>단골 전문가가 없습니다.</Text>
-              </View>
-            )
-          }}
-          showsHorizontalScrollIndicator={false}
-          horizontal
-          data={userDetail?.favoriteUsers}
-          renderItem={({item}) => {
-            return <TouchableOpacity onPress={() => onClickFavoriteUser(item.userId)} key={item.id} style={{
-              width: 100,
-              height: 100,
-              backgroundColor: Colors.DIMMED,
-              marginRight: 8,
-              borderRadius: 8,
-              alignItems: "center",
-            }}>
-              <ImageWithPH styles={{
-                width: 100,
-                height: 60,
-                borderTopLeftRadius: 8,
-                borderTopRightRadius: 8,
-                marginBottom: 10
-              }} fileName={item.fileName} />
-              <Text>{item.nickname}</Text>
-            </TouchableOpacity>
-          }
-          }/>
+                <ImageWithPH styles={{
+                  width: 100,
+                  height: 60,
+                  borderTopLeftRadius: 8,
+                  borderTopRightRadius: 8,
+                  marginBottom: 10
+                }} fileName={item.fileName} />
+                <Text>{item.nickname}</Text>
+              </TouchableOpacity>
+            }
+            }/>
+        }
+
       </View>
 
 

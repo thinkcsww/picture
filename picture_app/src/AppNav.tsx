@@ -147,7 +147,7 @@ const AppNav = () => {
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons name="chat" color={color} size={26} />
             ),
-            tabBarBadge: 5,
+            // tabBarBadge: 5,
           }} />
         <Tab.Screen
           name={RouteNames.MyPageTab}

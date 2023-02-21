@@ -12,7 +12,7 @@ import {
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import AppHeader from "../../components/AppHeader";
 import { Colors } from "../../colors";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import axios, { AxiosError } from "axios";
 import { ChattingService } from "../../services/ChattingService";
 import { Client, IMessage } from "@stomp/stompjs";
@@ -40,6 +40,7 @@ const ChattingRoomScreen = ({ route }: any) => {
   const { targetUserId, roomType, sellerId, clientId, roomId } = route.params;
   const listRef = useRef<FlatList>(null);
   const stompClient = useRef<Client>(new Client());
+  const queryClient = useQueryClient();
 
   useQuery(ChattingService.QueryKey.enterRoom, () => {
     const params = {
@@ -54,7 +55,9 @@ const ChattingRoomScreen = ({ route }: any) => {
       console.log("==== EnterRoom 조회 성공 ====");
       console.log(result);
       setRoomInfo(result);
-      setPagedMessageList(result.messages)
+      if (result.messages && result.messages) {
+        setPagedMessageList(result.messages)
+      }
     },
     onError: (err: AxiosError) => {
       console.log("==== EnterRoom 조회 실패 ====");

@@ -65,7 +65,6 @@ const SignUpSellerScreen = () => {
 
   const [showNicknameError, setShowNicknameError] = useState(false);
   const [nicknameChecked, setNicknameChecked] = useState(false);
-
   const [nickname, setNickname] = useState('')
   const [desc, setDesc] = useState('')
   const [peopleChecked, setPeopleChecked] = useState(false)

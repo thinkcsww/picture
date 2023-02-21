@@ -21,5 +21,6 @@ export const emptyPageResult = () => {
     number: 0,
     first: true,
     last: false,
-  } as PageResult;
+    content: [],
+  } as unknown as PageResult;
 }

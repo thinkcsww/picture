@@ -66,7 +66,6 @@ public class RequestService {
         RequestDto.VM requestVM = new RequestDto.VM(request);
 
         setAnotherRequest(id, requestVM);
-
         setAcceptRate(requestVM);
 
         return requestVM;

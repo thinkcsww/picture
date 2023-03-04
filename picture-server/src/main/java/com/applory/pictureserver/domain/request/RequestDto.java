@@ -50,7 +50,7 @@ public class RequestDto {
         private Constant.Specialty specialty;
         private String title;
         private Integer desiredPrice;
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
         private LocalDateTime dueDate;
         private String description;
         private String matchYn;

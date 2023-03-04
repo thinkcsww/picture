@@ -1,5 +1,6 @@
 package com.applory.pictureserver.domain.request;
 
+import com.applory.pictureserver.shared.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +29,7 @@ public class RequestController {
     }
 
     @GetMapping("/{id}")
-    public RequestDto.VM getRequests(@PathVariable String id) {
-        return requestService.getRequest(id);
+    public Result getRequest(@PathVariable String id) {
+        return Result.success(requestService.getRequest(id));
     }
 }

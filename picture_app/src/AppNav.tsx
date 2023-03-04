@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import RequestScreen from "./screens/request/RequestScreen";
 import ChattingScreen from "./screens/chatting/ChattingScreen";
@@ -100,7 +100,7 @@ const AppNav = () => {
 
   const Tab = createMaterialBottomTabNavigator();
 
-  const HomeTabs = () => {
+  const HomeTabs = useCallback(() => {
     return (
       <Tab.Navigator
         shifting={false}
@@ -152,6 +152,7 @@ const AppNav = () => {
         <Tab.Screen
           name={RouteNames.MyPageTab}
           component={MyPageStack}
+          listeners={tabEventListenerShowLoginScreen}
           options={{
             tabBarLabel: "마이페이지",
             tabBarIcon: ({ color }) => (
@@ -161,7 +162,7 @@ const AppNav = () => {
         />
       </Tab.Navigator>
     );
-  };
+  }, [isTokenExist]);
 
   const tabEventListenerShowLoginScreen = {
     tabPress: (e: any) => {

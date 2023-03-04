@@ -12,7 +12,8 @@ export interface PageResult<T = any> {
 
 export interface Result<T = any> {
   message: string;
-  data: T
+  data: T;
+  code: string;
 }
 
 export const emptyPageResult = () => {

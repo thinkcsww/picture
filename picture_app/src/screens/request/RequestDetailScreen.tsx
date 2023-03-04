@@ -13,20 +13,37 @@ import { RequestService } from "../../services/RequestService";
 import CommonUtils from "../../utils/CommonUtils";
 import AnotherRequestList from "./components/AnotherRequestList";
 import { Env } from "../../constants/Env";
+import { useAppSelector } from "../../store/config";
+import ImageWithPH from "../../components/ImageWithPH";
 
 const RequestDetailScreen = ({ route }: any) => {
   const { id } = route.params;
   const navigation = useNavigation<any>();
+  const { user } = useAppSelector(state => state.common);
 
   const getRequestDetailQuery = useQuery(RequestService.QueryKey.getRequest, () => {
     return RequestService.getRequest(id);
+  }, {
+    onSuccess: (data) => {
+      console.log('==== Request 상세 조회 성공 ====');
+      console.log(data);
+    }
   });
+
 
   if (getRequestDetailQuery.isLoading || !getRequestDetailQuery.data) {
     return null;
   }
 
-  const request = getRequestDetailQuery.data;
+  const request = getRequestDetailQuery.data.data;
+
+  const isNotMe = () => {
+    if (!!user) {
+      return user.id !== request.userId;
+    }
+
+    return true;
+  }
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -53,7 +70,11 @@ const RequestDetailScreen = ({ route }: any) => {
             flexDirection: "row",
             alignItems: "center",
           }}>
-            <Avatar size={"large"}  source={{ uri: `${Env.host}/api/v1/files/images/${request.userProfileFileName}` }} rounded />
+            <ImageWithPH styles={{
+              width: 50,
+              height: 50,
+              borderRadius: 25
+            }} fileName={request.userProfileFileName}/>
             <Text style={{
               marginLeft: 12,
               fontWeight: "bold",
@@ -115,7 +136,7 @@ const RequestDetailScreen = ({ route }: any) => {
                   marginLeft: 8,
                   fontWeight: "bold",
                   fontSize: 12,
-                }}>마감까지 {DateUtils.getRemainTime(new Date(request.dueDate).toISOString())} 남음</Text>
+                }}>마감까지 {DateUtils.getRemainTime(request.dueDate)} 남음</Text>
               </View>
             </View>
           </View>
@@ -152,13 +173,13 @@ const RequestDetailScreen = ({ route }: any) => {
             flexDirection: 'row',
             alignItems: 'center',
           }}>
-            <TouchableOpacity style={{
-              borderRightWidth: 1,
-              borderRightColor: '#e9e9e9',
-              padding: 12
-            }}>
-              <Icon name={'ios-heart'} size={28} color={Colors.PRIMARY}/>
-            </TouchableOpacity>
+            {/*<TouchableOpacity style={{*/}
+            {/*  borderRightWidth: 1,*/}
+            {/*  borderRightColor: '#e9e9e9',*/}
+            {/*  padding: 12*/}
+            {/*}}>*/}
+            {/*  <Icon name={'ios-heart'} size={28} color={Colors.PRIMARY}/>*/}
+            {/*</TouchableOpacity>*/}
             <Text style={{
               fontWeight: 'bold',
               marginLeft: 12,
@@ -166,17 +187,22 @@ const RequestDetailScreen = ({ route }: any) => {
             }}>{ request.desiredPrice.toLocaleString() }원</Text>
           </View>
 
-          <TouchableOpacity style={{
-            backgroundColor: Colors.PRIMARY,
-            paddingVertical: 10,
-            paddingHorizontal: 20,
-            borderRadius: 8
-          }}>
-            <Text style={{
-              color: 'white',
-              fontWeight: 'bold'
-            }}>채팅하기</Text>
-          </TouchableOpacity>
+          {
+            isNotMe() && (
+              <TouchableOpacity style={{
+                backgroundColor: Colors.PRIMARY,
+                paddingVertical: 10,
+                paddingHorizontal: 20,
+                borderRadius: 8
+              }}>
+                <Text style={{
+                  color: 'white',
+                  fontWeight: 'bold'
+                }}>채팅하기</Text>
+              </TouchableOpacity>
+            )
+          }
+
         </View>
 
 

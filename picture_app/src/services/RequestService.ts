@@ -1,5 +1,5 @@
 import { instance } from "../hooks/useAxiosLoader";
-import { PageResult } from "../types/Page";
+import { PageResult, Result } from "../types/Page";
 import { Request } from "../types/Request";
 import { Specialty } from "../types/Common";
 
@@ -42,7 +42,7 @@ export const RequestService = {
   getRequest: async (id: string) => {
     let url = `${REQUEST_API_URL}/${id}`;
 
-    const {data} = await instance.get<Request.Request>(url);
+    const {data} = await instance.get<Result<Request.Request>>(url);
 
     return data;
 

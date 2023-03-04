@@ -1,5 +1,6 @@
 import { instance } from "../hooks/useAxiosLoader";
 import { User } from "../types/User";
+import { Result } from "../types/Page";
 
 const USER_API_URL = '/v1/users'
 
@@ -29,7 +30,7 @@ const UserService = {
   },
   getUserMe: async () => {
     let url = `${USER_API_URL}/me`;
-    const {data} = await instance.get<User.VM>(url, {
+    const {data} = await instance.get<Result<User.VM>>(url, {
       headers: {
         PermitAll: false
       }

@@ -18,8 +18,13 @@ const SellerDetailProfile: FC<SellerDetailProfileProps> = ({ seller, onClickChat
   const { user } = useAppSelector(state => state.common);
 
   const isNotMe = () => {
-    return user.id !== seller.id;
+    if (!!user) {
+      return user.id !== seller.id;
+    }
+
+    return true;
   }
+
   return (
     <View>
       <View style={styles.container}>

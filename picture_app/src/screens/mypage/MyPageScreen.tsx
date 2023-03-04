@@ -3,7 +3,7 @@ import { FlatList, Platform, SafeAreaView, ScrollView, StyleSheet, Text, Touchab
 import AsyncStorageService from "../../services/AsyncStorageService";
 import UserService from "../../services/UserService";
 import { useAppDispatch } from "../../store/config";
-import { setUser } from "../../store/slices/commonSlice";
+import { setIsTokenExist, setUser } from "../../store/slices/commonSlice";
 import TabListHeaderWithOptions from "../../components/tab-list/TabListHeaderWithOptions";
 import { Divider } from "react-native-paper";
 import { Colors } from "../../colors";
@@ -31,7 +31,7 @@ const MyPageScreen = () => {
       console.log("==== 마이페이지 getUserMe ====");
       console.log(res);
       setUserDetail(res.data);
-      // dispatch(setUser(res))
+      dispatch(setUser(res))
     });
   };
 
@@ -78,6 +78,7 @@ const MyPageScreen = () => {
   const logout = async () => {
     await AsyncStorageService.removeData(AsyncStorageService.Keys.TokenInfo);
     dispatch(setUser(undefined));
+    dispatch(setIsTokenExist(false));
   };
 
   const onClickFavoriteUser = (id: string) => {
@@ -95,7 +96,7 @@ const MyPageScreen = () => {
       <View style={{
         paddingHorizontal: 20,
       }}>
-        <TouchableOpacity onPress={onPressEditProfileImage} style={{
+        <TouchableOpacity onPress={logout} style={{
           marginTop: 24,
           flexDirection: "row",
           marginVertical: 12,

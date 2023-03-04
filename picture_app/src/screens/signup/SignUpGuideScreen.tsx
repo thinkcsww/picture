@@ -31,7 +31,7 @@ const SignUpGuideScreen = () => {
 
       AuthService.setTokenInfo(result).then();
       const userMeResponse =  await UserService.getUserMe()
-      dispatch(setUser(userMeResponse));
+      dispatch(setUser(userMeResponse.data));
       dispatch(setIsTokenExist(true));
 
       navigation.navigate(signUpRedux.destination.key, {...signUpRedux.destination.params})

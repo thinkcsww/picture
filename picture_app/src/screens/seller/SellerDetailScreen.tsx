@@ -66,7 +66,12 @@ const SellerDetailScreen = ({ route, navigation }: any) => {
   }
 
   const isNotMe = () => {
-    return user.id !== seller.id;
+    console.log('hello', user);
+    if (!!user) {
+      return user.id !== seller.id;
+    }
+
+    return true;
   }
 
   const toggleFavoriteMutation = useMutation(UserService.QueryKey.toggleFavorite, () => {

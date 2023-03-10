@@ -70,6 +70,7 @@ public class AuthService {
         try {
             restTemplate.exchange(KAKAO_VALIDATE_TOKEN_URL, HttpMethod.GET, httpEntity, HashMap.class);
         } catch (HttpClientErrorException e) {
+            log.error("checkKakaoToken: {}", e.getMessage());
             throw new UnauthorizedException(e.getMessage());
         }
     }

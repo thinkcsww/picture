@@ -18,7 +18,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public MyOAuth2Token login(@Valid @RequestBody AuthDto.Login dto, HttpServletRequest request) {
-        return authService.login(dto, request.getScheme() + "://" + request.getLocalName() + ":" + request.getLocalPort());
+//        return authService.login(dto, request.getScheme() + "://" + request.getLocalName() + ":" + request.getLocalPort());
+        return authService.login(dto, "http://ec2-3-34-1-40.ap-northeast-2.compute.amazonaws.com:8080");
     }
 
     @PostMapping(value = "/token/refresh")
